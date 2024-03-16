@@ -38,10 +38,13 @@ const enemies = [];
 
 function spawnEnemies(spawnCount){
     for(let i = 1; i <= spawnCount; i++){
-        const xOffset = i * 180;
+        const enemyTypes = ['common', 'fast', 'range'];
+        const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        const xOffset = i * Math.floor(Math.random() * 350) + 200;
         enemies.push(
             new Enemy({
-                position: {x: (waypoints[0].x + 50) - xOffset, y: waypoints[0].y - 96}
+                position: {x: (waypoints[0].x + 50) - xOffset, y: waypoints[0].y - 96},
+                type: randomType
             })
         )
     }
@@ -56,7 +59,7 @@ let coins = 5;
 spawnEnemies(enemyCount);
 
 function animate(){
-    const animationID = requestAnimationFrame(animate)
+    const animationID = requestAnimationFrame(animate);
 
     ctx.drawImage(image, 0, 0);
 
@@ -64,16 +67,61 @@ function animate(){
         const enemy = enemies[i];
         enemy.update();
 
+        enemies.forEach(enemy => {
+            enemy.target = null;
+
+            const validTowers = towers.filter((tower) => {
+                const xDiff = tower.center.x - enemy.center.x;
+                const yDiff = tower.center.y - enemy.center.y;
+                const distance = Math.hypot(xDiff, yDiff);
+                return distance <= tower.radius + enemy.radius;
+            })
+    
+            enemy.target = validTowers[0];
+
+            for(let i = enemy.projectiles.length - 1; i >= 0; i--){
+                const projectile = enemy.projectiles[i]
+    
+                projectile.update();
+    
+                const xDiff = projectile.enemy.center.x - projectile.position.x;
+                const yDiff = projectile.enemy.center.y - projectile.position.y;
+                const distance = Math.hypot(xDiff, yDiff);
+    
+                if(distance <= 45){
+                    projectile.enemy.health -= 5;
+                    if (projectile.enemy.health <= 0) {
+                        const towerIndex = towers.findIndex((tower) => {
+                            return projectile.enemy === tower;
+                        });
+                    
+                        if (towerIndex > -1) {
+                            const tower = towers[towerIndex];
+                            const tileIndex = placementTiles.findIndex(tile =>
+                                tile.position.x === tower.position.x && tile.position.y === tower.position.y
+                            );
+                            if (tileIndex > -1) {
+                                placementTiles[tileIndex].isOccupied = false;
+                            }
+                    
+                            towers.splice(towerIndex, 1);
+                        }
+                    }                    
+                    enemy.projectiles.splice(i, 1);
+                }
+            }
+        })
+
         if(enemy.position.x > canvas.width - 400){
             hearts -= 1;
             enemies.splice(i, 1);
             document.querySelector('#hearts').innerHTML = hearts;
-
-            if(hearts === 0){
-                cancelAnimationFrame(animationID);
-                document.querySelector('#gameOver').style.display = "flex";
-            }
         }
+    }
+
+    if(hearts === 0){
+        cancelAnimationFrame(animationID);
+        document.querySelector('#gameOver').style.display = "flex";
     }
 
     if(enemies.length === 0){

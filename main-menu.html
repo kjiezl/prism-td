@@ -1,0 +1,42 @@
+<title>Main Menu</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Micro+5&display=swap');
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+
+    .container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #playButton{
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        font-size: 10em;
+        font-family: 'Micro 5', sans-serif;
+        color: rgb(67, 109, 13);
+        background-color: greenyellow;
+    }
+
+    #playButton:hover{
+        background-color: rgb(180, 255, 170);
+    }
+</style>
+<div class="container">
+    <div>
+        <a href="index.html"><button id="playButton">START GAME</button></a>
+    </div>
+</div>
+
+<script src="js/main-menu.js"></script>

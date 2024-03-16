@@ -12,6 +12,12 @@ class Tower extends Sprite{
         this.radius = 500;
         this.target 
         this.frames = 0;
+
+        this.attackSpeed = 250;
+        // this.attackSpeed = 100;
+
+        this.health = 100;
+        this.maxHealth = 100;
     }
 
     draw(){
@@ -21,12 +27,19 @@ class Tower extends Sprite{
         ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.fill();
+
+        // health bar
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillRect(this.position.x + 60, this.position.y - 20, this.width - 120, 10);
+
+        ctx.fillStyle = 'rgb(0, 230, 46)';
+        ctx.fillRect(this.position.x + 60, this.position.y - 20, (this.width - 120) * this.health / this.maxHealth, 10);
     }
 
     update(){
         this.draw();
 
-        if(this.frames % 150 === 0 && this.target){
+        if(this.frames % this.attackSpeed === 0 && this.target){
             this.projectiles.push(
                 new Projectile({
                     position: {
