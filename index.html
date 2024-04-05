@@ -1,46 +1,10 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js" integrity="sha512-xi/RZRIF/S0hJ+yJJYuZ5yk6/8pCiRlEXZzoguSMl+vk2i3m6UjUO/WcZ11blRL/O+rnj94JRGwt/CHbc9+6EA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <title>Level 1</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Micro+5&display=swap');
-    body{
-        margin: 0;
-        background-color: black;
-    }
-
-    #gameOver{
-        position: absolute;
-        top: 0; 
-        bottom: 0; 
-        left: 0; 
-        right: 0;
-        display: none; 
-        align-items: center; 
-        justify-content: center;
-        font-size: 12em;
-        font-family: 'Micro 5', sans-serif;
-        background-color: rgba(0, 0, 30, 0.5);
-        color: white;
-    }
-
-    #playerInfo{
-        position: absolute;
-        top: 20;
-        right: 20;
-        font-family: 'Micro 5', sans-serif;
-        font-size: 5em;
-        /* color: rgb(1, 88, 1); */
-        color: white;
-        display: flex;
-        align-items: center;
-        pointer-events: none;
-    }
-</style>
+<link rel="stylesheet" href="index.css">
 
 <div style="position: relative; display: inline-block;">
     <canvas></canvas>
-
-    <div id="gameOver">
-        GAME OVER
-    </div>
 
     <!-- FOR GRADIENT
         <div style="
@@ -57,6 +21,20 @@
     </div> -->
 
     <div id="playerInfo">
+        <div style="display: flex; align-items: center; margin-right: 30px;">
+            <svg id="musicButton"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
+                <path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
+              </svg>
+        </div>
+
+        <div>
+            <svg id="musicPause"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM17.78 9.22a.75.75 0 1 0-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L20.56 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" />
+              </svg>              
+        </div>
 
         <div style="display: flex; align-items: center; margin-right: 30px;">
             <svg 
@@ -83,6 +61,49 @@
         <div id="hearts">5</div>
         </div>
     </div>
+
+    <div class="upgradeMenu" style="display: none;">
+        <!-- <div style="font-size: 1.7em; margin-bottom: 20; font-family: monospace; text-align: center;"><b>UPGRADE TOWER</b></div> -->
+        <div id="upgradeStats">
+            <div style="text-align: center;">TOWER STATS</div>
+            <div>Level: &ensp; <span id="towerLevel"></span></div>
+            <div>Class: &ensp; <span id="towerClass"></span></div>
+            <div>Health: &ensp; <span id="towerMaxHealth"></span></div>
+            <div>Fire Rate: &ensp; <span id="towerAttackSpeed"></span></div>
+            <div>Projectile Speed: &ensp; <span id="towerProjectileSpeed"></span></div>
+            <div>Damage: &ensp; <span id="towerDamage"></span></div>
+            <div id="specialDiv">Special: &ensp;<span id="special"></span></div>
+            <div><span id="abilityDiv" class="upgradeItem"></span>&ensp;<span id="ability" class="upgradeItem"></span></div>
+            <br><div style="text-align: center;">UPGRADE STATS</div>
+            <div>Health Increase: &ensp; <span id="healthIncrease"></span></div>
+            <div>Fire Rate Increase: &ensp; <span id="attackSpeedIncrease"></span></div>
+            <div>Projectile Speed Increase: &ensp; <span id="projectileSpeedIncrease"></span></div>
+            <div id="specialUpgradeDiv">Special Upgrade: &ensp;<span id="specialUpgrade"></span></div>
+            <div><span id="abilityUpDiv" class="upgradeItem"></span>&ensp;<span id="abilityUp" class="upgradeItem"></span></div>
+            
+        </div>
+    </div>
+
+    <div class="upgradeBox">
+        <button id="upgradeButton" class="upgradeItem">Upgrade</button>
+        <button id="sellButton" class="upgradeItem">Sell</button>
+    </div>
+
+    <div id="towerSelectionMenu" style="display: none;">
+        <img id="commonTowerButton" src="sprites/towers/common-tower-1.png">
+        <label style="left: 33px; top: 85px">Common</label>
+        <img id="iceTowerButton" src="sprites/towers/ice-tower-1.png"><br>
+        <label style="left: 131px; top: 85px">Ice</label>
+        <img id="lightningTowerButton" src="sprites/towers/lightning-tower-1.png">
+        <label style="left: 30px; top: 166px">Lightning</label>
+        <img id="sniperTowerButton" src="sprites/towers/sniper-tower-1.png">
+        <label style="left: 123px; top: 166px">Sniper</label>
+    </div>
+
+    <div id="gameOver">
+        GAME OVER
+    </div>
+    
 </div>
 
 <script src="js/level1-slots.js"></script>

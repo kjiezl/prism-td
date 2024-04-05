@@ -1,11 +1,59 @@
+"use strict";
+
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
+// canvas.width = window.innerWidth;
 canvas.width = 1920;
-canvas.height = 960;
+canvas.height = canvas.width / 2;
 
 ctx.fillStyle = 'white';
-ctx.fillRect(0, 0, canvas.width, canvas.height)
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+let qCoins = $("#coins");
+let qUpgradeMenu = $(".upgradeMenu");
+
+let sfx = {
+    towerPlace: new Howl({
+        src: ['sfx/tower-place.mp3'],
+        volume: 0.7
+    }),
+    towerUpgrade: new Howl({
+        src: ['sfx/tower-upgrade.mp3'],
+        volume: 0.5
+    }),
+    towerShoot: new Howl({
+        src: ['sfx/tower-shoot.wav']
+    }),
+    towerDestroyed: new Howl({
+        src: ['sfx/tower-destroyed.mp3'],
+        volume: 0.5
+    }),
+    towerStrike: new Howl({
+        src: ['sfx/tower-strike.mp3'],
+        volume: 0.7
+    }),
+    towerSlow: new Howl({
+        src: ['sfx/tower-slow.mp3'],
+        volume: 0.3
+    }),
+    enemyDeath: new Howl({
+        src: ['sfx/enemy-death.mp3'],
+        volume: 0.1
+    })
+}
+
+let bgm = {
+    bgm1: new Howl({
+        src: ['bgm/level1-bgm1.mp3'],
+        loop: true,
+        volume: 0.7
+    }),
+    gameOver: new Howl({
+        src: ['bgm/gameover.mp3'],
+        volume: 0.3
+    })
+}
 
 const placementTilesData2D = [];
 
@@ -20,8 +68,8 @@ placementTilesData2D.forEach((row, y) => {
         if(symbol === 9){
             placementTiles.push(new placementTile({
                 position: {
-                    x: x * 192,
-                    y: y * 192
+                    x: x * canvas.width / 10,
+                    y: y * canvas.width / 10
                 }
             }))
         }
@@ -29,10 +77,10 @@ placementTilesData2D.forEach((row, y) => {
 })
 
 const image = new Image();
+image.src = 'sprites/map/level1.png';
 image.onload = () =>{
     animate();
 }
-image.src = 'sprites/map/level1.png';
 
 const enemies = [];
 
@@ -40,7 +88,7 @@ function spawnEnemies(spawnCount){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = ['common', 'fast', 'range'];
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        const xOffset = i * Math.floor(Math.random() * 350) + 200;
+        let xOffset = i * Math.floor(Math.random() * 350) + 200;
         enemies.push(
             new Enemy({
                 position: {x: (waypoints[0].x + 50) - xOffset, y: waypoints[0].y - 96},
@@ -52,16 +100,47 @@ function spawnEnemies(spawnCount){
 
 const towers = [];
 let activeTile = undefined;
-let enemyCount = 1;
+let enemyCount = 5;
 let hearts = 5; //player health
-let coins = 5;
+let coins = 205;
+let selectedTower = {};
+
+let portal = new Image();
+portal.src = 'sprites/gameobj/portal1.png';
+let portalCount = 0;
+let portalFrameX = 0;
+
+let flowers = new Image();
+flowers.src = 'sprites/gameobj/flowers.png';
+let flowersCount = 0;
+let flowersFrameX = 0;
 
 spawnEnemies(enemyCount);
 
+let msPrev = window.performance.now();
+const fps = 60;
+const msPerFrame = 1000 / fps;
+let frames = 0;
+
 function animate(){
-    const animationID = requestAnimationFrame(animate);
+    const animationID = window.requestAnimationFrame(animate);
+
+    const msNow = window.performance.now();
+    const msPassed = msNow - msPrev;
+
+    if (msPassed < msPerFrame) return;
+
+    const excessTime = msPassed % msPerFrame;
+    msPrev = msNow - excessTime;
+
+    frames++;
 
     ctx.drawImage(image, 0, 0);
+    ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
+    ctx.drawImage(flowers, 192 * flowersFrameX, 0, 192, 192, 768, 0, 192, 192);
+    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 576, 768, 192, 192);
+    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 1728, 192, 192, 192);
+    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 0, 0, 192, 192);
 
     for(let i = enemies.length - 1; i >= 0; i--){
         const enemy = enemies[i];
@@ -103,7 +182,8 @@ function animate(){
                             if (tileIndex > -1) {
                                 placementTiles[tileIndex].isOccupied = false;
                             }
-                    
+                            
+                            sfx.towerDestroyed.play();
                             towers.splice(towerIndex, 1);
                         }
                     }                    
@@ -115,17 +195,23 @@ function animate(){
         if(enemy.position.x > canvas.width - 400){
             hearts -= 1;
             enemies.splice(i, 1);
-            document.querySelector('#hearts').innerHTML = hearts;
+            $("#hearts").text(hearts);
         }
     }
 
     if(hearts === 0){
         cancelAnimationFrame(animationID);
-        document.querySelector('#gameOver').style.display = "flex";
+        bgm.bgm1.stop();
+        bgm.gameOver.play();
+        qUpgradeMenu.css("display", "none");
+        $("#towerSelectionMenu").css("display", "none");
+        $("#gameOver").css("display", "flex");  
+        $(".upgradeItem").css("display", "none");
+        $("#specialID").css("display", "none");
     }
 
     if(enemies.length === 0){
-        enemyCount += 1;
+        enemyCount += 2;
         spawnEnemies(enemyCount);
     }
 
@@ -155,7 +241,52 @@ function animate(){
             const distance = Math.hypot(xDiff, yDiff);
 
             if(distance <= projectile.enemy.radius + projectile.radius){
-                projectile.enemy.health -= 5;
+                projectile.enemy.health -= tower.towerDamage;
+                switch(tower.towerClass){
+                    case "Ice":
+                        if(projectile.enemy.health > 0){
+                            sfx.towerSlow.play();
+                        }
+                        if(projectile.enemy.state === "iced"){
+                            projectile.enemy.state = "iced";
+                        } else{
+                            projectile.enemy.state = "slowed";
+                        }
+                        let intervalIce = setInterval(() => {
+                            if(projectile.enemy.state === "slowed"){
+                                projectile.enemy.state = "normal";
+                                clearInterval(intervalIce);
+                            }
+                        }, tower.slowedMS)
+                        break;
+                    case "Lightning":
+                        sfx.towerStrike.play();
+                        projectile.enemy.state = "striked";
+                        const otherEnemies = enemies.filter(e => e !== projectile.enemy);
+                        otherEnemies.sort((a, b) => {
+                            const distA = Math.hypot(projectile.enemy.center.x - a.center.x, projectile.enemy.center.y - a.center.y);
+                            const distB = Math.hypot(projectile.enemy.center.x - b.center.x, projectile.enemy.center.y - b.center.y);
+                            return distA - distB;
+                        });
+
+                        otherEnemies.slice(0, tower.strikedEnemies).forEach(enemy => {
+                            enemy.health -= (tower.towerDamage / 2); 
+                            enemy.state = "striked";
+
+                            setInterval(() => {
+                                if(enemy.state === "striked"){
+                                    enemy.state = "normal";
+                                }
+                            }, 100)
+                        });
+
+                        setInterval(() => {
+                            if(projectile.enemy.state === "striked"){
+                                projectile.enemy.state = "normal";
+                            }
+                        }, 100)
+                        break;
+                }
                 if(projectile.enemy.health <= 0){
                     const enemyIndex = enemies.findIndex((enemy) => {
                         return projectile.enemy === enemy;
@@ -163,8 +294,9 @@ function animate(){
 
                     if(enemyIndex > -1){
                         enemies.splice(enemyIndex, 1);
-                        coins += 2;
-                        document.querySelector('#coins').innerHTML = coins;
+                        sfx.enemyDeath.play();
+                        coins += projectile.enemy.coinDrop;
+                        qCoins.text(coins);
                     }
                 }
 
@@ -174,24 +306,189 @@ function animate(){
     })
 }
 
-const mouse = {
+// setInterval(() => {
+//     console.log(frames)
+//   }, 1000)
+
+
+function anim(){
+    portalCount++;
+    if(portalCount > 25) portalFrameX++, portalCount = 0;
+    if(portalFrameX > 2) portalFrameX = 0;
+
+    flowersCount++;
+    if(flowersCount > 50) flowersFrameX++, flowersCount = 0;
+    if(flowersFrameX > 3) flowersFrameX = 0;
+
+    requestAnimationFrame(anim);
+}
+
+anim();
+
+let mouse = {
     x: undefined,
     y: undefined
 }
 
 canvas.addEventListener('click', (event) => {
     if(activeTile && !activeTile.isOccupied && coins - 5 >= 0){
-        coins -= 5;
-        document.querySelector('#coins').innerHTML = coins;
-        towers.push(new Tower({
-            position: {
-                x: activeTile.position.x,
-                y: activeTile.position.y
+        showTowerSelection();
+    }
+    else if(activeTile && activeTile.isOccupied){
+        const tower = towers.find(tower => tower.position.x === activeTile.position.x 
+                                        && tower.position.y === activeTile.position.y);
+        if(tower){
+            qUpgradeMenu.css("display", "block");
+            $(".upgradeBox").css({
+                "display": "block",
+                "top": activeTile.position.y + 137,
+                "left": activeTile.position.x
+            });
+            $(".upgradeItem").css("display", "inline-block");
+            $("#towerMaxHealth").text(tower.health + " / " + tower.maxHealth);
+            $("#towerAttackSpeed").text(tower.attackSpeed / 100);
+            $("#towerProjectileSpeed").text(Math.ceil(tower.projectileSpeed * 100) / 100);
+            $("#towerClass").text(tower.towerClass);
+            $("#towerDamage").text(tower.towerDamage);
+            $("#towerLevel").text(tower.towerLevel);
+            $("#healthIncrease").text(tower.healthIncrease);
+            $("#attackSpeedIncrease").text("-" + tower.attackSpeedIncrease / 100);
+            $("#projectileSpeedIncrease").text(tower.projectileSpeedIncrease);
+            $("#upgradeButton").text("Upgrade [" + tower.upgradeCost + "]");
+            $("#sellButton").text("Sell [" + tower.towerPrice + "]");
+            $("#specialUpgradeDiv").css("display", "flex");
+            
+            if(tower.towerLevel == 5){
+                $("#upgradeButton").css("display", "none");
+                $("#towerLevel").text(tower.towerLevel + " (MAX)");
             }
-        }))
-        activeTile.isOccupied = true;
+            switch(tower.towerClass){
+                case "Common":
+                    $("#special").text("Increase fire rate for " + (tower.fireRateTime / 1000) + "s");
+                    $("#abilityDiv, #ability, #abilityUpDiv, #abilityUp").css("display", "none");
+                    $("#specialUpgrade").text("Increase fire rate duration to 1s");
+                    break;
+                case "Ice":
+                    $("#special").text("Freeze all enemies for " + (tower.icedMS / 1000) + "s");
+                    $("#ability").text(tower.slowedMS / 1000 + "s");
+                    $("#abilityDiv").text("Slow Time: ");
+                    $("#abilityUpDiv").text("Slow Time Increase: ");
+                    $("#abilityUp").text(tower.slowedMSIncrease / 1000 + "s");
+                    $("#specialUpgrade").text("Increase freeze duration to 0.5s");
+                    break;
+                case "Lightning":
+                    $("#special").text("Deals " + (Math.ceil((tower.towerDamage * tower.strikeDamage) * 100) / 100) + " damage to all enemies");
+                    $("#ability").text(tower.strikedEnemies + 1);
+                    $("#abilityDiv").text("Enemies Striked: ");
+                    $("#abilityUpDiv").text("Enemies Striked Increase: ");
+                    $("#abilityUp").text("1");
+                    $("#specialUpgrade").text("Increases damage dealt");
+                    break;
+                case "Sniper":
+                    $("#special").text("Destroys all enemies in the area");
+                    $("#specialUpgrade").text("Decreases cooldown time");
+                    $("#abilityDiv, #ability, #abilityUpDiv, #abilityUp").css("display", "none");
+                    break;
+            }
+
+            selectedTower = tower;
+        }
+    }
+
+    else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event)){
+        qUpgradeMenu.css("display", "none");
+        $(".upgradeItem, #towerSelectionMenu, .upgradeBox").css("display", "none");
     }
 })
+
+function showTowerSelection(){
+    selectedTower = placementTiles.find(tile =>
+    tile.position.x === activeTile.position.x &&
+    tile.position.y === activeTile.position.y);
+    qUpgradeMenu.css("display", "none");
+    $(".upgradeBox").css("display", "none");
+    $(".upgradeItem").css("display", "none");
+    $("#towerSelectionMenu").css("display", "block");
+    $("#towerSelectionMenu").css("top", activeTile.position.y + "px");
+    $("#towerSelectionMenu").css("left", activeTile.position.x + "px");
+}
+
+$("#commonTowerButton").click(() => placeTower("Common"));
+$("#iceTowerButton").click(() => placeTower("Ice"));
+$("#lightningTowerButton").click(() => placeTower("Lightning"));
+$("#sniperTowerButton").click(() => placeTower("Sniper"));
+
+function placeTower(towerClass){
+    sfx.towerPlace.play();
+    if (activeTile && !activeTile.isOccupied && coins - 5 >= 0) {
+        coins -= 5;
+        $("#coins").text(coins);
+        let newTower = createTower({position: selectedTower.position, towerType: towerClass});
+        towers.push(newTower);
+        activeTile.isOccupied = true;
+        createSpecial();
+    }
+    $("#towerSelectionMenu").css("display", "none");
+}
+
+$("#upgradeButton").click(() => {
+    let tower = selectedTower;
+    if(coins >= tower.upgradeCost){
+        sfx.towerUpgrade.play();
+        tower.upgrade();
+        qCoins.text(coins);
+        qUpgradeMenu.css("display", "none");
+        $(".upgradeBox").css("display", "none");
+        $(".upgradeItem").css("display", "none");
+    }
+})
+
+$("#sellButton").click(() => {
+    sfx.towerDestroyed.play();
+    if (selectedTower) {
+        const index = towers.indexOf(selectedTower);
+        if (index !== -1) {
+            towers.splice(index, 1);
+
+            const tile = placementTiles.find(tile =>
+                tile.position.x === selectedTower.position.x &&
+                tile.position.y === selectedTower.position.y
+            );
+
+            if (tile) {
+                tile.isOccupied = false;
+            }
+
+            coins += selectedTower.towerPrice;
+            qCoins.text(coins);
+
+            selectedTower = null;
+            qUpgradeMenu.css("display", "none");
+            $(".upgradeBox").css("display", "none");
+            $(".upgradeItem").css("display", "none");
+        }
+    }
+});
+
+$("#musicButton").click(() => bgm.bgm1.play());
+$("#musicPause").click(() => bgm.bgm1.pause());
+
+
+function isClickOnTowerTile(event){
+    const towerTiles = placementTiles.filter(tile => tile.isOccupied);
+    return towerTiles.some(tile => {
+        const rect = canvas.getBoundingClientRect();
+        const tileX = tile.position.x + rect.left;
+        const tileY = tile.position.y + rect.top;
+        return event.clientX >= tileX && event.clientX <= tileX + tile.size &&
+               event.clientY >= tileY && event.clientY <= tileY + tile.size;
+    });
+}
+
+function isClickOnUpgradeMenu(event){
+    const upgradeMenu = document.querySelector('.upgradeMenu');
+    return event.target === upgradeMenu || upgradeMenu.contains(event.target);
+}
 
 window.addEventListener('mousemove', (event) => {
     mouse.x = event.clientX;

@@ -17,65 +17,113 @@ class Enemy extends Sprite{
             x: 0,
             y: 0
         }
-        this.speed = this.getSpeed(type);
+
+        // this.speed = this.getSpeed(type);
 
         this.projectiles = []
         this.target;
         this.frames = 0;
         this.shootRadius = 500;
         this.isRange = type === 'range';
+        this.coinDrop = this.getCoinDrop(type);
+        // this.slowedSpeed = this.getSlowedSpeed(type);
+
+        this.state = "normal";
+        this.type = type;
+        this.position = position;
+
+        this.speed;
+
+        this.slowedSprite = new Image();
+        this.slowedSprite.src = `sprites/enemies/${type}-enemy-slowed.png`;
+
+        this.strikedSprite = new Image();
+        this.strikedSprite.src = `sprites/enemies/${type}-enemy-striked1.png`;
+
         // this.attackDamage = this.getAttackDamage(type);
+        this.iceCount = 1;
+    }
+
+    getCoinDrop(type){
+        switch(type){
+            case 'common':
+                return 2;
+            case 'fast':
+                return 3;
+            case 'range':
+                return 5;
+            case 'def':
+                return 7;
+            case 'shell':
+                return 15;
+            default:
+                return 2;
+        }
     }
 
     getInitHealth(type){
         switch(type){
             case 'common':
                 return 15;
-                break;
             case 'fast':
                 return 10;
-                break;
             case 'range':
                 return 20;
-                break;
             case 'def':
                 return 30;
-                break;
             case 'shell':
                 return 20;
-                break;
             default:
                 return 15;
-                break;
         }
     }
 
     getSpeed(type){
         switch(type){
             case 'common':
+                return 2;
+            case 'fast':
+                return 2.5;
+            case 'range':
+                return 2;
+            case 'def':
+                return 1.5;
+            case 'shell':
+                return 2;
+            default:
+                return 2;
+        }
+    }
+
+    getSlowedSpeed(type){
+        switch(type){
+            case 'common':
                 return 1;
-                break;
             case 'fast':
                 return 1.5;
-                break;
             case 'range':
                 return 1;
-                break;
             case 'def':
                 return 0.5;
-                break;
             case 'shell':
                 return 1;
-                break;
             default:
                 return 1;
-                break;
         }
     }
 
     draw(){
         // enemy
-        super.draw();
+        if(this.state === "normal"){
+            super.draw();
+        } else if(this.state === "slowed"){
+            ctx.drawImage(this.slowedSprite, this.position.x, this.position.y);
+        } else if(this.state === "iced"){
+            ctx.drawImage(this.slowedSprite, this.position.x, this.position.y);
+        }
+        else if(this.state === "striked"){
+            ctx.drawImage(this.strikedSprite, this.position.x, this.position.y);
+        }
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -87,6 +135,15 @@ class Enemy extends Sprite{
 
     update(){
         this.draw();
+
+        if(this.state === "slowed"){
+            this.speed = this.getSlowedSpeed(this.type);
+        } else if(this.state === "iced"){
+            this.speed = 0;
+        }
+        else{
+            this.speed = this.getSpeed(this.type);
+        }
 
         const waypoint = waypoints[this.waypointIndex];
         const yDistance = waypoint.y - this.center.y;
@@ -118,12 +175,21 @@ class Enemy extends Sprite{
                             x: this.center.x,
                             y: this.center.y
                         },
-                        enemy: this.target
+                        enemy: this.target,
+                        projectileColor: 'red',
+                        moveSpeed: 5
                     })
                 )
             }
     
             this.frames++;
+        }
+
+        if (this.health <= 0) {
+            const index = enemies.indexOf(this);
+            if (index !== -1) {
+                enemies.splice(index, 1);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 class Projectile{
-    constructor({position = {x: 0, y: 0}, enemy}){
+    constructor({position = {x: 0, y: 0}, enemy, projectileColor, damage, moveSpeed}){
         this.position = position;
         this.velocity = {
             x: 0,
@@ -7,26 +7,27 @@ class Projectile{
         }
         this.enemy = enemy;
         this.radius = 10;
-        this.moveSpeed = 2;
-        // this.moveSpeed = 10;
+        this.moveSpeed = moveSpeed;
+        this.projectileColor = projectileColor;
 
-        this.trailLength = 25;
+        this.trailLength = 40;
         this.trailOpacity = 0.5;
-        this.trailColor = 'rgba(255, 255, 255, 0.5)';
+        this.trailColor = projectileColor;
         this.maxTrailWidth = 20;
+        this.damage = damage;
     }
 
     draw(){
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = this.projectileColor;
         ctx.fill();
 
         for (let i = 1; i <= 3; i++) {
-            const trailLengthMultiplier = i * 5;
-            const trailOpacityMultiplier = 1 - i * 0.3;
-            const trailWidth = this.maxTrailWidth * (1 - i / 4); // Decreasing width
+            const trailLengthMultiplier = i * 2;
+            const trailOpacityMultiplier = 1 - i * 0.2;
+            const trailWidth = this.maxTrailWidth * (1 - i / 4);
             ctx.beginPath();
             ctx.moveTo(this.position.x, this.position.y);
             ctx.lineTo(this.position.x - this.velocity.x * trailLengthMultiplier, this.position.y - this.velocity.y * trailLengthMultiplier);

@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Modak&family=MuseoModerno:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Micro+5&display=swap');
+body{
+    margin: 0;
+    background-color: black;
+}
+
+#gameOver{
+    position: absolute;
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    display: none; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 12em;
+    font-family: 'Micro 5', sans-serif;
+    background-color: rgba(0, 0, 30, 0.5);
+    color: white;
+}
+
+#playerInfo{
+    position: absolute;
+    top: 20;
+    right: 20;
+    font-family: 'Micro 5', sans-serif;
+    font-size: 5em;
+    color: white;
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+
+.upgradeMenu{
+    position: absolute;
+    bottom: 40;
+    left: 20;
+    font-size: 1em;
+    color: white;
+    display: flex;
+    font-family: "Radio Canada", sans-serif;
+    align-items: center;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 50px;
+}
+
+.upgradeBox{
+    display: none;
+    position: absolute;
+    /* background-color: rgba(0, 0, 0, 0.3); */
+    background: linear-gradient(
+            to top, 
+            rgba(67, 109, 40, 0.6), 
+            rgba(0, 0, 0, 0));
+    width: 172px;
+    padding: 10px;
+}
+
+#upgradeButton{
+    font-size: 0.75em;
+    background-color: greenyellow;
+    color: rgb(67, 109, 13);
+    font-family: "Radio Canada", sans-serif;
+    /* font-family: 'Micro 5', sans-serif; */
+    font-weight: 700;
+    border-radius: 10px;
+    border-color: rgb(117, 204, 3);
+    padding: 8.5px;
+}
+
+#upgradeButton:hover{
+    background-color: rgb(180, 255, 170);
+    cursor: pointer;
+}
+
+#sellButton{
+    font-size: 0.75em;
+    background-color: rgb(255, 63, 63);
+    color: rgb(109, 13, 13);
+    font-family: "Radio Canada", sans-serif;
+    /* font-family: 'Micro 5', sans-serif; */
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 8.5px;
+    border-color: rgb(199, 16, 16);
+}
+
+#sellButton:hover{
+    background-color: rgb(255, 170, 170);
+    cursor: pointer;
+}
+
+#towerSelectionMenu{
+    position: absolute;
+    width: 192;
+    height: 192;
+    left: 20;
+    font-size: 1.5em;
+    color: white;
+    display: flex;
+    font-family: "Radio Canada", sans-serif;
+    align-items: center;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0);
+    padding: 20px;
+    border-radius: 50px;;
+}
+
+img{
+    width: 70px;
+    padding: 3px;
+    margin-top: -5px;
+}
+
+img:hover{
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    width: 75px;
+}
+
+label{
+    font-size: 0.5em;
+    position: absolute;
+    color: rgb(16, 88, 9);
+    font-weight: bold;
+}
+
+#musicButton{
+    width: 30px; 
+    margin: 10px; 
+    color: rgb(70, 122, 21); 
+    cursor: pointer;
+}
+
+#musicButton:hover{
+    color:rgb(2, 11, 146);
+    width: 35px;
+}
+
+#musicPause{
+    width: 30px; 
+    margin: 10px; 
+    color: rgb(70, 122, 21); 
+    cursor: pointer;
+    margin-right: 30px;
+}
+
+#musicPause:hover{
+    color:rgb(2, 11, 146);
+    width: 35px;
+}
+
+#specialID{
+    position: absolute;
+    padding: 7px;
+    width: 35px;
+    border-radius: 50%;
+    text-align: center;
+    font-family: "Radio Canada", sans-serif;
+    font-weight: 700;
+}
