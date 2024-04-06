@@ -249,20 +249,23 @@ function animate(){
                             sfx.towerSlow.play();
                         }
                         if(projectile.enemy.state === "iced"){
-                            projectile.enemy.state = "iced";
+                            //projectile.enemy.state = "iced";
+							projectile.enemy.changeState("iced", 200);
                         } else{
-                            projectile.enemy.state = "slowed";
+                            //projectile.enemy.state = "slowed";
+							projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
-                        let intervalIce = setInterval(() => {
+                        /*let intervalIce = setInterval(() => {
                             if(projectile.enemy.state === "slowed"){
                                 projectile.enemy.state = "normal";
                                 clearInterval(intervalIce);
                             }
-                        }, tower.slowedMS)
+                        }, tower.slowedMS)*/
                         break;
                     case "Lightning":
                         sfx.towerStrike.play();
-                        projectile.enemy.state = "striked";
+                        //projectile.enemy.state = "striked";
+						projectile.enemy.changeState("striked", 200);
                         const otherEnemies = enemies.filter(e => e !== projectile.enemy);
                         otherEnemies.sort((a, b) => {
                             const distA = Math.hypot(projectile.enemy.center.x - a.center.x, projectile.enemy.center.y - a.center.y);
@@ -272,20 +275,21 @@ function animate(){
 
                         otherEnemies.slice(0, tower.strikedEnemies).forEach(enemy => {
                             enemy.health -= (tower.towerDamage / 2); 
-                            enemy.state = "striked";
+							enemy.changeState("striked", 200);
 
-                            setInterval(() => {
+                            /*setInterval(() => {
                                 if(enemy.state === "striked"){
                                     enemy.state = "normal";
                                 }
-                            }, 100)
+                            }, 100)*/
                         });
 
-                        setInterval(() => {
+						//projectile.enemy.stateExpiry = window.performance.now() + 120;
+                        /*setInterval(() => {
                             if(projectile.enemy.state === "striked"){
                                 projectile.enemy.state = "normal";
                             }
-                        }, 100)
+                        }, 100)*/
                         break;
                 }
                 if(projectile.enemy.health <= 0){

@@ -29,6 +29,7 @@ class Enemy extends Sprite{
         // this.slowedSpeed = this.getSlowedSpeed(type);
 
         this.state = "normal";
+		this.stateExpiry = 0;
         this.type = type;
         this.position = position;
 
@@ -111,8 +112,19 @@ class Enemy extends Sprite{
                 return 1;
         }
     }
+	
+	changeState(state, expiry) {
+		this.state = state;
+		this.stateExpiry = window.performance.now() + expiry;
+	}
 
     draw(){
+		
+		if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now()) {
+			this.stateExpiry = 0;
+			this.state = "normal";
+		}
+		
         // enemy
         if(this.state === "normal"){
             super.draw();
