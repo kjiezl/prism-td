@@ -38,7 +38,6 @@ class Tower extends Sprite {
 
         this.target = null;
         this.lastShot = 0;
-        //this.frames = 0;
         this.isGonnaBeDead = false;
 
         this.attackSpeed = this.getAttackSpeed(towerClass);
@@ -55,8 +54,7 @@ class Tower extends Sprite {
         this.attackSpeedIncrease = 35;
         this.projectileSpeedIncrease = 0.35;
 
-        this.isCooldown = true;
-        this.specialTimer = 5;
+        this.specialTimer = this.getSpecialTimer(towerClass);
         this.prevTimer = this.specialTimer;
         this.specialButton;
         
@@ -68,6 +66,21 @@ class Tower extends Sprite {
             "sprites/towers/" + towerClass + "-tower-5.png"
         ];
 
+    }
+
+    getSpecialTimer(towerClass){
+        switch(towerClass){
+            case "Common":
+                return 20;
+            case "Ice":
+                return 20;
+            case "Lightning":
+                return 25;
+            case "Sniper":
+                return 35;
+            default:
+                return 15;
+        }
     }
 
     getProjectileColor(towerClass){
@@ -140,23 +153,12 @@ class Tower extends Sprite {
         }
     }
 
-    incDamage(enemy) {
-        let totalDamage = 0;
-        for (const projectile of this.projectiles) {
-            if (projectile.enemy === enemy) {
-                totalDamage += projectile.damage;
-            }
-        }
-        return totalDamage;
-    }
-
     update(){
         this.draw();
         if(gamePaused) return;
         let msNow = window.performance.now();
         
-        // TODO: pls change calculations sa attackspeed
-        if(this.lastShot + this.attackSpeed*2 < msNow && this.target && !this.target.isGonnaBeDead) {
+        if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead) {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
@@ -172,33 +174,6 @@ class Tower extends Sprite {
             )
             this.lastShot = msNow;
         }
-
-        /*if(this.frames % this.attackSpeed === 0 && this.target){
-            sfx.towerShoot.play();
-            this.projectiles.push(
-                new Projectile({
-                    position: {
-                        x: this.center.x,
-                        y: this.center.y
-                    },
-                    enemy: this.target,
-                    projectileColor: this.projectileColor,
-                    damage: this.towerDamage,
-                    moveSpeed: this.projectileSpeed
-                })
-            )
-        }*/
-
-        if (this.target && this.incDamage(this.target) >= this.target.health) {
-            const remainingEnemies = enemies.filter(enemy => enemy.health > 0);
-            if (remainingEnemies.length > 0) {
-                this.target = remainingEnemies[0];
-            }
-        }
-
-        this.frames++;
-
-
     }
 
     upgrade(){
@@ -222,12 +197,18 @@ class Tower extends Sprite {
                 switch(this.towerClass){
                     case 'Common':
                         this.fireRateTime += 500;
+                        break;
                     case 'Ice':
                         this.slowedMS += this.slowedMSIncrease;
                         this.icedMS += 500;
+                        break;
                     case 'Lightning':
                         this.strikedEnemies++;
                         this.strikeDamage += 0.1;
+                        break;
+                    case 'Sniper':
+                        this.specialTimer -= Math.floor(this.specialTimer * 0.07);
+                        break;
                 }
             }
         }
@@ -241,17 +222,20 @@ function createTower({position, towerType}) {
 let countdownIntervals = {};
 
 function startCountdown(tower) {
-    if (tower.specialTimer <= 0) {
+        tower.specialButton.disabled = true;
+        if (tower.specialTimer <= 0) {
         clearInterval(countdownIntervals[tower.towerClass]);
         tower.specialButton.textContent = "S";
         tower.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
     } else if (tower.specialTimer === tower.prevTimer) {
         clearInterval(countdownIntervals[tower.towerClass]);
         countdownIntervals[tower.towerClass] = setInterval(() => {
+            tower.specialButton.style.backgroundColor = tower.projectileColor;
             tower.specialTimer -= 1;
             tower.specialButton.textContent = tower.specialTimer.toString();
 
             if (tower.specialTimer <= 0) {
+                tower.specialButton.disabled = false;
                 tower.specialButton.textContent = "S";
                 tower.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
             }
@@ -267,7 +251,7 @@ function createSpecial() {
         specialButton.style.borderColor = tower.projectileColor;
         specialButton.style.top = tower.position.y + 15;
         specialButton.style.left = tower.position.x + 130;
-        specialButton.className = "specialClass"
+        specialButton.className = "specialClass";
         specialButton.textContent = tower.specialTimer;
 
         tower.specialButton = specialButton;
@@ -282,11 +266,10 @@ function createSpecial() {
 
 
 function handleSpecial(tower) {
-    // if (tower.isCooldown) {
-    //     return; 
-    // }
+    if (tower.specialTimer > 0) {
+        return; 
+    }
 
-    // tower.isCooldown = true;
     switch (tower.towerClass) {
         case "Common":
             previousSpeed = tower.attackSpeed;
@@ -301,25 +284,15 @@ function handleSpecial(tower) {
             tower.specialAttack(tower.towerClass);
             enemies.forEach(enemy => {
                 if (enemy.state !== "iced") {
-                    enemy.state = "iced";
-                    let timeout = setTimeout(() => {
-                        enemy.state = "normal";
-                        clearTimeout(timeout);
-                    }, tower.icedMS);
+                    enemy.changeState("iced", tower.icedMS);
                 }
             });
             break;
         case "Lightning":
             sfx.towerStrike.play();
             enemies.forEach(enemy => {
-                enemy.state = "striked";
+                enemy.changeState("striked", 200);
                 enemy.health -= tower.towerDamage * 1.2;
-                let interval = setInterval(() => {
-                    if (enemy.state === "striked") {
-                        enemy.state = "normal";
-                        clearInterval(interval);
-                    }
-                }, 100);
             });
             break;
         case "Sniper":
@@ -329,9 +302,8 @@ function handleSpecial(tower) {
             break;
     }
 
-    // setTimeout(() => {
-    //     clearInterval(countdownIntervals);
-    //     tower.specialTimer = tower.prevTimer + 1;
-    // }, 100);
+    setTimeout(() => {
+        tower.specialTimer = tower.prevTimer + 1;
+    }, 100);
 }
 

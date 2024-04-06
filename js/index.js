@@ -150,15 +150,6 @@ function animate(){
         frameMultiplier = frameMultiplier > 5 ? 1 : frameMultiplier;
     }
     msPrev = msNow;
-    
-    //console.log(1000/msPassed);
-
-    //if (msPassed < msPerFrame) return;
-
-    //const excessTime = msPassed % msPerFrame;
-    //msPrev = msNow - excessTime;
-
-    //frames++;
 
     ctx.drawImage(image, 0, 0);
     ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
@@ -255,15 +246,6 @@ function animate(){
             return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead && enemy.spawnDelay <= 0;
         })
         
-        /*for(let x=0; x < validEnemies.length; x++) {
-            console.log(validEnemies[x].health);
-            if(validEnemies[x].health - tower.towerDamage < tower.towerDamage) {
-                continue;
-            } else {
-                tower.target = validEnemies[x];
-            }
-        }*/
-        
         tower.target = validEnemies[0];
         for(let i = tower.projectiles.length - 1; i >= 0; i--){
             const projectile = tower.projectiles[i]
@@ -283,16 +265,13 @@ function animate(){
                             sfx.towerSlow.play();
                         }
                         if(projectile.enemy.state === "iced"){
-                            //projectile.enemy.state = "iced";
                             projectile.enemy.changeState("iced", 200);
                         } else{
-                            //projectile.enemy.state = "slowed";
                             projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
                         break;
                     case "Lightning":
                         sfx.towerStrike.play();
-                        //projectile.enemy.state = "striked";
                         projectile.enemy.changeState("striked", 200);
                         const otherEnemies = enemies.filter(e => e !== projectile.enemy);
                         otherEnemies.sort((a, b) => {

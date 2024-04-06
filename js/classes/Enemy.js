@@ -19,19 +19,15 @@ class Enemy extends Sprite{
             y: 0
         }
 
-        // this.speed = this.getSpeed(type);
         this.constOffset = -40 + Math.random() * 50;
 
         this.projectiles = [];
         this.spawnDelay = delay;
         this.spawnTime = window.performance.now();
         this.target;
-        //this.frames = 0;
         this.lastShot = 0;
         this.shootRadius = 500;
-        this.isRange = type === 'range';
         this.coinDrop = this.getCoinDrop(type);
-        // this.slowedSpeed = this.getSlowedSpeed(type);
 
         this.state = "normal";
         this.stateExpiry = 0;
@@ -49,7 +45,6 @@ class Enemy extends Sprite{
         this.strikedSprite.src = `sprites/enemies/${type}-enemy-striked1.png`;
 
         // this.attackDamage = this.getAttackDamage(type);
-        this.iceCount = 1;
     }
 
     getCoinDrop(type){
@@ -202,7 +197,7 @@ class Enemy extends Sprite{
             this.waypointIndex++;
         }
 
-        if (this.isRange) {
+        if (this.type === "range") {
             let msNow = window.performance.now();
             if(this.lastShot + 3000 < msNow && this.target) {
                 this.projectiles.push(
@@ -218,21 +213,6 @@ class Enemy extends Sprite{
                 )
                 this.lastShot = msNow;
             }
-            /*if(this.frames % 350 === 0 && this.target){
-                this.projectiles.push(
-                    new Projectile({
-                        position: {
-                            x: this.center.x,
-                            y: this.center.y
-                        },
-                        enemy: this.target,
-                        projectileColor: 'red',
-                        moveSpeed: 5
-                    })
-                )
-            }
-    
-            this.frames++;*/
         }
 
         if (this.health <= 0) {
