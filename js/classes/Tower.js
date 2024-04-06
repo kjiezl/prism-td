@@ -37,7 +37,8 @@ class Tower extends Sprite {
         }
 
         this.target = null;
-        this.frames = 0;
+        this.lastShot = 0;
+        //this.frames = 0;
 
         this.attackSpeed = this.getAttackSpeed(towerClass);
 
@@ -151,8 +152,10 @@ class Tower extends Sprite {
         this.draw();
 
         // console.log(this.isCooldown);
-
-        if(this.frames % this.attackSpeed === 0 && this.target){
+        let msNow = window.performance.now();
+        
+        // TODO: pls change calculations sa attackspeed
+        if(this.lastShot + this.attackSpeed*2 < msNow && this.target) {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
@@ -166,7 +169,24 @@ class Tower extends Sprite {
                     moveSpeed: this.projectileSpeed
                 })
             )
+            this.lastShot = msNow;
         }
+
+        /*if(this.frames % this.attackSpeed === 0 && this.target){
+            sfx.towerShoot.play();
+            this.projectiles.push(
+                new Projectile({
+                    position: {
+                        x: this.center.x,
+                        y: this.center.y
+                    },
+                    enemy: this.target,
+                    projectileColor: this.projectileColor,
+                    damage: this.towerDamage,
+                    moveSpeed: this.projectileSpeed
+                })
+            )
+        }*/
 
         if (this.target && this.incDamage(this.target) >= this.target.health) {
             const remainingEnemies = enemies.filter(enemy => enemy.health > 0);

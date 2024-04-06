@@ -22,7 +22,8 @@ class Enemy extends Sprite{
 
         this.projectiles = []
         this.target;
-        this.frames = 0;
+        //this.frames = 0;
+        this.lastShot = 0;
         this.shootRadius = 500;
         this.isRange = type === 'range';
         this.coinDrop = this.getCoinDrop(type);
@@ -184,7 +185,22 @@ class Enemy extends Sprite{
         }
 
         if (this.isRange) {
-            if(this.frames % 350 === 0 && this.target){
+            let msNow = window.performance.now();
+            if(this.lastShot + 3000 < msNow && this.target) {
+                this.projectiles.push(
+                    new Projectile({
+                        position: {
+                            x: this.center.x,
+                            y: this.center.y
+                        },
+                        enemy: this.target,
+                        projectileColor: 'red',
+                        moveSpeed: 5
+                    })
+                )
+                this.lastShot = msNow;
+            }
+            /*if(this.frames % 350 === 0 && this.target){
                 this.projectiles.push(
                     new Projectile({
                         position: {
@@ -198,7 +214,7 @@ class Enemy extends Sprite{
                 )
             }
     
-            this.frames++;
+            this.frames++;*/
         }
 
         if (this.health <= 0) {
