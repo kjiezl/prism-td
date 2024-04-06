@@ -1,5 +1,5 @@
 class Enemy extends Sprite{
-    constructor({position = {x: 0, y: 0}, type = ''}){
+    constructor({position = {x: 0, y: 0}, type = '', delay = 0}){
         const spriteSrc = `sprites/enemies/${type}-enemy.png`;
         super({position, imageSrc: spriteSrc});
 
@@ -20,8 +20,11 @@ class Enemy extends Sprite{
         }
 
         // this.speed = this.getSpeed(type);
+        this.constOffset = -40 + Math.random() * 50;
 
-        this.projectiles = []
+        this.projectiles = [];
+        this.spawnDelay = delay;
+        this.spawnTime = window.performance.now();
         this.target;
         //this.frames = 0;
         this.lastShot = 0;
@@ -133,20 +136,20 @@ class Enemy extends Sprite{
         if(this.state === "normal"){
             super.draw();
         } else if(this.state === "slowed"){
-            ctx.drawImage(this.slowedSprite, this.position.x, this.position.y);
+            ctx.drawImage(this.slowedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
         } else if(this.state === "iced"){
-            ctx.drawImage(this.slowedSprite, this.position.x, this.position.y);
+            ctx.drawImage(this.slowedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
         }
         else if(this.state === "striked"){
-            ctx.drawImage(this.strikedSprite, this.position.x, this.position.y);
+            ctx.drawImage(this.strikedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
         }
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.fillRect(this.position.x + 60, this.position.y - 25, this.width - 120, 10);
+        ctx.fillRect(this.position.x + 60 + this.constOffset, this.position.y - 25 + this.constOffset, this.width - 120, 10);
 
         ctx.fillStyle = 'rgb(255, 26, 26)';
-        ctx.fillRect(this.position.x + 60, this.position.y - 25, (this.width - 120) * this.health / this.maxHealth, 10);
+        ctx.fillRect(this.position.x + 60 + this.constOffset, this.position.y - 25 + this.constOffset, (this.width - 120) * this.health / this.maxHealth, 10);
     }
     
     checkTargets(towers) {
@@ -154,6 +157,13 @@ class Enemy extends Sprite{
     }
 
     update(){
+        let msNow = window.performance.now();
+        if(this.spawnDelay > 0) {
+            this.spawnDelay -= msNow - this.spawnTime;
+            this.spawnTime = msNow;
+            return;
+        }
+        
         this.draw();
 
         if(this.state === "slowed"){

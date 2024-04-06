@@ -88,13 +88,13 @@ function spawnEnemies(spawnCount){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = ['common', 'fast', 'range'];
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        let xOffset = i * Math.floor(Math.random() * 350) + 200;
         enemies.push(
             new Enemy({
-                position: {x: (waypoints[0].x + 50) - xOffset, y: waypoints[0].y - 96},
-                type: randomType
+                position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
+                type: randomType,
+                delay: 500 * i + Math.random() * 3000
             })
-        )
+        );
     }
 }
 
@@ -243,7 +243,7 @@ function animate(){
             const xDiff = enemy.center.x - tower.center.x;
             const yDiff = enemy.center.y - tower.center.y;
             const distance = Math.hypot(xDiff, yDiff);
-            return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead;
+            return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead && enemy.spawnDelay <= 0;
         })
         
         /*for(let x=0; x < validEnemies.length; x++) {
@@ -256,7 +256,7 @@ function animate(){
         }*/
         
         tower.target = validEnemies[0];
-
+        console.log(tower.projectiles.length);
         for(let i = tower.projectiles.length - 1; i >= 0; i--){
             const projectile = tower.projectiles[i]
 
