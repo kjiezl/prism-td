@@ -37,6 +37,10 @@ let sfx = {
         src: ['sfx/tower-slow.mp3'],
         volume: 0.3
     }),
+    towerSniper: new Howl({
+        src: ['sfx/tower-sniper.mp3'],
+        volume: 0.3
+    }),
     enemyDeath: new Howl({
         src: ['sfx/enemy-death.mp3'],
         volume: 0.1

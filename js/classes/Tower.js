@@ -296,6 +296,7 @@ function handleSpecial(tower) {
             });
             break;
         case "Sniper":
+            sfx.towerSniper.play();
             enemies.forEach(enemy => {
                 enemy.health = 0;
             });
