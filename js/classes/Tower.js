@@ -151,11 +151,10 @@ class Tower extends Sprite {
     update(){
         this.draw();
 
-        // console.log(this.isCooldown);
         let msNow = window.performance.now();
         
         // TODO: pls change calculations sa attackspeed
-        if(this.lastShot + this.attackSpeed*1.75 < msNow && this.target) {
+        if(this.lastShot + this.attackSpeed * 1.75 < msNow && this.target) {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
@@ -247,12 +246,15 @@ function startCountdown(tower) {
     } else if (tower.specialTimer === tower.prevTimer) {
         clearInterval(countdownIntervals[tower.towerClass]);
         countdownIntervals[tower.towerClass] = setInterval(() => {
+            tower.specialButton.disabled = true;
+            tower.specialButton.style.backgroundColor = tower.projectileColor;
             tower.specialTimer -= 1;
             tower.specialButton.textContent = tower.specialTimer.toString();
 
             if (tower.specialTimer <= 0) {
                 tower.specialButton.textContent = "S";
                 tower.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
+                tower.specialButton.disabled = false;
             }
         }, 1000);
     }
@@ -269,6 +271,7 @@ function createSpecial() {
         specialButton.className = "specialClass"
         specialButton.textContent = tower.specialTimer;
 
+        specialButton.disabled = true;
         tower.specialButton = specialButton;
 
         specialButton.addEventListener('click', () => {
@@ -281,11 +284,10 @@ function createSpecial() {
 
 
 function handleSpecial(tower) {
-    // if (tower.isCooldown) {
-    //     return; 
-    // }
+    if (tower.specialTimer > 0) {
+        return; 
+    }
 
-    // tower.isCooldown = true;
     switch (tower.towerClass) {
         case "Common":
             previousSpeed = tower.attackSpeed;
@@ -300,25 +302,15 @@ function handleSpecial(tower) {
             tower.specialAttack(tower.towerClass);
             enemies.forEach(enemy => {
                 if (enemy.state !== "iced") {
-                    enemy.state = "iced";
-                    let timeout = setTimeout(() => {
-                        enemy.state = "normal";
-                        clearTimeout(timeout);
-                    }, tower.icedMS);
+                    enemy.changeState("iced", tower.icedMS);
                 }
             });
             break;
         case "Lightning":
             sfx.towerStrike.play();
             enemies.forEach(enemy => {
-                enemy.state = "striked";
+                enemy.changeState("striked", 200);
                 enemy.health -= tower.towerDamage * 1.2;
-                let interval = setInterval(() => {
-                    if (enemy.state === "striked") {
-                        enemy.state = "normal";
-                        clearInterval(interval);
-                    }
-                }, 100);
             });
             break;
         case "Sniper":
@@ -328,9 +320,8 @@ function handleSpecial(tower) {
             break;
     }
 
-    // setTimeout(() => {
-    //     clearInterval(countdownIntervals);
-    //     tower.specialTimer = tower.prevTimer + 1;
-    // }, 100);
+    setTimeout(() => {
+        tower.specialTimer = tower.prevTimer + 1;
+    }, 100);
 }
 

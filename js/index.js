@@ -120,7 +120,6 @@ spawnEnemies(enemyCount);
 let msPrev = window.performance.now();
 const fps = 60;
 const msPerFrame = 1000 / fps;
-//let frames = 0;
 
 let frameMultiplier = 1;
 
@@ -272,12 +271,6 @@ function animate(){
                             //projectile.enemy.state = "slowed";
                             projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
-                        /*let intervalIce = setInterval(() => {
-                            if(projectile.enemy.state === "slowed"){
-                                projectile.enemy.state = "normal";
-                                clearInterval(intervalIce);
-                            }
-                        }, tower.slowedMS)*/
                         break;
                     case "Lightning":
                         sfx.towerStrike.play();
@@ -293,20 +286,7 @@ function animate(){
                         otherEnemies.slice(0, tower.strikedEnemies).forEach(enemy => {
                             enemy.health -= (tower.towerDamage / 2); 
                             enemy.changeState("striked", 200);
-
-                            /*setInterval(() => {
-                                if(enemy.state === "striked"){
-                                    enemy.state = "normal";
-                                }
-                            }, 100)*/
                         });
-
-                        //projectile.enemy.stateExpiry = window.performance.now() + 120;
-                        /*setInterval(() => {
-                            if(projectile.enemy.state === "striked"){
-                                projectile.enemy.state = "normal";
-                            }
-                        }, 100)*/
                         break;
                 }
                 if(projectile.enemy.health <= 0){
