@@ -246,7 +246,7 @@ function createSpecial() {
         specialButton.style.borderColor = tower.projectileColor;
         specialButton.style.top = tower.position.y + 15;
         specialButton.style.left = tower.position.x + 130;
-        specialButton.id = "specialID";
+        specialButton.className = "specialClass"
         specialButton.textContent = tower.specialTimer;
 
         tower.specialButton = specialButton;
@@ -309,10 +309,8 @@ function handleSpecial(tower) {
     }
 
     // setTimeout(() => {
-    //     tower.isCooldown = false;
-    //     // clearInterval(countdownInterval);
+    //     clearInterval(countdownIntervals);
     //     tower.specialTimer = tower.prevTimer + 1;
-    //     // startCountdown(specialButton);
     // }, 100);
 }
 

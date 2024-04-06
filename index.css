@@ -154,7 +154,7 @@ label{
     width: 35px;
 }
 
-#specialID{
+.specialClass{
     position: absolute;
     padding: 7px;
     width: 35px;

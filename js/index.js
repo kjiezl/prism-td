@@ -184,6 +184,7 @@ function animate(){
                             }
                             
                             sfx.towerDestroyed.play();
+                            tower.specialButton.style.display = "none";
                             towers.splice(towerIndex, 1);
                         }
                     }                    
@@ -207,7 +208,7 @@ function animate(){
         $("#towerSelectionMenu").css("display", "none");
         $("#gameOver").css("display", "flex");  
         $(".upgradeItem").css("display", "none");
-        $("#specialID").css("display", "none");
+        $(".specialClass").css("display", "none");
     }
 
     if(enemies.length === 0){
@@ -449,6 +450,7 @@ $("#sellButton").click(() => {
         const index = towers.indexOf(selectedTower);
         if (index !== -1) {
             towers.splice(index, 1);
+            selectedTower.specialButton.style.display = "none";
 
             const tile = placementTiles.find(tile =>
                 tile.position.x === selectedTower.position.x &&
