@@ -29,7 +29,7 @@ class Enemy extends Sprite{
         // this.slowedSpeed = this.getSlowedSpeed(type);
 
         this.state = "normal";
-		this.stateExpiry = 0;
+        this.stateExpiry = 0;
         this.type = type;
         this.position = position;
 
@@ -112,19 +112,19 @@ class Enemy extends Sprite{
                 return 1;
         }
     }
-	
-	changeState(state, expiry) {
-		this.state = state;
-		this.stateExpiry = window.performance.now() + expiry;
-	}
+    
+    changeState(state, expiry) {
+        this.state = state;
+        this.stateExpiry = window.performance.now() + expiry;
+    }
 
     draw(){
-		
-		if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now()) {
-			this.stateExpiry = 0;
-			this.state = "normal";
-		}
-		
+        
+        if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now()) {
+            this.stateExpiry = 0;
+            this.state = "normal";
+        }
+        
         // enemy
         if(this.state === "normal"){
             super.draw();
@@ -143,6 +143,10 @@ class Enemy extends Sprite{
 
         ctx.fillStyle = 'rgb(255, 26, 26)';
         ctx.fillRect(this.position.x + 60, this.position.y - 25, (this.width - 120) * this.health / this.maxHealth, 10);
+    }
+    
+    checkTargets(towers) {
+        
     }
 
     update(){
@@ -164,8 +168,8 @@ class Enemy extends Sprite{
 
         this.velocity.x = Math.cos(angle) * this.speed;
         this.velocity.y = Math.sin(angle) * this.speed;
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
+        this.position.x += this.velocity.x * frameMultiplier;
+        this.position.y += this.velocity.y * frameMultiplier;
         this.center = {
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2

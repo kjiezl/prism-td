@@ -120,20 +120,37 @@ spawnEnemies(enemyCount);
 let msPrev = window.performance.now();
 const fps = 60;
 const msPerFrame = 1000 / fps;
-let frames = 0;
+//let frames = 0;
+
+let frameMultiplier = 1;
+
+const ControlledFPS = true;
 
 function animate(){
     const animationID = window.requestAnimationFrame(animate);
 
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
+    
+    if(!!ControlledFPS) {
+        if(msPassed < msPerFrame) {
+            // discard useless frames
+            return;
+        }
+    } else {
+        // render all frames
+        frameMultiplier = msPassed / msPerFrame;
+    }
+    msPrev = msNow;
+    
+    //console.log(1000/msPassed);
 
-    if (msPassed < msPerFrame) return;
+    //if (msPassed < msPerFrame) return;
 
-    const excessTime = msPassed % msPerFrame;
-    msPrev = msNow - excessTime;
+    //const excessTime = msPassed % msPerFrame;
+    //msPrev = msNow - excessTime;
 
-    frames++;
+    //frames++;
 
     ctx.drawImage(image, 0, 0);
     ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
@@ -250,10 +267,10 @@ function animate(){
                         }
                         if(projectile.enemy.state === "iced"){
                             //projectile.enemy.state = "iced";
-							projectile.enemy.changeState("iced", 200);
+                            projectile.enemy.changeState("iced", 200);
                         } else{
                             //projectile.enemy.state = "slowed";
-							projectile.enemy.changeState("slowed", tower.slowedMS);
+                            projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
                         /*let intervalIce = setInterval(() => {
                             if(projectile.enemy.state === "slowed"){
@@ -265,7 +282,7 @@ function animate(){
                     case "Lightning":
                         sfx.towerStrike.play();
                         //projectile.enemy.state = "striked";
-						projectile.enemy.changeState("striked", 200);
+                        projectile.enemy.changeState("striked", 200);
                         const otherEnemies = enemies.filter(e => e !== projectile.enemy);
                         otherEnemies.sort((a, b) => {
                             const distA = Math.hypot(projectile.enemy.center.x - a.center.x, projectile.enemy.center.y - a.center.y);
@@ -275,7 +292,7 @@ function animate(){
 
                         otherEnemies.slice(0, tower.strikedEnemies).forEach(enemy => {
                             enemy.health -= (tower.towerDamage / 2); 
-							enemy.changeState("striked", 200);
+                            enemy.changeState("striked", 200);
 
                             /*setInterval(() => {
                                 if(enemy.state === "striked"){
@@ -284,7 +301,7 @@ function animate(){
                             }, 100)*/
                         });
 
-						//projectile.enemy.stateExpiry = window.performance.now() + 120;
+                        //projectile.enemy.stateExpiry = window.performance.now() + 120;
                         /*setInterval(() => {
                             if(projectile.enemy.state === "striked"){
                                 projectile.enemy.state = "normal";
@@ -504,11 +521,12 @@ window.addEventListener('mousemove', (event) => {
 
     for(let i = 0; i <= placementTiles.length; i++){
         const tile = placementTiles[i];
-
-        if(mouse.x >= tile.position.x && mouse.x <= tile.position.x + tile.size &&
-            mouse.y >= tile.position.y && mouse.y <= tile.position.y + tile.size){
-                activeTile = tile;
-                break;
-        }
+        try {
+            if(mouse.x >= tile.position.x && mouse.x <= tile.position.x + tile.size &&
+                mouse.y >= tile.position.y && mouse.y <= tile.position.y + tile.size){
+                    activeTile = tile;
+                    break;
+            }
+        } catch(e) { };
     }
 })
