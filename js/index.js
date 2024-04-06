@@ -123,13 +123,21 @@ const msPerFrame = 1000 / fps;
 
 let frameMultiplier = 1;
 
-const ControlledFPS = true;
+const ControlledFPS = !true;
+
+var gamePaused = false;
 
 function animate(){
     const animationID = window.requestAnimationFrame(animate);
 
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
+    
+    if(msPassed > 1000) {
+        // pause game
+        console.log("game paused");
+        gamePaused = true;
+    }
     
     if(!!ControlledFPS) {
         if(msPassed < msPerFrame) {
@@ -139,6 +147,7 @@ function animate(){
     } else {
         // render all frames
         frameMultiplier = msPassed / msPerFrame;
+        frameMultiplier = frameMultiplier > 5 ? 1 : frameMultiplier;
     }
     msPrev = msNow;
     
@@ -256,7 +265,6 @@ function animate(){
         }*/
         
         tower.target = validEnemies[0];
-        console.log(tower.projectiles.length);
         for(let i = tower.projectiles.length - 1; i >= 0; i--){
             const projectile = tower.projectiles[i]
 

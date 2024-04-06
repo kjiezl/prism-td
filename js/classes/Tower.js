@@ -152,8 +152,7 @@ class Tower extends Sprite {
 
     update(){
         this.draw();
-
-        // console.log(this.isCooldown);
+        if(gamePaused) return;
         let msNow = window.performance.now();
         
         // TODO: pls change calculations sa attackspeed

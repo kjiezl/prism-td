@@ -157,14 +157,19 @@ class Enemy extends Sprite{
     }
 
     update(){
+        
         let msNow = window.performance.now();
-        if(this.spawnDelay > 0) {
+        if(this.spawnDelay > 0 && !gamePaused) {
             this.spawnDelay -= msNow - this.spawnTime;
             this.spawnTime = msNow;
             return;
+        } else if(gamePaused && this.spawnDelay > 0) {
+            this.spawnTime = msNow;
+            return;
+        } else {
+            this.draw();
         }
-        
-        this.draw();
+        if(gamePaused) return;
 
         if(this.state === "slowed"){
             this.speed = this.getSlowedSpeed(this.type);

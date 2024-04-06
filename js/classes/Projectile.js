@@ -48,14 +48,15 @@ class Projectile{
 
 	update(){
 		this.draw();
+        if(gamePaused) return;
 
-		const angle = Math.atan2(this.enemy.center.y - this.position.y, 
-			this.enemy.center.x - this.position.x);
+        const angle = Math.atan2(this.enemy.center.y - this.position.y, 
+            this.enemy.center.x - this.position.x);
 
-		this.velocity.x = Math.cos(angle) * this.moveSpeed;
-		this.velocity.y = Math.sin(angle) * this.moveSpeed;
+        this.velocity.x = Math.cos(angle) * this.moveSpeed;
+        this.velocity.y = Math.sin(angle) * this.moveSpeed;
 
-		this.position.x += this.velocity.x * frameMultiplier;
-		this.position.y += this.velocity.y * frameMultiplier;
+        this.position.x += this.velocity.x * frameMultiplier;
+        this.position.y += this.velocity.y * frameMultiplier;
 	}
 }
