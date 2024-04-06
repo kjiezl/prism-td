@@ -15,7 +15,15 @@ class Projectile{
 		this.trailColor = projectileColor;
 		this.maxTrailWidth = 20;
 		this.damage = damage;
+        if(this.enemy.health - this.enemy.incomingDamage - this.damage <= 0) {
+            this.enemy.isGonnaBeDead = true;
+        }
+        this.enemy.incomingDamage += this.damage;
 	}
+    
+    enemyHit() {
+        this.enemy.incomingDamage -= this.damage;
+    }
 
 	draw(){
 

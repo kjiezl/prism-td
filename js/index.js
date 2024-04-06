@@ -244,9 +244,18 @@ function animate(){
             const xDiff = enemy.center.x - tower.center.x;
             const yDiff = enemy.center.y - tower.center.y;
             const distance = Math.hypot(xDiff, yDiff);
-            return distance <= enemy.radius + tower.radius;
+            return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead;
         })
-
+        
+        /*for(let x=0; x < validEnemies.length; x++) {
+            console.log(validEnemies[x].health);
+            if(validEnemies[x].health - tower.towerDamage < tower.towerDamage) {
+                continue;
+            } else {
+                tower.target = validEnemies[x];
+            }
+        }*/
+        
         tower.target = validEnemies[0];
 
         for(let i = tower.projectiles.length - 1; i >= 0; i--){
@@ -259,6 +268,7 @@ function animate(){
             const distance = Math.hypot(xDiff, yDiff);
 
             if(distance <= projectile.enemy.radius + projectile.radius){
+                projectile.enemyHit();
                 projectile.enemy.health -= tower.towerDamage;
                 switch(tower.towerClass){
                     case "Ice":

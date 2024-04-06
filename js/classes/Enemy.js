@@ -13,6 +13,7 @@ class Enemy extends Sprite{
         this.radius = 45;
         this.health = this.getInitHealth(type);
         this.maxHealth = this.getInitHealth(type);
+        this.incomingDamage = 0;
         this.velocity = {
             x: 0,
             y: 0
@@ -33,6 +34,8 @@ class Enemy extends Sprite{
         this.stateExpiry = 0;
         this.type = type;
         this.position = position;
+        
+        this.isGonnaBeDead = false;
 
         this.speed;
 

@@ -39,6 +39,7 @@ class Tower extends Sprite {
         this.target = null;
         this.lastShot = 0;
         //this.frames = 0;
+        this.isGonnaBeDead = false;
 
         this.attackSpeed = this.getAttackSpeed(towerClass);
 
@@ -47,6 +48,7 @@ class Tower extends Sprite {
         this.health = 100;
         this.maxHealth = 100;
         this.towerPrice = 5;
+        this.incomingDamage = 0;
 
         this.upgradeCost = 10;
         this.healthIncrease = 20;
@@ -155,7 +157,7 @@ class Tower extends Sprite {
         let msNow = window.performance.now();
         
         // TODO: pls change calculations sa attackspeed
-        if(this.lastShot + this.attackSpeed*1.75 < msNow && this.target) {
+        if(this.lastShot + this.attackSpeed*2 < msNow && this.target && !this.target.isGonnaBeDead) {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
