@@ -155,7 +155,7 @@ class Tower extends Sprite {
         let msNow = window.performance.now();
         
         // TODO: pls change calculations sa attackspeed
-        if(this.lastShot + this.attackSpeed*2 < msNow && this.target) {
+        if(this.lastShot + this.attackSpeed*1.75 < msNow && this.target) {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
