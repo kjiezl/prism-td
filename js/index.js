@@ -218,6 +218,7 @@ function animate(){
             hearts -= 1;
             enemies.splice(i, 1);
             $("#hearts").text(hearts);
+            shakeCanvas();
         }
     }
 
@@ -335,10 +336,10 @@ let mouse = {
 }
 
 canvas.addEventListener('click', (event) => {
-    if(activeTile && !activeTile.isOccupied && coins - 5 >= 0){
+    if(activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused){
         showTowerSelection();
     }
-    else if(activeTile && activeTile.isOccupied){
+    else if(activeTile && activeTile.isOccupied && !gamePaused){
         const tower = towers.find(tower => tower.position.x === activeTile.position.x 
                                         && tower.position.y === activeTile.position.y);
         if(tower){
@@ -401,7 +402,7 @@ canvas.addEventListener('click', (event) => {
         }
     }
 
-    else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event)){
+    else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
         qUpgradeMenu.css("display", "none");
         $(".upgradeItem, #towerSelectionMenu, .upgradeBox").css("display", "none");
     }
@@ -426,7 +427,7 @@ $("#sniperTowerButton").click(() => placeTower("Sniper"));
 
 function placeTower(towerClass){
     sfx.towerPlace.play();
-    if (activeTile && !activeTile.isOccupied && coins - 5 >= 0) {
+    if (activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused) {
         coins -= 5;
         $("#coins").text(coins);
         let newTower = createTower({position: selectedTower.position, towerType: towerClass});
@@ -515,8 +516,35 @@ window.addEventListener('mousemove', (event) => {
 })
 
 window.addEventListener('keypress', (e) => {
-    if(e.key === 'p'){
+    if(e.key === 'p' || e.key === 'P'){
         gamePaused = !gamePaused;
         gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
     }
 })
+
+function shakeCanvas(){
+    let intensity = 10;
+    let duration = 100;
+
+    let startTime = window.performance.now();
+
+    function shake(){
+        let currentTime = window.performance.now();
+        let elapsedTime = currentTime - startTime;
+
+        if(elapsedTime < duration){
+            $("#redVignette").css("display", "block");
+            let dx = Math.sin(elapsedTime / duration * Math.PI * 2) * intensity;
+            let dy = Math.cos(elapsedTime / duration * Math.PI * 2) * intensity;
+
+            canvas.style.transform = "translate(" + dx + "px, " + dy + "px)";
+
+            requestAnimationFrame(shake);
+        }else{
+            $("#redVignette").css("display", "none");
+            canvas.style.transform = "translate(0, 0)";
+        }
+    }
+
+    shake();
+}

@@ -155,7 +155,7 @@ class Tower extends Sprite {
         this.specialButton = specialButton;
 
         specialButton.addEventListener('click', () => {
-            handleSpecial(this);
+            if(!gamePaused) handleSpecial(this);
         });
 
         this.startCountdown(this.specialTimer);
