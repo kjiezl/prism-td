@@ -27,7 +27,7 @@ let sfx = {
     }),
     towerDestroyed: new Howl({
         src: ['sfx/tower-destroyed.mp3'],
-        volume: 0.5
+        volume: 0.4
     }),
     towerStrike: new Howl({
         src: ['sfx/tower-strike.mp3'],
@@ -44,6 +44,10 @@ let sfx = {
     enemyDeath: new Howl({
         src: ['sfx/enemy-death.mp3'],
         volume: 0.1
+    }),
+    baseHit: new Howl({
+        src: ['sfx/base-hit.mp3'],
+        volume: 0.5
     })
 }
 
@@ -523,6 +527,7 @@ window.addEventListener('keypress', (e) => {
 })
 
 function shakeCanvas(){
+    sfx.baseHit.play();
     let intensity = 10;
     let duration = 100;
 
