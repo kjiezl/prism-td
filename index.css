@@ -20,6 +20,21 @@ body{
     color: white;
 }
 
+#gamePausedDiv{
+    position: absolute;
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    display: none; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 12em;
+    font-family: 'Micro 5', sans-serif;
+    background-color: rgba(0, 0, 30, 0.5);
+    color: white;
+}
+
 #playerInfo{
     position: absolute;
     top: 20;

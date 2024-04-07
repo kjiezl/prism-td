@@ -39,7 +39,7 @@ let sfx = {
     }),
     towerSniper: new Howl({
         src: ['sfx/tower-sniper.mp3'],
-        volume: 0.3
+        volume: 0.1
     }),
     enemyDeath: new Howl({
         src: ['sfx/enemy-death.mp3'],
@@ -127,7 +127,7 @@ const msPerFrame = 1000 / fps;
 
 let frameMultiplier = 1;
 
-const ControlledFPS = !true;
+const ControlledFPS = true;
 
 var gamePaused = false;
 
@@ -139,8 +139,9 @@ function animate(){
     
     if(msPassed > 1000) {
         // pause game
-        console.log("game paused");
+        // console.log("game paused");
         gamePaused = true;
+        $("#gamePausedDiv").css("display", "flex");
     }
     
     if(!!ControlledFPS) {
@@ -390,7 +391,9 @@ canvas.addEventListener('click', (event) => {
                 case "Sniper":
                     $("#special").text("Destroys all enemies in the area");
                     $("#specialUpgrade").text("Decreases cooldown time");
-                    $("#abilityDiv, #ability, #abilityUpDiv, #abilityUp").css("display", "none");
+                    $("#ability").text("2x more than common towers");
+                    $("#abilityDiv").text("Tower Range: ");
+                    $("#abilityUpDiv, #abilityUp").css("display", "none");
                     break;
             }
 
@@ -429,7 +432,6 @@ function placeTower(towerClass){
         let newTower = createTower({position: selectedTower.position, towerType: towerClass});
         towers.push(newTower);
         activeTile.isOccupied = true;
-        createSpecial();
     }
     $("#towerSelectionMenu").css("display", "none");
 }
@@ -474,7 +476,7 @@ $("#sellButton").click(() => {
     }
 });
 
-$("#musicButton").click(() => bgm.bgm1.play());
+$("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});
 $("#musicPause").click(() => bgm.bgm1.pause());
 
 
@@ -509,5 +511,12 @@ window.addEventListener('mousemove', (event) => {
                     break;
             }
         } catch(e) { };
+    }
+})
+
+window.addEventListener('keypress', (e) => {
+    if(e.key === 'p'){
+        gamePaused = !gamePaused;
+        gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
     }
 })

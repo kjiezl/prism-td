@@ -54,9 +54,12 @@ class Tower extends Sprite {
         this.attackSpeedIncrease = 35;
         this.projectileSpeedIncrease = 0.35;
 
-        this.specialTimer = this.getSpecialTimer(towerClass);
-        this.prevTimer = this.specialTimer;
+        this.specialTimer = this.getSpecialTimer(towerClass) * 1000;
+        // this.specialTimer = 5000;    
         this.specialButton;
+        this.timer = 0;
+
+        this.counting = true;
         
         this.levelSprites = [
             imageSrc,
@@ -65,7 +68,7 @@ class Tower extends Sprite {
             "sprites/towers/" + towerClass + "-tower-4.png",
             "sprites/towers/" + towerClass + "-tower-5.png"
         ];
-
+        this.createSpecial();
     }
 
     getSpecialTimer(towerClass){
@@ -139,22 +142,34 @@ class Tower extends Sprite {
         ctx.fillRect(this.position.x + 60, this.position.y - 20, (this.width - 120) * this.health / this.maxHealth, 10);
     }
 
-    specialAttack(type){
-        switch(type){
-            case 'Common':
-                this.attackSpeed = 20;
-                setInterval(() => {
-                    this.attackSpeed = this.fireRateTime;
-                }, 5000)
-                break;
-            default:
-                console.log("no special attack");
-                break;
-        }
+    createSpecial() {
+        const specialButton = document.createElement('button');
+        document.querySelector('.specialButtonDiv').appendChild(specialButton);
+        specialButton.style.backgroundColor = this.projectileColor;
+        specialButton.style.borderColor = this.projectileColor;
+        specialButton.style.top = this.position.y + 15;
+        specialButton.style.left = this.position.x + 130;
+        specialButton.className = "specialClass";
+        specialButton.textContent = this.specialTimer / 1000;
+
+        this.specialButton = specialButton;
+
+        specialButton.addEventListener('click', () => {
+            handleSpecial(this);
+        });
+
+        this.startCountdown(this.specialTimer);
+    }
+
+    startCountdown(specialTimer) {
+        this.specialButton.disabled = true;
+        this.timer = window.performance.now() + specialTimer;
+        this.specialButton.style.backgroundColor = this.projectileColor;
     }
 
     update(){
         this.draw();
+        
         if(gamePaused) return;
         let msNow = window.performance.now();
         
@@ -173,6 +188,18 @@ class Tower extends Sprite {
                 })
             )
             this.lastShot = msNow;
+        }
+
+        if (this.timer < window.performance.now() && this.counting) {
+            this.counting = false;
+            this.timer = this.specialTimer;
+            this.specialButton.disabled = false;
+            this.specialButton.textContent = "S";
+            this.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
+        }
+
+        if(this.counting){
+            this.specialButton.textContent = Math.ceil((this.timer - window.performance.now()) / 1000);
         }
     }
 
@@ -219,57 +246,8 @@ function createTower({position, towerType}) {
     return new Tower({position, imageSrc: "sprites/towers/" + towerType + "-tower-1.png", towerClass: towerType});
 }
 
-let countdownIntervals = {};
-
-function startCountdown(tower) {
-        tower.specialButton.disabled = true;
-        if (tower.specialTimer <= 0) {
-        clearInterval(countdownIntervals[tower.towerClass]);
-        tower.specialButton.textContent = "S";
-        tower.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
-    } else if (tower.specialTimer === tower.prevTimer) {
-        clearInterval(countdownIntervals[tower.towerClass]);
-        countdownIntervals[tower.towerClass] = setInterval(() => {
-            tower.specialButton.style.backgroundColor = tower.projectileColor;
-            tower.specialTimer -= 1;
-            tower.specialButton.textContent = tower.specialTimer.toString();
-
-            if (tower.specialTimer <= 0) {
-                tower.specialButton.disabled = false;
-                tower.specialButton.textContent = "S";
-                tower.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
-            }
-        }, 1000);
-    }
-}
-
-function createSpecial() {
-    towers.forEach(tower => {
-        const specialButton = document.createElement('button');
-        document.body.appendChild(specialButton);
-        specialButton.style.backgroundColor = tower.projectileColor;
-        specialButton.style.borderColor = tower.projectileColor;
-        specialButton.style.top = tower.position.y + 15;
-        specialButton.style.left = tower.position.x + 130;
-        specialButton.className = "specialClass";
-        specialButton.textContent = tower.specialTimer;
-
-        tower.specialButton = specialButton;
-
-        specialButton.addEventListener('click', () => {
-            handleSpecial(tower);
-        });
-
-        startCountdown(tower);
-    });
-}
-
-
 function handleSpecial(tower) {
-    if (tower.specialTimer > 0) {
-        return; 
-    }
-
+    tower.counting = true;
     switch (tower.towerClass) {
         case "Common":
             previousSpeed = tower.attackSpeed;
@@ -281,7 +259,6 @@ function handleSpecial(tower) {
             break;
         case "Ice":
             sfx.towerSlow.play();
-            tower.specialAttack(tower.towerClass);
             enemies.forEach(enemy => {
                 if (enemy.state !== "iced") {
                     enemy.changeState("iced", tower.icedMS);
@@ -303,8 +280,6 @@ function handleSpecial(tower) {
             break;
     }
 
-    setTimeout(() => {
-        tower.specialTimer = tower.prevTimer + 1;
-    }, 100);
+    tower.startCountdown(tower.timer);
 }
 

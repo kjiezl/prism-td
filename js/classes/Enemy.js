@@ -146,10 +146,6 @@ class Enemy extends Sprite{
         ctx.fillStyle = 'rgb(255, 26, 26)';
         ctx.fillRect(this.position.x + 60 + this.constOffset, this.position.y - 25 + this.constOffset, (this.width - 120) * this.health / this.maxHealth, 10);
     }
-    
-    checkTargets(towers) {
-        
-    }
 
     update(){
         
@@ -197,7 +193,7 @@ class Enemy extends Sprite{
             this.waypointIndex++;
         }
 
-        if (this.type === "range") {
+        if (this.type === "range" && this.state !== "iced") {
             let msNow = window.performance.now();
             if(this.lastShot + 3000 < msNow && this.target) {
                 this.projectiles.push(
