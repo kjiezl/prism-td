@@ -51,6 +51,18 @@ body{
     cursor: default;
 }
 
+#wavesDiv{
+    position: absolute;
+    top: 7%;
+    left: 7%;
+    font-family: "Radio Canada", sans-serif;
+    /* font-family: 'Micro 5', sans-serif; */
+    font-size: 2em;
+    display: block;
+    color: white;
+    text-shadow: 2px 3px rgb(67, 109, 40);
+}
+
 .upgradeMenu{
     position: absolute;
     bottom: 40;
@@ -76,6 +88,21 @@ body{
             rgba(0, 0, 0, 0));
     width: 172px;
     padding: 10px;
+}
+
+.shopMenu{
+    position: absolute;
+    bottom: 40;
+    left: 20;
+    font-size: 1em;
+    color: white;
+    display: none;
+    font-family: "Radio Canada", sans-serif;
+    align-items: center;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 50px;
 }
 
 #upgradeButton{

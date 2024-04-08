@@ -63,9 +63,28 @@
         </div>
     </div>
 
+    <div id="towerSelectionMenu" style="display: none;">
+        <img id="commonTowerButton" src="sprites/towers/common-tower-1.png">
+        <label style="left: 33px; top: 85px">Common</label>
+        <img id="iceTowerButton" src="sprites/towers/ice-tower-1.png"><br>
+        <label style="left: 131px; top: 85px">Ice</label>
+        <img id="lightningTowerButton" src="sprites/towers/lightning-tower-1.png">
+        <label style="left: 30px; top: 166px">Lightning</label>
+        <img id="sniperTowerButton" src="sprites/towers/sniper-tower-1.png">
+        <label style="left: 123px; top: 166px">Sniper</label>
+    </div>
+
+    <div class="specialButtonDiv"></div>
+
+    <div class="upgradeBox">
+        <button id="upgradeButton" class="upgradeItem">Upgrade</button>
+        <button id="sellButton" class="upgradeItem">Sell</button>
+    </div>
+
     <div class="upgradeMenu" style="display: none;">
         <!-- <div style="font-size: 1.7em; margin-bottom: 20; font-family: monospace; text-align: center;"><b>UPGRADE TOWER</b></div> -->
         <div id="upgradeStats">
+            <div style="margin-top: 10px; margin-left: 85%;"><button id="shopButton">Shop</button></div>
             <div style="text-align: center;">TOWER STATS</div>
             <div>Level: &ensp; <span id="towerLevel"></span></div>
             <div>Class: &ensp; <span id="towerClass"></span></div>
@@ -85,23 +104,11 @@
         </div>
     </div>
 
-    <div class="upgradeBox">
-        <button id="upgradeButton" class="upgradeItem">Upgrade</button>
-        <button id="sellButton" class="upgradeItem">Sell</button>
+    <div class="shopMenu">
+        <button>Heal This Tower</button>
     </div>
 
-    <div id="towerSelectionMenu" style="display: none;">
-        <img id="commonTowerButton" src="sprites/towers/common-tower-1.png">
-        <label style="left: 33px; top: 85px">Common</label>
-        <img id="iceTowerButton" src="sprites/towers/ice-tower-1.png"><br>
-        <label style="left: 131px; top: 85px">Ice</label>
-        <img id="lightningTowerButton" src="sprites/towers/lightning-tower-1.png">
-        <label style="left: 30px; top: 166px">Lightning</label>
-        <img id="sniperTowerButton" src="sprites/towers/sniper-tower-1.png">
-        <label style="left: 123px; top: 166px">Sniper</label>
-    </div>
-
-    <div class="specialButtonDiv"></div>
+    <div id="wavesDiv">Wave: &ensp;<span id="wavesID"></span></div>
 
     <div id="redVignette"></div>
 
@@ -119,6 +126,7 @@
 <script src="js/level1-waypoints.js"></script>
 <script src="js/classes/Sprite.js"></script>
 <script src="js/classes/Enemy.js"></script>
+<script src="js/classes/Levels.js"></script>
 <script src="js/classes/placementTile.js"></script>
 <script src="js/classes/Projectile.js"></script>
 <script src="js/classes/Tower.js"></script>

@@ -92,9 +92,19 @@ image.onload = () =>{
 
 const enemies = [];
 
-function spawnEnemies(spawnCount){
+let currentWave = 0;
+let currentLevel = 0;
+
+function spawnEnemies(){
+    let wave = levels[currentLevel].waves[currentWave];
+
+    let spawnCount = 0;
+    for(let enemyType in wave){
+        spawnCount += wave[enemyType];
+    }
+
     for(let i = 1; i <= spawnCount; i++){
-        const enemyTypes = ['common', 'fast', 'range'];
+        const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
         enemies.push(
             new Enemy({
@@ -106,9 +116,31 @@ function spawnEnemies(spawnCount){
     }
 }
 
+function startNextWave(){
+    currentWave++;
+    if(currentWave < levels[currentLevel].waveCount){
+        spawnEnemies();
+    } else{
+        currentLevel++;
+    }
+}
+
+// function spawnEnemies(spawnCount){
+//     for(let i = 1; i <= spawnCount; i++){
+//         const enemyTypes = ['common', 'fast', 'range'];
+//         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+//         enemies.push(
+//             new Enemy({
+//                 position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
+//                 type: randomType,
+//                 delay: 500 * i + Math.random() * 3000
+//             })
+//         );
+//     }
+// }
+
 const towers = [];
 let activeTile = undefined;
-let enemyCount = 5;
 let hearts = 5; //player health
 let coins = 205;
 let selectedTower = {};
@@ -123,7 +155,7 @@ flowers.src = 'sprites/gameobj/flowers.png';
 let flowersCount = 0;
 let flowersFrameX = 0;
 
-spawnEnemies(enemyCount);
+spawnEnemies();
 
 let msPrev = window.performance.now();
 const fps = 60;
@@ -159,6 +191,8 @@ function animate(){
         frameMultiplier = frameMultiplier > 5 ? 1 : frameMultiplier;
     }
     msPrev = msNow;
+
+    $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
 
     ctx.drawImage(image, 0, 0);
     ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
@@ -238,8 +272,7 @@ function animate(){
     }
 
     if(enemies.length === 0){
-        enemyCount += 2;
-        spawnEnemies(enemyCount);
+        startNextWave();
     }
 
     placementTiles.forEach(tile => {
