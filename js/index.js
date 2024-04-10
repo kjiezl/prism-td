@@ -141,8 +141,8 @@ function startNextWave(){
 
 const towers = [];
 let activeTile = undefined;
-let hearts = 5; //player health
-let coins = 205;
+let hearts = 15; //player health
+let coins = 1000;
 let selectedTower = {};
 
 let portal = new Image();
@@ -154,6 +154,9 @@ let flowers = new Image();
 flowers.src = 'sprites/gameobj/flowers.png';
 let flowersCount = 0;
 let flowersFrameX = 0;
+
+let base = new Image();
+base.src = 'sprites/gameobj/base.png';
 
 spawnEnemies();
 
@@ -195,6 +198,7 @@ function animate(){
     $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
 
     ctx.drawImage(image, 0, 0);
+    ctx.drawImage(base, 1536, 192);
     ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
     ctx.drawImage(flowers, 192 * flowersFrameX, 0, 192, 192, 768, 0, 192, 192);
     ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 576, 768, 192, 192);
@@ -241,10 +245,6 @@ function animate(){
                             if (tileIndex > -1) {
                                 placementTiles[tileIndex].isOccupied = false;
                             }
-                            
-                            sfx.towerDestroyed.play();
-                            tower.specialButton.style.display = "none";
-                            towers.splice(towerIndex, 1);
                         }
                     }                    
                     enemy.projectiles.splice(i, 1);
@@ -348,11 +348,6 @@ function animate(){
     })
 }
 
-// setInterval(() => {
-//     console.log(frames)
-//   }, 1000)
-
-
 function anim(){
     portalCount++;
     if(portalCount > 25) portalFrameX++, portalCount = 0;
@@ -377,71 +372,11 @@ canvas.addEventListener('click', (event) => {
         showTowerSelection();
     }
     else if(activeTile && activeTile.isOccupied && !gamePaused){
-        const tower = towers.find(tower => tower.position.x === activeTile.position.x 
-                                        && tower.position.y === activeTile.position.y);
-        if(tower){
-            qUpgradeMenu.css("display", "block");
-            $(".upgradeBox").css({
-                "display": "block",
-                "top": activeTile.position.y + 137,
-                "left": activeTile.position.x
-            });
-            $(".upgradeItem").css("display", "inline-block");
-            $("#towerMaxHealth").text(tower.health + " / " + tower.maxHealth);
-            $("#towerAttackSpeed").text(tower.attackSpeed / 100);
-            $("#towerProjectileSpeed").text(Math.ceil(tower.projectileSpeed * 100) / 100);
-            $("#towerClass").text(tower.towerClass);
-            $("#towerDamage").text(tower.towerDamage);
-            $("#towerLevel").text(tower.towerLevel);
-            $("#healthIncrease").text(tower.healthIncrease);
-            $("#attackSpeedIncrease").text("-" + tower.attackSpeedIncrease / 100);
-            $("#projectileSpeedIncrease").text(tower.projectileSpeedIncrease);
-            $("#upgradeButton").text("Upgrade [" + tower.upgradeCost + "]");
-            $("#sellButton").text("Sell [" + tower.towerPrice + "]");
-            $("#specialUpgradeDiv").css("display", "flex");
-            
-            if(tower.towerLevel == 5){
-                $("#upgradeButton").css("display", "none");
-                $("#towerLevel").text(tower.towerLevel + " (MAX)");
-            }
-            switch(tower.towerClass){
-                case "Common":
-                    $("#special").text("Increase fire rate for " + (tower.fireRateTime / 1000) + "s");
-                    $("#abilityDiv, #ability, #abilityUpDiv, #abilityUp").css("display", "none");
-                    $("#specialUpgrade").text("Increase fire rate duration to 1s");
-                    break;
-                case "Ice":
-                    $("#special").text("Freeze all enemies for " + (tower.icedMS / 1000) + "s");
-                    $("#ability").text(tower.slowedMS / 1000 + "s");
-                    $("#abilityDiv").text("Slow Time: ");
-                    $("#abilityUpDiv").text("Slow Time Increase: ");
-                    $("#abilityUp").text(tower.slowedMSIncrease / 1000 + "s");
-                    $("#specialUpgrade").text("Increase freeze duration to 0.5s");
-                    break;
-                case "Lightning":
-                    $("#special").text("Deals " + (Math.ceil((tower.towerDamage * tower.strikeDamage) * 100) / 100) + " damage to all enemies");
-                    $("#ability").text(tower.strikedEnemies + 1);
-                    $("#abilityDiv").text("Enemies Striked: ");
-                    $("#abilityUpDiv").text("Enemies Striked Increase: ");
-                    $("#abilityUp").text("1");
-                    $("#specialUpgrade").text("Increases damage dealt");
-                    break;
-                case "Sniper":
-                    $("#special").text("Destroys all enemies in the area");
-                    $("#specialUpgrade").text("Decreases cooldown time");
-                    $("#ability").text("2x more than common towers");
-                    $("#abilityDiv").text("Tower Range: ");
-                    $("#abilityUpDiv, #abilityUp").css("display", "none");
-                    break;
-            }
-
-            selectedTower = tower;
-        }
+        showTowerMenu();   
     }
-
     else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
         qUpgradeMenu.css("display", "none");
-        $(".upgradeItem, #towerSelectionMenu, .upgradeBox").css("display", "none");
+        $(".upgradeItem, #towerSelectionMenu, .upgradeBox, .shopMenu").css("display", "none");
     }
 })
 
@@ -450,11 +385,101 @@ function showTowerSelection(){
     tile.position.x === activeTile.position.x &&
     tile.position.y === activeTile.position.y);
     qUpgradeMenu.css("display", "none");
-    $(".upgradeBox").css("display", "none");
-    $(".upgradeItem").css("display", "none");
+    $(".upgradeBox, .upgradeItem, .shopMenu").css("display", "none");
     $("#towerSelectionMenu").css("display", "block");
     $("#towerSelectionMenu").css("top", activeTile.position.y + "px");
     $("#towerSelectionMenu").css("left", activeTile.position.x + "px");
+}
+
+function showTowerMenu(){
+    const tower = towers.find(tower => tower.position.x === activeTile.position.x 
+        && tower.position.y === activeTile.position.y);
+    if(tower){
+        qUpgradeMenu.css("display", "block");
+        $(".normalTowerClass").css("display", "flex");
+        $(".upgradeBox").css({
+            "display": "block",
+            "top": activeTile.position.y + 137,
+            "left": activeTile.position.x
+        });
+        $("#upgradeStatsText").css("display", "block");
+        $(".shopMenu").css("display", "none");
+        $(".upgradeItem, #specialUpgrade, #healthUpDiv").css("display", "inline-block");
+        $("#towerMaxHealth").text(tower.health + " / " + tower.maxHealth);
+        $("#towerAttackSpeed").text(tower.attackSpeed / 100);
+        $("#towerProjectileSpeed").text(Math.ceil(tower.projectileSpeed * 100) / 100);
+        $("#towerClass").text(tower.towerClass);
+        $("#towerDamage").text(tower.towerDamage);
+        $("#towerLevel").text(tower.towerLevel);
+        $("#healthIncrease").text(tower.healthIncrease);
+        $("#attackSpeedIncrease").text("-" + tower.attackSpeedIncrease / 100);
+        $("#projectileSpeedIncrease").text(tower.projectileSpeedIncrease);
+        $("#upgradeButton").text("Upgrade [" + tower.upgradeCost + "]");
+        $("#sellButton").text("Sell [" + tower.towerPrice + "]");
+        $("#specialUpgradeDiv").css("display", "flex");
+
+        if(tower.towerLevel == 5){
+            $("#upgradeButton").css("display", "none");
+            $("#towerLevel").text(tower.towerLevel + " (MAX)");
+        }
+
+        if(tower.towerClass === "Common" && tower.towerLevel === 1){
+            $("#shopButton").css("display", "flex");
+        } else{
+            $("#shopButton").css("display", "none");
+        }
+
+        switch(tower.towerClass){
+            case "Common":
+                $("#special").text("Increase fire rate for " + (tower.fireRateTime / 1000) + "s");
+                $("#abilityDiv, #ability, #abilityUpDiv, #abilityUp").css("display", "none");
+                $("#specialUpgrade").text("Increase fire rate duration to 1s");
+            break;
+            case "Ice":
+                $("#special").text("Freeze all enemies for " + (tower.icedMS / 1000) + "s");
+                $("#ability").text(tower.slowedMS / 1000 + "s");
+                $("#abilityDiv").text("Slow Time: ");
+                $("#abilityUpDiv").text("Slow Time Increase: ");
+                $("#abilityUp").text(tower.slowedMSIncrease / 1000 + "s");
+                $("#specialUpgrade").text("Increase freeze duration to 0.5s");
+                break;
+            case "Lightning":
+                $("#special").text("Deals " + (Math.ceil((tower.towerDamage * tower.strikeDamage) * 100) / 100) + " damage to all enemies");
+                $("#ability").text(tower.strikedEnemies + 1);
+                $("#abilityDiv").text("Enemies Striked: ");
+                $("#abilityUpDiv").text("Enemies Striked Increase: ");
+                $("#abilityUp").text("1");
+                $("#specialUpgrade").text("Increases damage dealt");
+                break;
+            case "Sniper":
+                $("#special").text("Destroys all enemies in the area");
+                $("#specialUpgrade").text("Decreases cooldown time");
+                $("#ability").text("2x more than common towers");
+                $("#abilityDiv").text("Tower Range: ");
+                $("#abilityUpDiv, #abilityUp").css("display", "none");
+                break;
+            case "Heal":
+                $(".normalTowerClass").css("display", "none");
+                $("#special").text("Heals all towers every " + (tower.specialTimer / 1000) + "s");
+                $("#specialUpgrade").text("Decreases cooldown time");
+                $("#towerClass").text("Heal Tower");
+                break;
+            case "AttackBoost":
+                $(".normalTowerClass").css("display", "none");
+                $("#special").text("Boosts attacks for all towers every " + (tower.specialTimer / 1000) + "s for " + (tower.boostAttackAmount / 1000) + "s");
+                $("#specialUpgrade").text("Increases boost time by 0.5s");
+                $("#towerClass").text("Attack Boost Tower");
+                break;
+            case "SpeedProjectile":
+                $(".normalTowerClass, #upgradeButton, #upgradeStatsText, #specialUpgrade, #specialUpgradeDiv, #healthUpDiv").css("display", "none");
+                $("#towerClass").text("Speed Projectile Tower");
+                $("#special").text("Increases projectile speed for all towers");
+                $("#towerLevel").text(tower.towerLevel + " [NOT UPGRADEABLE]");
+                break;
+        }
+
+        selectedTower = tower;
+    }
 }
 
 $("#commonTowerButton").click(() => placeTower("Common"));
@@ -469,10 +494,15 @@ function placeTower(towerClass){
         $("#coins").text(coins);
         let newTower = createTower({position: selectedTower.position, towerType: towerClass});
         towers.push(newTower);
-        activeTile.isOccupied = true;
+        activeTile.isOccupied = true;   
     }
     $("#towerSelectionMenu").css("display", "none");
 }
+
+$("#shopButton").click(() => {
+    qUpgradeMenu.css("display", "none");
+    $(".shopMenu").css("display", "flex");
+})
 
 $("#upgradeButton").click(() => {
     let tower = selectedTower;
@@ -481,8 +511,7 @@ $("#upgradeButton").click(() => {
         tower.upgrade();
         qCoins.text(coins);
         qUpgradeMenu.css("display", "none");
-        $(".upgradeBox").css("display", "none");
-        $(".upgradeItem").css("display", "none");
+        $(".upgradeBox, .upgradeItem").css("display", "none");
     }
 })
 
@@ -492,7 +521,9 @@ $("#sellButton").click(() => {
         const index = towers.indexOf(selectedTower);
         if (index !== -1) {
             towers.splice(index, 1);
-            selectedTower.specialButton.style.display = "none";
+            if(selectedTower.towerClass !== "SpeedProjectile"){
+                selectedTower.specialButton.style.display = "none";
+            }
 
             const tile = placementTiles.find(tile =>
                 tile.position.x === selectedTower.position.x &&
@@ -508,11 +539,34 @@ $("#sellButton").click(() => {
 
             selectedTower = null;
             qUpgradeMenu.css("display", "none");
-            $(".upgradeBox").css("display", "none");
-            $(".upgradeItem").css("display", "none");
+            $(".upgradeBox, .upgradeItem").css("display", "none");
         }
     }
 });
+
+$("#specialHealButton").click(() =>{
+    let tower = selectedTower;
+    tower.health = 0;
+    let newTower = createTower({position: tower.position, towerType: "Heal"});
+    towers.push(newTower);
+    $(".shopMenu").css("display", "none");
+})
+
+$("#attackBoostButton").click(() => {
+    let tower = selectedTower;
+    tower.health = 0;
+    let newTower = createTower({position: tower.position, towerType: "AttackBoost"});
+    towers.push(newTower);
+    $(".shopMenu").css("display", "none");
+})
+
+$("#speedProjectileButton").click(() => {
+    let tower = selectedTower;
+    tower.health = 0;
+    let newTower = createTower({position: tower.position, towerType: "SpeedProjectile"});
+    towers.push(newTower);
+    $(".shopMenu").css("display", "none");
+})
 
 $("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});
 $("#musicPause").click(() => bgm.bgm1.pause());

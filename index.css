@@ -90,10 +90,24 @@ body{
     padding: 10px;
 }
 
+#shopButton{
+    position: absolute;
+    margin-left: 80%; 
+    width: 30px; 
+    color: yellow;
+    display: none;
+}
+
+#shopButton:hover{
+    color: white;
+    width: 33px;
+}
+
 .shopMenu{
     position: absolute;
     bottom: 40;
     left: 20;
+    width: 370px;
     font-size: 1em;
     color: white;
     display: none;

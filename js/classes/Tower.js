@@ -8,57 +8,18 @@ class Tower extends Sprite {
             y: this.position.y + this.height / 2 - 30
         };
         this.projectiles = [];
-        this.projectileColor = this.getProjectileColor(towerClass);
-
-        if(towerClass === "Sniper"){
-            this.towerDamage = 10;
-            this.radius = 700;
-            this.projectileSpeed = 10;
-        } else{
-            this.towerDamage = 5;
-            this.radius = 500;
-            this.projectileSpeed = 5;
-        }
-
-        if(towerClass === "Ice"){
-            this.slowedMS = 1500;
-            this.slowedMSIncrease = 250;
-            this.icedMS = 3000;
-        }
-
-        if(towerClass === "Lightning"){
-            this.strikedEnemies = 2;
-            this.radius = 400;
-            this.strikeDamage = 1.2;
-        }
-
-        if(towerClass === "Common"){
-            this.fireRateTime = 5000;
-        }
-
         this.target = null;
         this.lastShot = 0;
         this.isGonnaBeDead = false;
-
-        this.attackSpeed = this.getAttackSpeed(towerClass);
-
         this.towerLevel = 1;
         this.towerClass = towerClass;
-        this.health = 100;
-        this.maxHealth = 100;
         this.towerPrice = 5;
         this.incomingDamage = 0;
-
-        this.upgradeCost = 10;
         this.healthIncrease = 20;
-        this.attackSpeedIncrease = 35;
-        this.projectileSpeedIncrease = 0.35;
-
-        this.specialTimer = this.getSpecialTimer(towerClass) * 1000;
-        // this.specialTimer = 5000;    
         this.specialButton;
         this.timer = 0;
-
+        this.attackSpeedIncrease = 35;
+        this.projectileSpeedIncrease = 0.35;  
         this.counting = true;
         
         this.levelSprites = [
@@ -68,67 +29,94 @@ class Tower extends Sprite {
             "sprites/towers/" + towerClass + "-tower-4.png",
             "sprites/towers/" + towerClass + "-tower-5.png"
         ];
-        this.createSpecial();
+
+        this.getTowerStats(towerClass);
+        if(towerClass !== "SpeedProjectile") this.createSpecial();
     }
 
-    getSpecialTimer(towerClass){
+    getTowerStats(towerClass){
         switch(towerClass){
             case "Common":
-                return 20;
-            case "Ice":
-                return 20;
-            case "Lightning":
-                return 25;
-            case "Sniper":
-                return 35;
-            default:
-                return 15;
-        }
-    }
-
-    getProjectileColor(towerClass){
-        switch(towerClass){
-            case "Common":
-                return 'rgb(150, 150, 150)';
+                this.projectileColor = 'rgb(150, 150, 150)';
+                this.attackSpeed = 250;
+                this.previousSpeed = this.attackSpeed;
+                this.maxHealth = 100;
+                this.health = this.maxHealth;
+                this.upgradeCost = 10;
+                this.specialTimer = 20 * 1000;
+                this.towerDamage = 5;
+                this.radius = 500;
+                this.projectileSpeed = 5;
+                this.fireRateTime = 5000;
                 break;
             case "Ice":
-                return 'rgb(50, 170, 255)';
+                this.projectileColor = 'rgb(50, 170, 255)';
+                this.attackSpeed = 280;
+                this.previousSpeed = this.attackSpeed;
+                this.maxHealth = 100;
+                this.health = this.maxHealth;
+                this.upgradeCost = 10;
+                this.specialTimer = 20 * 1000;
+                this.towerDamage = 5;
+                this.radius = 500;
+                this.projectileSpeed = 5;
+                this.slowedMS = 1500;
+                this.slowedMSIncrease = 250;
+                this.icedMS = 3000;
                 break;
             case "Lightning":
-                return 'rgb(255, 255, 100)';
+                this.projectileColor = 'rgb(255, 255, 100)';
+                this.attackSpeed = 280;
+                this.previousSpeed = this.attackSpeed;
+                this.maxHealth = 100;
+                this.health = this.maxHealth;
+                this.upgradeCost = 10;
+                this.specialTimer = 25 * 1000;
+                this.towerDamage = 5;
+                this.radius = 500;
+                this.projectileSpeed = 5;
+                this.strikedEnemies = 2;
+                this.radius = 400;
+                this.strikeDamage = 1.2;
                 break;
             case "Sniper":
-                return 'rgb(100, 255, 100)';
+                this.projectileColor = 'rgb(100, 255, 100)';
+                this.attackSpeed = 600;
+                this.previousSpeed = this.attackSpeed;
+                this.maxHealth = 100;
+                this.health = this.maxHealth;
+                this.upgradeCost = 10;
+                this.specialTimer = 35 * 1000;
+                this.towerDamage = 10;
+                this.radius = 700;
+                this.projectileSpeed = 10;
                 break;
-            default:
-                return 'rgb(176, 176, 176)';
+            case "Heal":
+                this.maxHealth = 300;
+                this.health = this.maxHealth;
+                this.upgradeCost = 40;
+                this.specialTimer = 30 * 1000;
+                this.specialHealAmount = 50;
                 break;
-        }
-    }
-
-    getAttackSpeed(towerClass){
-        switch(towerClass){
-            case "Common":
-                return 250;
+            case "AttackBoost":
+                this.maxHealth = 300;
+                this.health = this.maxHealth;
+                this.upgradeCost = 40;
+                this.specialTimer = 40 * 1000;
+                this.boostAttackAmount = 3 * 1000;
                 break;
-            case "Ice":
-                return 280;
-                break;
-            case "Lightning":
-                return 280;
-                break;
-            case "Sniper":
-                return 600;
-                break;
-            default:
-                return 250;
+            case "SpeedProjectile":
+                this.maxHealth = 300;
+                this.health = this.maxHealth;
+                this.upgradeCost = 40;
+                this.speedProjectile = true;
                 break;
         }
     }
 
     draw(){
         super.draw();
-        // circle radius
+        // attack radius
         // ctx.beginPath();
         // ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
         // ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -167,13 +155,21 @@ class Tower extends Sprite {
         this.specialButton.style.backgroundColor = this.projectileColor;
     }
 
+    boostAttack(){
+        towers.forEach(tower => {
+            duration = window.performance.now() + this.boostAttackAmount;
+            tower.attackSpeed = 20;
+        })
+    }
+
     update(){
         this.draw();
         
         if(gamePaused) return;
         let msNow = window.performance.now();
         
-        if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead) {
+        if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead
+             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
             sfx.towerShoot.play();
             this.projectiles.push(
                 new Projectile({
@@ -190,7 +186,22 @@ class Tower extends Sprite {
             this.lastShot = msNow;
         }
 
-        if (this.timer < window.performance.now() && this.counting) {
+        if (this.health <= 0) {
+            const index = towers.indexOf(this);
+            if (index !== -1) {
+                if(this.towerClass !== "SpeedProjectile"){
+                    this.specialButton.style.display = "none";
+                }
+                sfx.towerDestroyed.play();
+                towers.splice(index, 1);
+                qUpgradeMenu.css("display", "none");
+                $(".shopMenu").css("display", "none");
+                $(".upgradeBox").css("display", "none");
+            }
+        }
+
+        if (this.timer < window.performance.now() && this.counting 
+            && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
             this.counting = false;
             this.timer = this.specialTimer;
             this.specialButton.disabled = false;
@@ -198,9 +209,74 @@ class Tower extends Sprite {
             this.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
         }
 
-        if(this.counting){
+        if(this.timer < window.performance.now() && this.counting && this.towerClass === "Heal"){
+            towers.forEach(tower => {
+                if(tower.health + this.specialHealAmount < tower.maxHealth){
+                    tower.health += this.specialHealAmount;
+                } else{
+                    tower.health = tower.maxHealth;
+                }
+                this.timer = this.specialTimer;
+                this.startCountdown(this.timer);
+            })
+        }
+
+        if(this.timer < window.performance.now() && this.counting && this.towerClass === "AttackBoost"){
+            this.boostAttack();
+            this.timer = this.specialTimer;
+            this.startCountdown(this.timer);
+        }
+
+        if(duration < window.performance.now()){
+            this.attackSpeed = this.previousSpeed;
+        }
+
+        if(this.counting && this.towerClass !== "SpeedProjectile"){
             this.specialButton.textContent = Math.ceil((this.timer - window.performance.now()) / 1000);
         }
+
+        if(this.speedProjectile){
+            towers.forEach(tower => {
+                if(tower.towerClass === "Sniper"){
+                    tower.projectileSpeed = 15;
+                } else{
+                    tower.projectileSpeed = 10;
+                }
+            })
+        } else{
+            towers.forEach(tower => {
+                if(tower.towerClass === "Sniper"){
+                    tower.projectileSpeed = 10;
+                } else{
+                    tower.projectileSpeed = 5;
+                }
+            })
+        }
+
+        this.checkSpecials();
+    }
+
+    // needs work
+    checkSpecials(){
+        towers.forEach(tower =>{
+            if(tower.towerClass === "Heal"){
+                document.querySelector("#specialHealButton").disabled = true;
+            } else{
+                document.querySelector("#specialHealButton").disabled = false;
+            }
+
+            if(tower.towerClass === "AttackBoost"){
+                document.querySelector("#attackBoostButton").disabled = true;
+            } else{
+                document.querySelector("#attackBoostButton").disabled = false;
+            }
+
+            if(tower.towerClass === "SpeedProjectile"){
+                document.querySelector("#speedProjectileButton").disabled = true;
+            } else{
+                document.querySelector("#speedProjectileButton").disabled = false;
+            }
+        })
     }
 
     upgrade(){
@@ -222,25 +298,33 @@ class Tower extends Sprite {
                 this.towerDamage += 3;
                 this.projectileSpeed += this.projectileSpeedIncrease;
                 switch(this.towerClass){
-                    case 'Common':
+                    case "Common":
                         this.fireRateTime += 500;
                         break;
-                    case 'Ice':
+                    case "Ice":
                         this.slowedMS += this.slowedMSIncrease;
                         this.icedMS += 500;
                         break;
-                    case 'Lightning':
+                    case "Lightning":
                         this.strikedEnemies++;
                         this.strikeDamage += 0.1;
                         break;
-                    case 'Sniper':
+                    case "Sniper":
                         this.specialTimer -= Math.floor(this.specialTimer * 0.07);
+                        break;
+                    case "Heal":
+                        this.specialTimer -= 2000;
+                        break;
+                    case "AttackBoost":
+                        this.boostAttackAmount += 750;
                         break;
                 }
             }
         }
     }
 }
+
+let duration = 0;
 
 function createTower({position, towerType}) {
     return new Tower({position, imageSrc: "sprites/towers/" + towerType + "-tower-1.png", towerClass: towerType});
