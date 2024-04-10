@@ -37,12 +37,15 @@ class Enemy extends Sprite{
         this.isGonnaBeDead = false;
 
         this.speed;
+        
+        this.slowedSprite = img[type + "EnemySlowed"];
+        this.strikedSprite = img[type + "EnemyStriked"];
 
-        this.slowedSprite = new Image();
-        this.slowedSprite.src = `sprites/enemies/${type}-enemy-slowed.png`;
+        //this.slowedSprite = new Image();
+        //this.slowedSprite.src = 'sprites/enemies/${type}-enemy-slowed.png';
 
-        this.strikedSprite = new Image();
-        this.strikedSprite.src = `sprites/enemies/${type}-enemy-striked1.png`;
+        //this.strikedSprite = new Image();
+        //this.strikedSprite.src = 'sprites/enemies/${type}-enemy-striked1.png';
 
         // this.attackDamage = this.getAttackDamage(type);
     }
@@ -128,7 +131,25 @@ class Enemy extends Sprite{
         }
         
         // enemy
-        if(this.state === "normal"){
+        let posX = this.position.x + this.constOffset;
+        let posY = this.position.y + this.constOffset;
+        
+        switch(this.state) {
+            case "normal":
+                super.draw();
+                break;
+            case "slowed":
+                //ctx.drawImage(this.slowedSprite, 0, 0, 192, 192, posX, posY, ctx.canvas.clientWidth / 10, ctx.canvas.clientWidth / 10);
+                ctx.drawImage(this.slowedSprite, posX, posY);
+                break;
+            case "iced":
+                ctx.drawImage(this.slowedSprite, posX, posY);
+                break;
+            case "striked":
+                ctx.drawImage(this.strikedSprite, posX, posY);
+                break;
+        }
+        /*if(this.state === "normal"){
             super.draw();
         } else if(this.state === "slowed"){
             ctx.drawImage(this.slowedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
@@ -137,14 +158,14 @@ class Enemy extends Sprite{
         }
         else if(this.state === "striked"){
             ctx.drawImage(this.strikedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
-        }
+        }*/
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.fillRect(this.position.x + 60 + this.constOffset, this.position.y - 25 + this.constOffset, this.width - 120, 10);
+        ctx.fillRect(posX + 60, posY - 25, this.width - 120, 10);
 
         ctx.fillStyle = 'rgb(255, 26, 26)';
-        ctx.fillRect(this.position.x + 60 + this.constOffset, this.position.y - 25 + this.constOffset, (this.width - 120) * this.health / this.maxHealth, 10);
+        ctx.fillRect(posX + 60, posY - 25, (this.width - 120) * this.health / this.maxHealth, 10);
     }
 
     update(){

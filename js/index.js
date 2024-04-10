@@ -1,7 +1,7 @@
 "use strict";
 
 const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
+var ctx = canvas.getContext('2d');
 
 // canvas.width = window.innerWidth;
 canvas.width = 1920;
@@ -63,13 +63,43 @@ let bgm = {
     })
 }
 
-const placementTilesData2D = [];
+var files = {
+    images: {
+        level1: "sprites/map/level1.png",
+        portal: "sprites/gameobj/portal1.png",
+        flowers: "sprites/gameobj/flowers.png",
+        base: "sprites/gameobj/base.png",
+        explosions: "sprites/effects/explosions.png",
+        commonEnemy: "sprites/enemies/common-enemy.png",
+        fastEnemy: "sprites/enemies/fast-enemy.png",
+        rangeEnemy: "sprites/enemies/range-enemy.png",
+        commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
+        fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
+        rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
+        commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
+        fastEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
+        rangeEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
+    }
+};
+
+var img = {};
+Object.keys(files.images).forEach(key => {
+    //img[key] = new Image();
+    img[key] = new Image();
+    img[key].onload = () => {
+        console.log("Image loaded: " + key);
+    };
+    img[key].src = files.images[key];
+});
+
+
+var placementTilesData2D = [];
 
 for(let i = 0; i < placementTilesData.length; i += 10){
     placementTilesData2D.push(placementTilesData.slice(i, i + 20))
 }
 
-const placementTiles = [];
+var placementTiles = [];
 
 placementTilesData2D.forEach((row, y) => {
     row.forEach((symbol, x) => {
@@ -82,15 +112,26 @@ placementTilesData2D.forEach((row, y) => {
             }))
         }
     })
-})
+});
 
+
+/* @dev
+ * move animate() to bottom or enclose with jQuery onload -- $(function(){})
+**/
+
+img.level1.onload = () => {
+    animate();
+};
+
+/*
 const image = new Image();
 image.src = 'sprites/map/level1.png';
 image.onload = () =>{
     animate();
-}
+}*/
 
-const enemies = [];
+var enemies = [];
+var effects = [];
 
 let currentWave = 0;
 let currentLevel = 0;
@@ -145,18 +186,18 @@ let hearts = 15; //player health
 let coins = 1000;
 let selectedTower = {};
 
-let portal = new Image();
-portal.src = 'sprites/gameobj/portal1.png';
+//let portal = new Image();
+//portal.src = 'sprites/gameobj/portal1.png';
 let portalCount = 0;
 let portalFrameX = 0;
 
-let flowers = new Image();
-flowers.src = 'sprites/gameobj/flowers.png';
+//let flowers = new Image();
+//flowers.src = 'sprites/gameobj/flowers.png';
 let flowersCount = 0;
 let flowersFrameX = 0;
 
-let base = new Image();
-base.src = 'sprites/gameobj/base.png';
+//let base = new Image();
+//base.src = 'sprites/gameobj/base.png';
 
 spawnEnemies();
 
@@ -197,13 +238,13 @@ function animate(){
 
     $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
 
-    ctx.drawImage(image, 0, 0);
-    ctx.drawImage(base, 1536, 192);
-    ctx.drawImage(portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
-    ctx.drawImage(flowers, 192 * flowersFrameX, 0, 192, 192, 768, 0, 192, 192);
-    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 576, 768, 192, 192);
-    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 1728, 192, 192, 192);
-    ctx.drawImage(flowers, 192 * flowersFrameX, 192, 192, 192, 0, 0, 192, 192);
+    ctx.drawImage(img.level1, 0, 0);
+    ctx.drawImage(img.base, 1536, 192);
+    ctx.drawImage(img.portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
+    ctx.drawImage(img.flowers, 192 * flowersFrameX, 0, 192, 192, 768, 0, 192, 192);
+    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 576, 768, 192, 192);
+    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 1728, 192, 192, 192);
+    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 0, 0, 192, 192);
 
     for(let i = enemies.length - 1; i >= 0; i--){
         const enemy = enemies[i];
@@ -232,6 +273,10 @@ function animate(){
     
                 if(distance <= 45){
                     projectile.enemy.health -= 5;
+                    effects.push(new Effect({
+                        x: projectile.enemy.position.x,
+                        y: projectile.enemy.position.y
+                    }, 0, 0, img.explosions, 160, 128, 6, 200));
                     if (projectile.enemy.health <= 0) {
                         const towerIndex = towers.findIndex((tower) => {
                             return projectile.enemy === tower;
@@ -246,7 +291,8 @@ function animate(){
                                 placementTiles[tileIndex].isOccupied = false;
                             }
                         }
-                    }                    
+                    }
+                    
                     enemy.projectiles.splice(i, 1);
                 }
             }
@@ -277,7 +323,7 @@ function animate(){
 
     placementTiles.forEach(tile => {
         tile.update(mouse);
-    })
+    });
 
     towers.forEach(tower => {
         tower.update();
@@ -301,6 +347,12 @@ function animate(){
 
             if(distance <= projectile.enemy.radius + projectile.radius){
                 projectile.enemyHit();
+                let eX = projectile.enemy.position.x > projectile.position.x ? 32 : -32;
+                let eY = projectile.enemy.position.y > projectile.position.y ? 32 : -32;
+                effects.push(new Effect({
+                    x: (projectile.position.x + eX),
+                    y: (projectile.position.y + eY)
+                }, 0, 160, img.explosions, 160, 64, 6, 200));
                 projectile.enemy.health -= tower.towerDamage;
                 switch(tower.towerClass){
                     case "Ice":
@@ -332,7 +384,7 @@ function animate(){
                 if(projectile.enemy.health <= 0){
                     const enemyIndex = enemies.findIndex((enemy) => {
                         return projectile.enemy === enemy;
-                    })
+                    });
 
                     if(enemyIndex > -1){
                         enemies.splice(enemyIndex, 1);
@@ -340,12 +392,23 @@ function animate(){
                         coins += projectile.enemy.coinDrop;
                         qCoins.text(coins);
                     }
+                    effects.push(new Effect({
+                        x: projectile.enemy.position.x + projectile.enemy.constOffset,
+                        y: projectile.enemy.position.y + projectile.enemy.constOffset
+                    }, 0, 0, img.explosions, 160, 192, 6, 200));
                 }
 
                 tower.projectiles.splice(i, 1);
             }
         }
-    })
+    });
+    
+    for(let i = 0; i < effects.length; i++) {
+        effects[i].update();
+        if(effects[i].isDone()) {
+            effects.splice(i, 1);
+        }
+    }
 }
 
 function anim(){
