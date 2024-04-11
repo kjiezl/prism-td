@@ -20,7 +20,7 @@ class Effect{
 
 	draw(){
         let diff = window.performance.now() - this.startTime;
-        if(diff > this.timeout) {
+        if(diff > this.timeout && this.timeout != 0) {
             this.done = true;
             console.log("effect done");
             return;

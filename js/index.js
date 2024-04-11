@@ -250,17 +250,18 @@ function animate(){
         const enemy = enemies[i];
         enemy.update();
 
-        enemies.forEach(enemy => {
+        //enemies.forEach(enemy => {
             enemy.target = null;
 
             const validTowers = towers.filter((tower) => {
                 const xDiff = tower.center.x - enemy.center.x;
                 const yDiff = tower.center.y - enemy.center.y;
                 const distance = Math.hypot(xDiff, yDiff);
-                return distance <= tower.radius + enemy.radius;
+                return (distance <= tower.radius + enemy.radius) && !enemy.isGonnaBeDead;
             })
     
-            enemy.target = validTowers[0];
+            //enemy.target = validTowers[0];
+            enemy.target = validTowers[Math.floor(Math.random() * validTowers.length)]; // randomize target
 
             for(let i = enemy.projectiles.length - 1; i >= 0; i--){
                 const projectile = enemy.projectiles[i]
@@ -271,7 +272,10 @@ function animate(){
                 const yDiff = projectile.enemy.center.y - projectile.position.y;
                 const distance = Math.hypot(xDiff, yDiff);
     
-                if(distance <= 45){
+                if(distance <= 50){
+                    /* @dev
+                     * unique damage from each enemy type
+                    **/
                     projectile.enemy.health -= 5;
                     effects.push(new Effect({
                         x: projectile.enemy.position.x,
@@ -300,7 +304,7 @@ function animate(){
                     enemy.projectiles.splice(i, 1);
                 }
             }
-        })
+        //})
 
         if(enemy.position.x > canvas.width - 400){
             hearts -= 1;
@@ -339,17 +343,18 @@ function animate(){
             return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead && enemy.spawnDelay <= 0;
         })
         
-        tower.target = validEnemies[0];
+        //tower.target = validEnemies[0];
+        tower.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
         for(let i = tower.projectiles.length - 1; i >= 0; i--){
             const projectile = tower.projectiles[i]
 
             projectile.update();
 
-            const xDiff = projectile.enemy.center.x - projectile.position.x;
-            const yDiff = projectile.enemy.center.y - projectile.position.y;
+            const xDiff = projectile.enemy.center.x - projectile.position.x + projectile.enemy.constOffset/2;
+            const yDiff = projectile.enemy.center.y - projectile.position.y + projectile.enemy.constOffset/2; // include y offset from spawning
             const distance = Math.hypot(xDiff, yDiff);
 
-            if(distance <= projectile.enemy.radius + projectile.radius){
+            if(distance <= projectile.enemy.radius + projectile.radius - 15){ // -15 for nearer impact
                 projectile.enemyHit();
                 let eX = projectile.enemy.position.x > projectile.position.x ? 32 : -32;
                 let eY = projectile.enemy.position.y > projectile.position.y ? 32 : -32;

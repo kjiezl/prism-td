@@ -50,8 +50,8 @@ class Projectile{
 		this.draw();
         if(gamePaused) return;
 
-        const angle = Math.atan2(this.enemy.center.y - this.position.y, 
-            this.enemy.center.x - this.position.x);
+        const angle = Math.atan2(this.enemy.center.y - this.position.y + this.enemy.constOffset, 
+            this.enemy.center.x - this.position.x + this.enemy.constOffset);
 
         this.velocity.x = Math.cos(angle) * this.moveSpeed;
         this.velocity.y = Math.sin(angle) * this.moveSpeed;
