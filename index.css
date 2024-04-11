@@ -4,7 +4,22 @@ body{
     margin: 0;
     background-color: black;
 }
-
+#resumeButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 0.5em;
+    font-family: 'Micro 5', sans-serif;
+    color: rgb(67, 109, 13);
+    background-color: greenyellow;
+    transition: transform 200ms, filter 200ms;
+}
+#resumeButton:hover {
+    transform: scale(110%);
+    filter: brightness(120%);
+}
 #gameOver{
     position: absolute;
     top: 0; 
@@ -28,6 +43,7 @@ body{
     bottom: 0; 
     left: 0; 
     right: 0;
+    flex-direction: column;
     display: none; 
     align-items: center; 
     justify-content: center;
@@ -36,7 +52,7 @@ body{
     background-color: rgba(0, 0, 30, 0.5);
     color: white;
     cursor: default;
-    pointer-events: none;
+    /*pointer-events: none;*/
 }
 
 #playerInfo{
@@ -129,6 +145,7 @@ body{
     border-radius: 10px;
     border-color: rgb(117, 204, 3);
     padding: 8.5px;
+    transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
 #upgradeButton:hover{
@@ -146,10 +163,11 @@ body{
     border-radius: 10px;
     padding: 8.5px;
     border-color: rgb(199, 16, 16);
+    transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
 #sellButton:hover{
-    background-color: rgb(255, 170, 170);
+    background-color: rgb(255, 150, 130);
     cursor: pointer;
 }
 
@@ -173,13 +191,15 @@ img{
     width: 70px;
     padding: 3px;
     margin-top: -5px;
+    transition: transform 200ms, filter 200ms, background-color 200ms;
+    border-radius: 20px;
 }
 
 img:hover{
     background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
     cursor: pointer;
-    width: 75px;
+    /*width: 75px;*/
+    transform: scale(110%);
 }
 
 label{
@@ -194,11 +214,12 @@ label{
     margin: 10px; 
     color: rgb(70, 122, 21); 
     cursor: pointer;
+    transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
 #musicButton:hover{
     color:rgb(2, 11, 146);
-    width: 35px;
+    transform: scale(110%);
 }
 
 #musicPause{
@@ -207,11 +228,12 @@ label{
     color: rgb(70, 122, 21); 
     cursor: pointer;
     margin-right: 30px;
+    transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
 #musicPause:hover{
     color:rgb(2, 11, 146);
-    width: 35px;
+    transform: scale(110%);
 }
 
 .specialClass{

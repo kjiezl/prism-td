@@ -314,7 +314,7 @@ function animate(){
         cancelAnimationFrame(animationID);
         bgm.bgm1.stop();
         bgm.gameOver.play();
-        qUpgradeMenu.css("display", "none");
+        qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu").css("display", "none");
         $("#gameOver").css("display", "flex");  
         $(".upgradeItem").css("display", "none");
@@ -453,7 +453,7 @@ canvas.addEventListener('click', (event) => {
         showTowerMenu();   
     }
     else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
-        qUpgradeMenu.css("display", "none");
+        qUpgradeMenu.fadeOut(150);
         $(".upgradeItem, #towerSelectionMenu, .upgradeBox, .shopMenu").css("display", "none");
     }
 })
@@ -462,7 +462,7 @@ function showTowerSelection(){
     selectedTower = placementTiles.find(tile =>
     tile.position.x === activeTile.position.x &&
     tile.position.y === activeTile.position.y);
-    qUpgradeMenu.css("display", "none");
+    qUpgradeMenu.fadeOut(150);
     $(".upgradeBox, .upgradeItem, .shopMenu").css("display", "none");
     $("#towerSelectionMenu").css("display", "block");
     $("#towerSelectionMenu").css("top", activeTile.position.y + "px");
@@ -473,7 +473,7 @@ function showTowerMenu(){
     const tower = towers.find(tower => tower.position.x === activeTile.position.x 
         && tower.position.y === activeTile.position.y);
     if(tower){
-        qUpgradeMenu.css("display", "block");
+        qUpgradeMenu.fadeIn(150);
         $(".normalTowerClass").css("display", "flex");
         $(".upgradeBox").css({
             "display": "block",
@@ -578,7 +578,7 @@ function placeTower(towerClass){
 }
 
 $("#shopButton").click(() => {
-    qUpgradeMenu.css("display", "none");
+    qUpgradeMenu.fadeOut(150);
     $(".shopMenu").css("display", "flex");
 })
 
@@ -588,7 +588,7 @@ $("#upgradeButton").click(() => {
         sfx.towerUpgrade.play();
         tower.upgrade();
         qCoins.text(coins);
-        qUpgradeMenu.css("display", "none");
+        qUpgradeMenu.fadeOut(150);
         $(".upgradeBox, .upgradeItem").css("display", "none");
     }
 })
@@ -616,7 +616,7 @@ $("#sellButton").click(() => {
             qCoins.text(coins);
 
             selectedTower = null;
-            qUpgradeMenu.css("display", "none");
+            qUpgradeMenu.fadeOut(150);
             $(".upgradeBox, .upgradeItem").css("display", "none");
         }
     }
@@ -648,6 +648,12 @@ $("#speedProjectileButton").click(() => {
 
 $("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});
 $("#musicPause").click(() => bgm.bgm1.pause());
+
+
+$("#resumeButton").click((e) => {
+    gamePaused = false;
+    $("#gamePausedDiv").css("display", "none");
+});
 
 
 function isClickOnTowerTile(event){
