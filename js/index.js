@@ -79,15 +79,17 @@ var files = {
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
+        alien1: "sprites/gameobj/alien-1-34x50.png",
     }
 };
 
 var img = {};
+var loaded = 0;
 Object.keys(files.images).forEach(key => {
     //img[key] = new Image();
     img[key] = new Image();
     img[key].onload = () => {
-        console.log("Image loaded: " + key);
+        loaded++;
     };
     img[key].src = files.images[key];
 });
@@ -114,24 +116,9 @@ placementTilesData2D.forEach((row, y) => {
     })
 });
 
-
-/* @dev
- * move animate() to bottom or enclose with jQuery onload -- $(function(){})
-**/
-
-img.level1.onload = () => {
-    animate();
-};
-
-/*
-const image = new Image();
-image.src = 'sprites/map/level1.png';
-image.onload = () =>{
-    animate();
-}*/
-
 var enemies = [];
-var effects = [];
+var layer1Anim = [];
+var layer3Anim = [];
 
 let currentWave = 0;
 let currentLevel = 0;
@@ -186,21 +173,6 @@ let hearts = 15; //player health
 let coins = 1000;
 let selectedTower = {};
 
-//let portal = new Image();
-//portal.src = 'sprites/gameobj/portal1.png';
-let portalCount = 0;
-let portalFrameX = 0;
-
-//let flowers = new Image();
-//flowers.src = 'sprites/gameobj/flowers.png';
-let flowersCount = 0;
-let flowersFrameX = 0;
-
-//let base = new Image();
-//base.src = 'sprites/gameobj/base.png';
-
-spawnEnemies();
-
 let msPrev = window.performance.now();
 const fps = 60;
 const msPerFrame = 1000 / fps;
@@ -237,14 +209,13 @@ function animate(){
     msPrev = msNow;
 
     $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
-
-    ctx.drawImage(img.level1, 0, 0);
-    ctx.drawImage(img.base, 1536, 192);
-    ctx.drawImage(img.portal, 192 * portalFrameX, 0, 192, 192, -35, 130, 250, 270);
-    ctx.drawImage(img.flowers, 192 * flowersFrameX, 0, 192, 192, 768, 0, 192, 192);
-    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 576, 768, 192, 192);
-    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 1728, 192, 192, 192);
-    ctx.drawImage(img.flowers, 192 * flowersFrameX, 192, 192, 192, 0, 0, 192, 192);
+    
+    for(let i = 0; i < layer1Anim.length; i++) {
+        layer1Anim[i].update();
+        if(layer1Anim[i].isDone()) {
+            layer1Anim.splice(i, 1);
+        }
+    }
 
     for(let i = enemies.length - 1; i >= 0; i--){
         const enemy = enemies[i];
@@ -277,10 +248,10 @@ function animate(){
                      * unique damage from each enemy type
                     **/
                     projectile.enemy.health -= 5;
-                    effects.push(new Effect({
+                    layer3Anim.push(new Effect({
                         x: projectile.enemy.position.x,
                         y: projectile.enemy.position.y
-                    }, 0, 0, img.explosions, 160, 128, 6, 200));
+                    }, 0, 0, img.explosions, 160, 160, 128, 128, 6, 200));
                     if (projectile.enemy.health <= 0) {
                         const towerIndex = towers.findIndex((tower) => {
                             return projectile.enemy === tower;
@@ -295,10 +266,10 @@ function animate(){
                                 placementTiles[tileIndex].isOccupied = false;
                             }
                         }
-                        effects.push(new Effect({
+                        layer3Anim.push(new Effect({
                             x: projectile.enemy.position.x,
                             y: projectile.enemy.position.y
-                        }, 0, 480, img.explosions, 160, 192, 6, 400));
+                        }, 0, 480, img.explosions, 160, 160, 192, 192, 6, 400));
                     }
                     
                     enemy.projectiles.splice(i, 1);
@@ -368,10 +339,10 @@ function animate(){
                         } else{
                             projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
-                        effects.push(new Effect({
+                        layer3Anim.push(new Effect({
                             x: (projectile.position.x + eX),
                             y: (projectile.position.y + eY)
-                        }, 0, 320, img.explosions, 160, 64, 6, 200));
+                        }, 0, 320, img.explosions, 160, 160, 64, 64, 6, 200));
                         projectile.enemy.health -= tower.towerDamage;
                         break;
                     case "Lightning":
@@ -388,17 +359,17 @@ function animate(){
                             enemy.health -= (tower.towerDamage / 2); 
                             enemy.changeState("striked", 200);
                         });
-                        effects.push(new Effect({
+                        layer3Anim.push(new Effect({
                             x: (projectile.position.x + eX),
                             y: (projectile.position.y + eY)
-                        }, 0, 0, img.explosions, 160, 64, 6, 200));
+                        }, 0, 0, img.explosions, 160, 160, 64, 64, 6, 200));
                         projectile.enemy.health -= tower.towerDamage;
                         break;
                     default:
-                        effects.push(new Effect({
+                        layer3Anim.push(new Effect({
                             x: (projectile.position.x + eX),
                             y: (projectile.position.y + eY)
-                        }, 0, 160, img.explosions, 160, 64, 6, 200));
+                        }, 0, 160, img.explosions, 160, 160, 64, 64, 6, 200));
                         projectile.enemy.health -= tower.towerDamage;
                 }
                 if(projectile.enemy.health <= 0){
@@ -412,10 +383,10 @@ function animate(){
                         coins += projectile.enemy.coinDrop;
                         qCoins.text(coins);
                     }
-                    effects.push(new Effect({
+                    layer3Anim.push(new Effect({
                         x: projectile.enemy.position.x + projectile.enemy.constOffset + 36,
                         y: projectile.enemy.position.y + projectile.enemy.constOffset + 36
-                    }, 0, 480, img.explosions, 160, 120, 6, 400));
+                    }, 0, 480, img.explosions, 160, 160, 120, 120, 6, 400));
                 }
 
                 tower.projectiles.splice(i, 1);
@@ -423,34 +394,75 @@ function animate(){
         }
     });
     
-    for(let i = 0; i < effects.length; i++) {
-        effects[i].update();
-        if(effects[i].isDone()) {
-            effects.splice(i, 1);
+    for(let i = 0; i < layer3Anim.length; i++) {
+        layer3Anim[i].update();
+        if(layer3Anim[i].isDone()) {
+            layer3Anim.splice(i, 1);
         }
     }
 }
 
-function anim(){
-    portalCount++;
-    if(portalCount > 25) portalFrameX++, portalCount = 0;
-    if(portalFrameX > 2) portalFrameX = 0;
+$(() => {
 
-    flowersCount++;
-    if(flowersCount > 50) flowersFrameX++, flowersCount = 0;
-    if(flowersFrameX > 3) flowersFrameX = 0;
+    /**
+     * MAIN LOOP
+    **/
 
-    requestAnimationFrame(anim);
-}
+    spawnEnemies();
+    
+    layer1Anim.push(new Effect({
+        x: 0,
+        y: 0,
+    }, 0, 0, img.level1, 1920, 960, 1920, 960, 1, 0, 1));
+    
+    layer1Anim.push(new Effect({
+        x: 192 * 8,
+        y: 192 * 1,
+    }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+    
+    layer1Anim.push(new Effect({
+        x: -35,
+        y: 130,
+    }, 0, 0, img.portal, 192, 192, 250, 270, 3, 0, 5)); // 3 frames, 5 frames per second
+    
+    let fl = [
+        [0, 0, 0, 192],
+        [192 * 3, 192 * 4, 0, 192],
+        [192 * 4, 192 * 0, 0, 0],
+        [192 * 9, 192 * 1, 0, 192],
+    ];
+    fl.forEach(d => {
+        layer1Anim.push(new Effect({
+            x: d[0],
+            y: d[1],
+        }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
+    });
+    
+    layer3Anim.push(new Effect({
+        x: 192 * 8 + 20,
+        y: 192 * 1 + 20,
+    }, 0, 0, img.alien1, 34, 50, 34, 50, 8, 0, 8));
+    
+    let loaderId = setInterval(() => {
+        let total = Object.keys(files.images).length;
+        if(loaded >= total) {
+            console.log("All assets loaded");
+            clearInterval(loaderId);
+            animate();
+        } else {
+            console.log("Loaded " + loaded + " of " + total + " assets");
+        }
+    }, 400);
 
-anim();
+});
 
 let mouse = {
     x: undefined,
     y: undefined
 }
 
-canvas.addEventListener('click', (event) => {
+//canvas.addEventListener('click', (event) => {
+$(canvas).on('click', (event) => {
     if(activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused){
         showTowerSelection();
     }
@@ -461,7 +473,7 @@ canvas.addEventListener('click', (event) => {
         qUpgradeMenu.fadeOut(150);
         $(".upgradeItem, #towerSelectionMenu, .upgradeBox, .shopMenu").css("display", "none");
     }
-})
+});
 
 function showTowerSelection(){
     selectedTower = placementTiles.find(tile =>
@@ -677,7 +689,8 @@ function isClickOnUpgradeMenu(event){
     return event.target === upgradeMenu || upgradeMenu.contains(event.target);
 }
 
-window.addEventListener('mousemove', (event) => {
+//window.addEventListener('mousemove', (event) => {
+$(window).on('mousemove', (event) => {
     mouse.x = event.clientX / screenZoom;
     mouse.y = event.clientY / screenZoom;
     activeTile = null;
@@ -692,14 +705,15 @@ window.addEventListener('mousemove', (event) => {
             }
         } catch(e) { };
     }
-})
+});
 
-window.addEventListener('keypress', (e) => {
+//window.addEventListener('keypress', (e) => {
+$(window).on('keypress', (e) => {
     if(e.key === 'p' || e.key === 'P'){
         gamePaused = !gamePaused;
         gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
     }
-})
+});
 
 function shakeCanvas(){
     sfx.baseHit.play();

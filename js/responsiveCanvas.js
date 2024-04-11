@@ -1,3 +1,4 @@
+"use strict";
 var screenZoom = 1;
 $(function() {
     let lastWidth = 0;
