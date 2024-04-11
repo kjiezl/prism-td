@@ -349,11 +349,6 @@ function animate(){
                 projectile.enemyHit();
                 let eX = projectile.enemy.position.x > projectile.position.x ? 32 : -32;
                 let eY = projectile.enemy.position.y > projectile.position.y ? 32 : -32;
-                effects.push(new Effect({
-                    x: (projectile.position.x + eX),
-                    y: (projectile.position.y + eY)
-                }, 0, 160, img.explosions, 160, 64, 6, 200));
-                projectile.enemy.health -= tower.towerDamage;
                 switch(tower.towerClass){
                     case "Ice":
                         if(projectile.enemy.health > 0){
@@ -364,6 +359,11 @@ function animate(){
                         } else{
                             projectile.enemy.changeState("slowed", tower.slowedMS);
                         }
+                        effects.push(new Effect({
+                            x: (projectile.position.x + eX),
+                            y: (projectile.position.y + eY)
+                        }, 0, 320, img.explosions, 160, 64, 6, 200));
+                        projectile.enemy.health -= tower.towerDamage;
                         break;
                     case "Lightning":
                         sfx.towerStrike.play();
@@ -379,7 +379,18 @@ function animate(){
                             enemy.health -= (tower.towerDamage / 2); 
                             enemy.changeState("striked", 200);
                         });
+                        effects.push(new Effect({
+                            x: (projectile.position.x + eX),
+                            y: (projectile.position.y + eY)
+                        }, 0, 0, img.explosions, 160, 64, 6, 200));
+                        projectile.enemy.health -= tower.towerDamage;
                         break;
+                    default:
+                        effects.push(new Effect({
+                            x: (projectile.position.x + eX),
+                            y: (projectile.position.y + eY)
+                        }, 0, 160, img.explosions, 160, 64, 6, 200));
+                        projectile.enemy.health -= tower.towerDamage;
                 }
                 if(projectile.enemy.health <= 0){
                     const enemyIndex = enemies.findIndex((enemy) => {
