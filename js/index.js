@@ -652,9 +652,8 @@ function isClickOnUpgradeMenu(event){
 }
 
 window.addEventListener('mousemove', (event) => {
-    mouse.x = event.clientX;
-    mouse.y = event.clientY;
-
+    mouse.x = event.clientX / screenZoom;
+    mouse.y = event.clientY / screenZoom;
     activeTile = null;
 
     for(let i = 0; i <= placementTiles.length; i++){
