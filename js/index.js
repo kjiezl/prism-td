@@ -77,8 +77,8 @@ var files = {
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
-        fastEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
-        rangeEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
+        fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
+        rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
     }
 };
 
@@ -291,6 +291,10 @@ function animate(){
                                 placementTiles[tileIndex].isOccupied = false;
                             }
                         }
+                        effects.push(new Effect({
+                            x: projectile.enemy.position.x,
+                            y: projectile.enemy.position.y
+                        }, 0, 480, img.explosions, 160, 192, 6, 400));
                     }
                     
                     enemy.projectiles.splice(i, 1);
@@ -404,9 +408,9 @@ function animate(){
                         qCoins.text(coins);
                     }
                     effects.push(new Effect({
-                        x: projectile.enemy.position.x + projectile.enemy.constOffset,
-                        y: projectile.enemy.position.y + projectile.enemy.constOffset
-                    }, 0, 0, img.explosions, 160, 192, 6, 200));
+                        x: projectile.enemy.position.x + projectile.enemy.constOffset + 36,
+                        y: projectile.enemy.position.y + projectile.enemy.constOffset + 36
+                    }, 0, 480, img.explosions, 160, 120, 6, 400));
                 }
 
                 tower.projectiles.splice(i, 1);
