@@ -80,6 +80,8 @@ var files = {
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
+        lightningStrike: "sprites/effects/lightning-strike2.png",
+        iced: "sprites/effects/iced.png",
     }
 };
 
@@ -121,7 +123,7 @@ var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
 
-let currentWave = 2;
+let currentWave = 0;
 let currentLevel = 0;
 
 function spawnEnemies(){
@@ -269,7 +271,7 @@ $(() => {
         x: -35,
         y: 130,
     }, 0, 0, img.portal, 192, 192, 250, 270, 3, 0, 5)); // 3 frames, 5 frames per second
-    
+
     let fl = [
         [0, 0, 0, 192],
         [192 * 3, 192 * 4, 0, 192],
