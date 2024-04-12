@@ -38,6 +38,13 @@ class Enemy extends Sprite{
 
         this.speed;
         
+        this.maxWaveHeight = 15;
+        this.waveHeight = Math.floor(Math.random() * this.maxWaveHeight);
+        this.waveDirection = this.waveHeight < this.maxWaveHeight / 2 ? 1 : 0;
+        this.waveTime = 50;
+        this.waveStep = 1;
+        this.lastUpdate = this.spawnTime;
+        
         this.slowedSprite = img[type + "EnemySlowed"];
         this.strikedSprite = img[type + "EnemyStriked"];
 
@@ -131,12 +138,13 @@ class Enemy extends Sprite{
         }
         
         // enemy
-        let posX = this.position.x + this.constOffset;
-        let posY = this.position.y + this.constOffset;
+        let posX = this.position.x + this.constOffset / 2;
+        let posY = this.position.y + this.constOffset - this.waveHeight;
         
         switch(this.state) {
             case "normal":
-                super.draw();
+                //super.draw();
+                ctx.drawImage(this.image, posX, posY);
                 break;
             case "slowed":
                 //ctx.drawImage(this.slowedSprite, 0, 0, 192, 192, posX, posY, ctx.canvas.clientWidth / 10, ctx.canvas.clientWidth / 10);
@@ -200,7 +208,7 @@ class Enemy extends Sprite{
         this.velocity.x = Math.cos(angle) * this.speed;
         this.velocity.y = Math.sin(angle) * this.speed;
         this.position.x += this.velocity.x * frameMultiplier;
-        this.position.y += this.velocity.y * frameMultiplier;
+        this.position.y += (this.velocity.y * frameMultiplier);
         this.center = {
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2
@@ -215,7 +223,7 @@ class Enemy extends Sprite{
         }
 
         if (this.type === "range" && this.state !== "iced") {
-            let msNow = window.performance.now();
+            //let msNow = window.performance.now(); // declared up top
             if(this.lastShot + 3000 < msNow && this.target) {
                 this.projectiles.push(
                     new Projectile({
@@ -238,5 +246,33 @@ class Enemy extends Sprite{
                 enemies.splice(index, 1);
             }
         }
+        
+        if(msNow - this.lastUpdate > this.waveTime) {
+            let waveChange = 0;
+            if(this.waveHeight > this.maxWaveHeight * 3/ 4 || this.waveHeight < this.maxWaveHeight / 4) {
+                if(this.waveHeight > this.maxWaveHeight * 7 / 8 || this.waveHeight < this.maxWaveHeight / 8) {
+                    waveChange = this.waveStep / 4;
+                } else {
+                    waveChange = this.waveStep / 2;
+                }
+            } else {
+                waveChange = this.waveStep;
+            }
+            if(this.waveDirection == 0) {
+                this.waveHeight -= waveChange;
+                if(this.waveHeight < 0) {
+                    this.waveHeight = 0;
+                    this.waveDirection = 1;
+                }
+            } else {
+                if(this.waveHeight >= this.maxWaveHeight) {
+                    this.waveHeight = this.maxWaveHeight;
+                    this.waveDirection = 0;
+                }
+                this.waveHeight += waveChange;
+            }
+            this.lastUpdate = msNow;
+        }
+        
     }
 }
