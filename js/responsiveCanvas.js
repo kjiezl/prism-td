@@ -48,6 +48,6 @@ $(function() {
         body.css({zoom: screenZoom, width: winW, height: winH});
         console.log(screenZoom);
         
-    }, 2000, window);
+    }, 100, window);
     
 });

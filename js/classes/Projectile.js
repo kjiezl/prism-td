@@ -77,10 +77,8 @@ class Projectile{
         const distance = Math.hypot(xDiff, yDiff);
 
         if(distance <= 50){
-            /* @dev
-             * unique damage from each enemy type
-            **/
-            this.enemy.health -= this.damage;
+            this.enemy.health -= 5;
+            // this.enemy.health -= this.damage;
             if (this.enemy.health <= 0) {
                 const towerIndex = towers.findIndex((tower) => {
                     return this.enemy === tower;

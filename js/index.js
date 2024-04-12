@@ -86,7 +86,6 @@ var files = {
 var img = {};
 var loaded = 0;
 Object.keys(files.images).forEach(key => {
-    //img[key] = new Image();
     img[key] = new Image();
     img[key].onload = () => {
         loaded++;
@@ -122,7 +121,7 @@ var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
 
-let currentWave = 0;
+let currentWave = 2;
 let currentLevel = 0;
 
 function spawnEnemies(){
@@ -155,23 +154,9 @@ function startNextWave(){
     }
 }
 
-// function spawnEnemies(spawnCount){
-//     for(let i = 1; i <= spawnCount; i++){
-//         const enemyTypes = ['common', 'fast', 'range'];
-//         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-//         enemies.push(
-//             new Enemy({
-//                 position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
-//                 type: randomType,
-//                 delay: 500 * i + Math.random() * 3000
-//             })
-//         );
-//     }
-// }
-
 const towers = [];
 let activeTile = undefined;
-let hearts = 15; //player health
+let hearts = 15;
 let coins = 1000;
 let selectedTower = {};
 
@@ -268,10 +253,6 @@ function animate(){
 
 $(() => {
 
-    /**
-     * MAIN LOOP
-    **/
-
     spawnEnemies();
     
     layer1Anim.push(new Effect({
@@ -325,7 +306,6 @@ let mouse = {
     y: undefined
 }
 
-//canvas.addEventListener('click', (event) => {
 $(canvas).on('click', (event) => {
     if(activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused){
         showTowerSelection();
@@ -460,7 +440,7 @@ function placeTower(towerClass){
 
 $("#shopButton").click(() => {
     qUpgradeMenu.fadeOut(150);
-    $(".shopMenu").css("display", "flex");
+    $(".shopMenu").css("display", "block");
 })
 
 $("#upgradeButton").click(() => {
@@ -503,29 +483,21 @@ $("#sellButton").click(() => {
     }
 });
 
-$("#specialHealButton").click(() =>{
-    let tower = selectedTower;
-    tower.health = 0;
-    let newTower = createTower({position: tower.position, towerType: "Heal"});
-    towers.push(newTower);
-    $(".shopMenu").css("display", "none");
-})
+$("#specialHealButton").click(() => {upgradeSpecial("Heal")});
+$("#attackBoostButton").click(() => {upgradeSpecial("AttackBoost")});
+$("#speedProjectileButton").click(() => {upgradeSpecial("SpeedProjectile")});
 
-$("#attackBoostButton").click(() => {
+function upgradeSpecial(specialClass){
     let tower = selectedTower;
-    tower.health = 0;
-    let newTower = createTower({position: tower.position, towerType: "AttackBoost"});
-    towers.push(newTower);
-    $(".shopMenu").css("display", "none");
-})
-
-$("#speedProjectileButton").click(() => {
-    let tower = selectedTower;
-    tower.health = 0;
-    let newTower = createTower({position: tower.position, towerType: "SpeedProjectile"});
-    towers.push(newTower);
-    $(".shopMenu").css("display", "none");
-})
+    if(coins >= tower.specialCost){
+        coins -= tower.specialCost;
+        qCoins.text(coins);
+        tower.health = 0;
+        let newTower = createTower({position: tower.position, towerType: specialClass});
+        towers.push(newTower);
+        $(".shopMenu").css("display", "none");
+    }
+}
 
 $("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});
 $("#musicPause").click(() => bgm.bgm1.pause());
@@ -553,7 +525,6 @@ function isClickOnUpgradeMenu(event){
     return event.target === upgradeMenu || upgradeMenu.contains(event.target);
 }
 
-//window.addEventListener('mousemove', (event) => {
 $(window).on('mousemove', (event) => {
     mouse.x = event.clientX / screenZoom;
     mouse.y = event.clientY / screenZoom;
@@ -571,7 +542,6 @@ $(window).on('mousemove', (event) => {
     }
 });
 
-//window.addEventListener('keypress', (e) => {
 $(window).on('keypress', (e) => {
     if(e.key === 'p' || e.key === 'P'){
         gamePaused = !gamePaused;

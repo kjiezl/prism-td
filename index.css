@@ -112,11 +112,14 @@ body{
     width: 30px; 
     color: yellow;
     display: none;
+    transition: transform 200ms, color 200ms;
 }
 
 #shopButton:hover{
     color: white;
-    width: 33px;
+    /* width: 33px; */
+    transform: scale(120%);
+    cursor: pointer;
 }
 
 .shopMenu{
@@ -128,10 +131,9 @@ body{
     color: white;
     display: none;
     font-family: "Radio Canada", sans-serif;
-    align-items: center;
     cursor: default;
     background-color: rgba(0, 0, 0, 0.3);
-    padding: 20px;
+    padding: 30px;
     border-radius: 50px;
 }
 
@@ -244,6 +246,7 @@ label{
     text-align: center;
     font-family: "Radio Canada", sans-serif;
     font-weight: 700;
+    cursor: pointer;
 }
 
 #redVignette {

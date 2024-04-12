@@ -45,7 +45,7 @@ class Effect{
         
         if(diff > this.timeout && this.timeout != 0) {
             this.done = true;
-            console.log("effect done");
+            // console.log("effect done");
             return;
         }
         

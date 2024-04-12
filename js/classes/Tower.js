@@ -21,6 +21,8 @@ class Tower extends Sprite {
         this.attackSpeedIncrease = 35;
         this.projectileSpeedIncrease = 0.35;  
         this.counting = true;
+        this.specialCost = 200;
+        this.speedProjectile = false;
         
         this.hasExploded = false;
         
@@ -34,6 +36,8 @@ class Tower extends Sprite {
 
         this.getTowerStats(towerClass);
         if(towerClass !== "SpeedProjectile") this.createSpecial();
+        this.prevProjSpeed = this.projectileSpeed;
+        this.health = this.maxHealth;
     }
 
     getTowerStats(towerClass){
@@ -43,22 +47,21 @@ class Tower extends Sprite {
                 this.attackSpeed = 250;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
-                this.health = this.maxHealth;
                 this.upgradeCost = 10;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 5 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
                 this.fireRateTime = 5000;
+                this.commonActive = false;
                 break;
             case "Ice":
                 this.projectileColor = 'rgb(50, 170, 255)';
                 this.attackSpeed = 280;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
-                this.health = this.maxHealth;
                 this.upgradeCost = 10;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 5 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -71,9 +74,8 @@ class Tower extends Sprite {
                 this.attackSpeed = 280;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
-                this.health = this.maxHealth;
                 this.upgradeCost = 10;
-                this.specialTimer = 25 * 1000;
+                this.specialTimer = 5 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -86,32 +88,28 @@ class Tower extends Sprite {
                 this.attackSpeed = 600;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
-                this.health = this.maxHealth;
                 this.upgradeCost = 10;
-                this.specialTimer = 35 * 1000;
+                this.specialTimer = 5 * 1000;
                 this.towerDamage = 10;
                 this.radius = 700;
                 this.projectileSpeed = 10;
                 break;
             case "Heal":
                 this.maxHealth = 300;
-                this.health = this.maxHealth;
                 this.upgradeCost = 40;
                 this.specialTimer = 30 * 1000;
                 this.specialHealAmount = 50;
                 break;
             case "AttackBoost":
                 this.maxHealth = 300;
-                this.health = this.maxHealth;
                 this.upgradeCost = 40;
-                this.specialTimer = 40 * 1000;
+                this.specialTimer = 10 * 1000;
                 this.boostAttackAmount = 3 * 1000;
+                this.attackBoost = true;
                 break;
             case "SpeedProjectile":
                 this.maxHealth = 300;
-                this.health = this.maxHealth;
                 this.upgradeCost = 40;
-                this.speedProjectile = true;
                 break;
         }
     }
@@ -155,10 +153,50 @@ class Tower extends Sprite {
         this.specialButton = specialButton;
 
         specialButton.addEventListener('click', () => {
-            if(!gamePaused) handleSpecial(this);
+            if(!gamePaused) this.handleSpecial();
         });
 
         this.startCountdown(this.specialTimer);
+    }
+
+    handleSpecial(){
+        this.counting = true;
+        switch(this.towerClass){
+            case "Common":
+                this.commonActive = true;
+                this.attackSpeed = 20;
+                setTimeout(() => {
+                    this.attackSpeed = this.previousSpeed;
+                    this.commonActive = false;
+                }, this.fireRateTime);
+                break;
+            case "Ice":
+                sfx.towerSlow.play();
+                enemies.forEach(enemy => {
+                    if (enemy.state !== "iced" && enemy.spawnDelay <= 0) {
+                        enemy.changeState("iced", this.icedMS);
+                    }
+                });
+                break;
+            case "Lightning":
+                sfx.towerStrike.play();
+                enemies.forEach(enemy => {
+                    if(enemy.spawnDelay <= 0) {
+                        enemy.changeState("striked", 200);
+                        enemy.health -= this.towerDamage * 1.2;
+                    }
+                });
+                break;
+            case "Sniper":
+                sfx.towerSniper.play();
+                enemies.forEach(enemy => {
+                    if(enemy.spawnDelay <= 0) {
+                        enemy.health = 0;
+                    }
+                });
+                break;
+        }
+        this.startCountdown(this.timer);
     }
 
     startCountdown(specialTimer) {
@@ -251,12 +289,18 @@ class Tower extends Sprite {
             this.startCountdown(this.timer);
         }
 
-        if(duration < msNow){
+        if(duration < msNow && !this.commonActive){
             this.attackSpeed = this.previousSpeed;
         }
 
         if(this.counting && this.towerClass !== "SpeedProjectile"){
             this.specialButton.textContent = Math.ceil((this.timer - msNow) / 1000);
+        }
+
+        if(towers.some(tower => tower.towerClass.includes("SpeedProjectile"))){
+            this.speedProjectile = true;
+        } else{
+            this.speedProjectile = false;
         }
 
         if(this.speedProjectile){
@@ -267,40 +311,31 @@ class Tower extends Sprite {
                     tower.projectileSpeed = 10;
                 }
             })
-        } else{
+        }  else{
             towers.forEach(tower => {
-                if(tower.towerClass === "Sniper"){
-                    tower.projectileSpeed = 10;
-                } else{
-                    tower.projectileSpeed = 5;
-                }
+                tower.projectileSpeed = tower.prevProjSpeed;
             })
         }
 
         this.checkSpecials();
     }
 
-    // needs work
     checkSpecials(){
-        towers.forEach(tower =>{
-            if(tower.towerClass === "Heal"){
-                document.querySelector("#specialHealButton").disabled = true;
-            } else{
-                document.querySelector("#specialHealButton").disabled = false;
-            }
-
-            if(tower.towerClass === "AttackBoost"){
-                document.querySelector("#attackBoostButton").disabled = true;
-            } else{
-                document.querySelector("#attackBoostButton").disabled = false;
-            }
-
-            if(tower.towerClass === "SpeedProjectile"){
-                document.querySelector("#speedProjectileButton").disabled = true;
-            } else{
-                document.querySelector("#speedProjectileButton").disabled = false;
-            }
-        })
+        if(towers.some(tower => tower.towerClass.includes("Heal"))){
+            document.querySelector("#specialHealButton").disabled = true;
+        } else{
+            document.querySelector("#specialHealButton").disabled = false;
+        }
+        if(towers.some(tower => tower.towerClass.includes("AttackBoost"))){
+            document.querySelector("#attackBoostButton").disabled = true;
+        } else{
+            document.querySelector("#attackBoostButton").disabled = false;
+        }
+        if(towers.some(tower => tower.towerClass.includes("SpeedProjectile"))){
+            document.querySelector("#speedProjectileButton").disabled = true;
+        } else{
+            document.querySelector("#speedProjectileButton").disabled = false;
+        }
     }
 
     upgrade(){
@@ -310,6 +345,7 @@ class Tower extends Sprite {
                 this.health += this.healthIncrease;
                 this.maxHealth += this.healthIncrease;
                 this.attackSpeed -= this.attackSpeedIncrease;
+                this.previousSpeed = this.attackSpeed;
                 this.towerLevel++;
                 this.image.src = this.levelSprites[this.towerLevel - 1];
                 if(this.towerClass === "Lightning"){
@@ -321,6 +357,7 @@ class Tower extends Sprite {
                 }
                 this.towerDamage += 3;
                 this.projectileSpeed += this.projectileSpeedIncrease;
+                this.prevProjSpeed = this.projectileSpeed;
                 switch(this.towerClass){
                     case "Common":
                         this.fireRateTime += 500;
@@ -352,45 +389,5 @@ let duration = 0;
 
 function createTower({position, towerType}) {
     return new Tower({position, imageSrc: "sprites/towers/" + towerType + "-tower-1.png", towerClass: towerType});
-}
-
-function handleSpecial(tower) {
-    tower.counting = true;
-    switch (tower.towerClass) {
-        case "Common":
-            previousSpeed = tower.attackSpeed;
-            tower.attackSpeed = 20;
-            setTimeout(() => {
-                tower.attackSpeed = previousSpeed;
-            }, tower.fireRateTime);
-            break;
-        case "Ice":
-            sfx.towerSlow.play();
-            enemies.forEach(enemy => {
-                if (enemy.state !== "iced" && enemy.spawnDelay <= 0) {
-                    enemy.changeState("iced", tower.icedMS);
-                }
-            });
-            break;
-        case "Lightning":
-            sfx.towerStrike.play();
-            enemies.forEach(enemy => {
-                if(enemy.spawnDelay <= 0) {
-                    enemy.changeState("striked", 200);
-                    enemy.health -= tower.towerDamage * 1.2;
-                }
-            });
-            break;
-        case "Sniper":
-            sfx.towerSniper.play();
-            enemies.forEach(enemy => {
-                if(enemy.spawnDelay <= 0) {
-                    enemy.health = 0;
-                }
-            });
-            break;
-    }
-
-    tower.startCountdown(tower.timer);
 }
 

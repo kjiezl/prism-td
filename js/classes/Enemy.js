@@ -11,8 +11,6 @@ class Enemy extends Sprite{
             y: this.position.y + this.height / 2
         }
         this.radius = 45;
-        this.health = this.getInitHealth(type);
-        this.maxHealth = this.getInitHealth(type);
         this.incomingDamage = 0;
         this.velocity = {
             x: 0,
@@ -27,7 +25,6 @@ class Enemy extends Sprite{
         this.target;
         this.lastShot = 0;
         this.shootRadius = 500;
-        this.coinDrop = this.getCoinDrop(type);
 
         this.state = "normal";
         this.stateExpiry = 0;
@@ -37,6 +34,7 @@ class Enemy extends Sprite{
         this.isGonnaBeDead = false;
 
         this.speed;
+        this.damage = 5;
         
         this.maxWaveHeight = 15;
         this.waveHeight = Math.floor(Math.random() * this.maxWaveHeight);
@@ -50,46 +48,36 @@ class Enemy extends Sprite{
         this.slowedSprite = img[type + "EnemySlowed"];
         this.strikedSprite = img[type + "EnemyStriked"];
 
-        //this.slowedSprite = new Image();
-        //this.slowedSprite.src = 'sprites/enemies/${type}-enemy-slowed.png';
-
-        //this.strikedSprite = new Image();
-        //this.strikedSprite.src = 'sprites/enemies/${type}-enemy-striked1.png';
-
-        // this.attackDamage = this.getAttackDamage(type);
+        this.getEnemyStats(type);
+        this.maxHealth = this.health;
     }
 
-    getCoinDrop(type){
+    getEnemyStats(type){
         switch(type){
-            case 'common':
-                return 2;
-            case 'fast':
-                return 3;
-            case 'range':
-                return 5;
-            case 'def':
-                return 7;
-            case 'shell':
-                return 15;
+            case "common":
+                this.coinDrop = 2;
+                this.health = 15;
+                break;
+            case "fast":
+                this.coinDrop = 3;
+                this.health = 10;
+                break;
+            case "range":
+                this.coinDrop = 5;
+                this.health = 20;
+                break;
+            case "def":
+                this.coinDrop = 7;
+                this.health = 30;
+                break;
+            case "shell":
+                this.coinDrop = 15;
+                this.health = 20;
+                break;
             default:
-                return 2;
-        }
-    }
-
-    getInitHealth(type){
-        switch(type){
-            case 'common':
-                return 15;
-            case 'fast':
-                return 10;
-            case 'range':
-                return 20;
-            case 'def':
-                return 30;
-            case 'shell':
-                return 20;
-            default:
-                return 15;
+                this.coinDrop = 2;
+                this.health = 15;
+                break;
         }
     }
 
@@ -155,11 +143,9 @@ class Enemy extends Sprite{
         
         switch(this.state) {
             case "normal":
-                //super.draw();
                 ctx.drawImage(this.image, posX, posY);
                 break;
             case "slowed":
-                //ctx.drawImage(this.slowedSprite, 0, 0, 192, 192, posX, posY, ctx.canvas.clientWidth / 10, ctx.canvas.clientWidth / 10);
                 ctx.drawImage(this.slowedSprite, posX, posY);
                 break;
             case "iced":
@@ -169,16 +155,6 @@ class Enemy extends Sprite{
                 ctx.drawImage(this.strikedSprite, posX, posY);
                 break;
         }
-        /*if(this.state === "normal"){
-            super.draw();
-        } else if(this.state === "slowed"){
-            ctx.drawImage(this.slowedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
-        } else if(this.state === "iced"){
-            ctx.drawImage(this.slowedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
-        }
-        else if(this.state === "striked"){
-            ctx.drawImage(this.strikedSprite, this.position.x + this.constOffset, this.position.y + this.constOffset);
-        }*/
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
