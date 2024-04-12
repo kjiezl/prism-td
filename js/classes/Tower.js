@@ -173,6 +173,10 @@ class Tower extends Sprite {
             case "Ice":
                 sfx.towerSlow.play();
                 enemies.forEach(enemy => {
+                    layer3Anim.push(new Effect({
+                        x: enemy.position.x + 21,
+                        y: enemy.position.y + 21
+                    }, 0, 138, img.iced, 148, 138, 150, 150, 4, 250, 16));
                     if (enemy.state !== "iced" && enemy.spawnDelay <= 0) {
                         enemy.changeState("iced", this.icedMS);
                     }

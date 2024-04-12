@@ -133,6 +133,10 @@ class TowerProjectile extends Projectile {
                     if(this.enemy.health > 0){
                         sfx.towerSlow.play();
                     }
+                    layer3Anim.push(new Effect({
+                        x: this.enemy.position.x + 21,
+                        y: this.enemy.position.y + 21
+                    }, 0, 138, img.iced, 148, 138, 150, 150, 4, 250, 16));
                     if(this.enemy.state === "iced"){
                         this.enemy.changeState("iced", 200);
                     } else{

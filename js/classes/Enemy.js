@@ -153,6 +153,14 @@ class Enemy extends Sprite{
                 break;
             case "striked":
                 ctx.drawImage(this.strikedSprite, posX, posY);
+                // layer1Anim.push(new Effect({
+                //     x: posX + 100,
+                //     y: posY - 50
+                // }, 0, 0, img.lightningStrike, 137.4, 363, 20, 100, 5, 200, 25));
+                layer3Anim.push(new Effect({
+                    x: posX + 80,
+                    y: posY - 50
+                }, 0, 0, img.lightningStrike, 135.5, 252, 20, 80, 7, 200, 35));
                 break;
         }
 
