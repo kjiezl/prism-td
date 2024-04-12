@@ -384,9 +384,9 @@ function animate(){
                         qCoins.text(coins);
                     }
                     layer3Anim.push(new Effect({
-                        x: projectile.enemy.position.x + projectile.enemy.constOffset + 36,
-                        y: projectile.enemy.position.y + projectile.enemy.constOffset + 36
-                    }, 0, 480, img.explosions, 160, 160, 120, 120, 6, 400));
+                        x: projectile.enemy.position.x + projectile.enemy.constOffset + 43,
+                        y: projectile.enemy.position.y + projectile.enemy.constOffset - 5
+                    }, 0, 480, img.explosions, 160, 160, 130, 130, 6, 400));
                 }
 
                 tower.projectiles.splice(i, 1);
