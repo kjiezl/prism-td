@@ -211,6 +211,19 @@ class Enemy extends Sprite{
         else{
             this.speed = this.getSpeed(this.type);
         }
+        
+        this.target = null;
+
+        const validTowers = towers.filter((tower) => {
+            const xDiff = tower.center.x - this.center.x;
+            const yDiff = tower.center.y - this.center.y;
+            const distance = Math.hypot(xDiff, yDiff);
+            return (distance <= tower.radius + this.radius) && !tower.isGonnaBeDead;
+        })
+
+        //enemy.target = validTowers[0];
+        this.target = validTowers[Math.floor(Math.random() * validTowers.length)]; // randomize target
+        
 
         const waypoint = waypoints[this.waypointIndex];
         const yDistance = waypoint.y - this.center.y;
@@ -237,13 +250,14 @@ class Enemy extends Sprite{
         if (this.type === "range" && this.state !== "iced") {
             //let msNow = window.performance.now(); // declared up top
             if(this.lastShot + 3000 < msNow && this.target) {
-                this.projectiles.push(
+                projectiles.push(
                     new Projectile({
                         position: {
                             x: this.center.x,
                             y: this.center.y
                         },
                         enemy: this.target,
+                        from: this,
                         projectileColor: 'red',
                         moveSpeed: 5
                     })

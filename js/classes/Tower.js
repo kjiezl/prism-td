@@ -180,16 +180,28 @@ class Tower extends Sprite {
         if(gamePaused) return;
         let msNow = window.performance.now();
         
+        this.target = null;
+        const validEnemies = enemies.filter((enemy) => {
+            const xDiff = enemy.center.x - this.center.x;
+            const yDiff = enemy.center.y - this.center.y;
+            const distance = Math.hypot(xDiff, yDiff);
+            return (distance <= enemy.radius + this.radius) && !enemy.isGonnaBeDead && enemy.spawnDelay <= 0;
+        })
+        
+        //tower.target = validEnemies[0];
+        this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
+        
         if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead
              && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
             sfx.towerShoot.play();
-            this.projectiles.push(
-                new Projectile({
+            projectiles.push(
+                new TowerProjectile({
                     position: {
                         x: this.center.x,
                         y: this.center.y
                     },
                     enemy: this.target,
+                    from: this,
                     projectileColor: this.projectileColor,
                     damage: this.towerDamage,
                     moveSpeed: this.projectileSpeed

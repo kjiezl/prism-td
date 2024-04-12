@@ -118,7 +118,9 @@ placementTilesData2D.forEach((row, y) => {
 
 var enemies = [];
 var layer1Anim = [];
+var layer2Anim = [];
 var layer3Anim = [];
+var projectiles = [];
 
 let currentWave = 0;
 let currentLevel = 0;
@@ -217,62 +219,17 @@ function animate(){
         }
     }
 
+    placementTiles.forEach(tile => {
+        tile.update(mouse);
+    });
+
+    towers.forEach(tower => {
+        tower.update();
+    });
+
     for(let i = enemies.length - 1; i >= 0; i--){
-        const enemy = enemies[i];
+        let enemy = enemies[i];
         enemy.update();
-
-        //enemies.forEach(enemy => {
-            enemy.target = null;
-
-            const validTowers = towers.filter((tower) => {
-                const xDiff = tower.center.x - enemy.center.x;
-                const yDiff = tower.center.y - enemy.center.y;
-                const distance = Math.hypot(xDiff, yDiff);
-                return (distance <= tower.radius + enemy.radius) && !enemy.isGonnaBeDead;
-            })
-    
-            //enemy.target = validTowers[0];
-            enemy.target = validTowers[Math.floor(Math.random() * validTowers.length)]; // randomize target
-
-            for(let i = enemy.projectiles.length - 1; i >= 0; i--){
-                const projectile = enemy.projectiles[i]
-    
-                projectile.update();
-    
-                const xDiff = projectile.enemy.center.x - projectile.position.x;
-                const yDiff = projectile.enemy.center.y - projectile.position.y;
-                const distance = Math.hypot(xDiff, yDiff);
-    
-                if(distance <= 50){
-                    /* @dev
-                     * unique damage from each enemy type
-                    **/
-                    projectile.enemy.health -= 5;
-                    layer3Anim.push(new Effect({
-                        x: projectile.enemy.position.x,
-                        y: projectile.enemy.position.y
-                    }, 0, 0, img.explosions, 160, 160, 128, 128, 6, 200));
-                    if (projectile.enemy.health <= 0) {
-                        const towerIndex = towers.findIndex((tower) => {
-                            return projectile.enemy === tower;
-                        });
-                    
-                        if (towerIndex > -1) {
-                            const tower = towers[towerIndex];
-                            const tileIndex = placementTiles.findIndex(tile =>
-                                tile.position.x === tower.position.x && tile.position.y === tower.position.y
-                            );
-                            if (tileIndex > -1) {
-                                placementTiles[tileIndex].isOccupied = false;
-                            }
-                        }
-                        projectile.enemy.explode();
-                    }
-                    
-                    enemy.projectiles.splice(i, 1);
-                }
-            }
-        //})
 
         if(enemy.position.x > canvas.width - 400){
             hearts -= 1;
@@ -280,6 +237,14 @@ function animate(){
             $("#hearts").text(hearts);
             shakeCanvas();
         }
+    }
+    
+    projectiles.forEach(projectile => {
+        projectile.update();
+    });
+
+    if(enemies.length === 0){
+        startNextWave();
     }
 
     if(hearts === 0){
@@ -292,101 +257,6 @@ function animate(){
         $(".upgradeItem").css("display", "none");
         $(".specialClass").css("display", "none");
     }
-
-    if(enemies.length === 0){
-        startNextWave();
-    }
-
-    placementTiles.forEach(tile => {
-        tile.update(mouse);
-    });
-
-    towers.forEach(tower => {
-        tower.update();
-        tower.target = null;
-        const validEnemies = enemies.filter((enemy) => {
-            const xDiff = enemy.center.x - tower.center.x;
-            const yDiff = enemy.center.y - tower.center.y;
-            const distance = Math.hypot(xDiff, yDiff);
-            return (distance <= enemy.radius + tower.radius) && !enemy.isGonnaBeDead && enemy.spawnDelay <= 0;
-        })
-        
-        //tower.target = validEnemies[0];
-        tower.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
-        for(let i = tower.projectiles.length - 1; i >= 0; i--){
-            const projectile = tower.projectiles[i]
-
-            projectile.update();
-
-            const xDiff = projectile.enemy.center.x - projectile.position.x + projectile.enemy.constOffset/2;
-            const yDiff = projectile.enemy.center.y - projectile.position.y + projectile.enemy.constOffset/2; // include y offset from spawning
-            const distance = Math.hypot(xDiff, yDiff);
-
-            if(distance <= projectile.enemy.radius + projectile.radius - 15){ // -15 for nearer impact
-                projectile.enemyHit();
-                let eX = projectile.enemy.position.x > projectile.position.x ? 32 : -32;
-                let eY = projectile.enemy.position.y > projectile.position.y ? 32 : -32;
-                switch(tower.towerClass){
-                    case "Ice":
-                        if(projectile.enemy.health > 0){
-                            sfx.towerSlow.play();
-                        }
-                        if(projectile.enemy.state === "iced"){
-                            projectile.enemy.changeState("iced", 200);
-                        } else{
-                            projectile.enemy.changeState("slowed", tower.slowedMS);
-                        }
-                        layer3Anim.push(new Effect({
-                            x: (projectile.position.x + eX),
-                            y: (projectile.position.y + eY)
-                        }, 0, 320, img.explosions, 160, 160, 64, 64, 6, 200));
-                        projectile.enemy.health -= tower.towerDamage;
-                        break;
-                    case "Lightning":
-                        sfx.towerStrike.play();
-                        projectile.enemy.changeState("striked", 200);
-                        const otherEnemies = enemies.filter(e => e !== projectile.enemy);
-                        otherEnemies.sort((a, b) => {
-                            const distA = Math.hypot(projectile.enemy.center.x - a.center.x, projectile.enemy.center.y - a.center.y);
-                            const distB = Math.hypot(projectile.enemy.center.x - b.center.x, projectile.enemy.center.y - b.center.y);
-                            return distA - distB;
-                        });
-
-                        otherEnemies.slice(0, tower.strikedEnemies).forEach(enemy => {
-                            enemy.health -= (tower.towerDamage / 2); 
-                            enemy.changeState("striked", 200);
-                        });
-                        layer3Anim.push(new Effect({
-                            x: (projectile.position.x + eX),
-                            y: (projectile.position.y + eY)
-                        }, 0, 0, img.explosions, 160, 160, 64, 64, 6, 200));
-                        projectile.enemy.health -= tower.towerDamage;
-                        break;
-                    default:
-                        layer3Anim.push(new Effect({
-                            x: (projectile.position.x + eX),
-                            y: (projectile.position.y + eY)
-                        }, 0, 160, img.explosions, 160, 160, 64, 64, 6, 200));
-                        projectile.enemy.health -= tower.towerDamage;
-                }
-                if(projectile.enemy.health <= 0){
-                    const enemyIndex = enemies.findIndex((enemy) => {
-                        return projectile.enemy === enemy;
-                    });
-
-                    if(enemyIndex > -1){
-                        enemies.splice(enemyIndex, 1);
-                        sfx.enemyDeath.play();
-                        coins += projectile.enemy.coinDrop;
-                        qCoins.text(coins);
-                    }
-                    projectile.enemy.explode();
-                }
-
-                tower.projectiles.splice(i, 1);
-            }
-        }
-    });
     
     for(let i = 0; i < layer3Anim.length; i++) {
         layer3Anim[i].update();
