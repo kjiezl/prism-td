@@ -355,7 +355,7 @@ function handleSpecial(tower) {
         case "Ice":
             sfx.towerSlow.play();
             enemies.forEach(enemy => {
-                if (enemy.state !== "iced") {
+                if (enemy.state !== "iced" && enemy.spawnDelay <= 0) {
                     enemy.changeState("iced", tower.icedMS);
                 }
             });
@@ -363,14 +363,18 @@ function handleSpecial(tower) {
         case "Lightning":
             sfx.towerStrike.play();
             enemies.forEach(enemy => {
-                enemy.changeState("striked", 200);
-                enemy.health -= tower.towerDamage * 1.2;
+                if(enemy.spawnDelay <= 0) {
+                    enemy.changeState("striked", 200);
+                    enemy.health -= tower.towerDamage * 1.2;
+                }
             });
             break;
         case "Sniper":
             sfx.towerSniper.play();
             enemies.forEach(enemy => {
-                enemy.health = 0;
+                if(enemy.spawnDelay <= 0) {
+                    enemy.health = 0;
+                }
             });
             break;
     }
