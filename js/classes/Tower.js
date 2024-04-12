@@ -22,6 +22,8 @@ class Tower extends Sprite {
         this.projectileSpeedIncrease = 0.35;  
         this.counting = true;
         
+        this.hasExploded = false;
+        
         this.levelSprites = [
             imageSrc,
             "sprites/towers/" + towerClass + "-tower-2.png",
@@ -113,6 +115,16 @@ class Tower extends Sprite {
                 break;
         }
     }
+    
+    explode() {
+        if(this.hasExploded == true) return;
+        this.hasExploded = true;
+        layer3Anim.push(new Effect({
+            x: this.position.x,
+            y: this.position.y
+        }, 0, 480, img.explosions, 160, 160, 192, 192, 6, 700));
+    }
+        
 
     draw(){
         super.draw();
@@ -200,7 +212,7 @@ class Tower extends Sprite {
             }
         }
 
-        if (this.timer < window.performance.now() && this.counting 
+        if (this.timer < msNow && this.counting 
             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
             this.counting = false;
             this.timer = this.specialTimer;
@@ -209,7 +221,7 @@ class Tower extends Sprite {
             this.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
         }
 
-        if(this.timer < window.performance.now() && this.counting && this.towerClass === "Heal"){
+        if(this.timer < msNow && this.counting && this.towerClass === "Heal"){
             towers.forEach(tower => {
                 if(tower.health + this.specialHealAmount < tower.maxHealth){
                     tower.health += this.specialHealAmount;
@@ -221,18 +233,18 @@ class Tower extends Sprite {
             })
         }
 
-        if(this.timer < window.performance.now() && this.counting && this.towerClass === "AttackBoost"){
+        if(this.timer < msNow && this.counting && this.towerClass === "AttackBoost"){
             this.boostAttack();
             this.timer = this.specialTimer;
             this.startCountdown(this.timer);
         }
 
-        if(duration < window.performance.now()){
+        if(duration < msNow){
             this.attackSpeed = this.previousSpeed;
         }
 
         if(this.counting && this.towerClass !== "SpeedProjectile"){
-            this.specialButton.textContent = Math.ceil((this.timer - window.performance.now()) / 1000);
+            this.specialButton.textContent = Math.ceil((this.timer - msNow) / 1000);
         }
 
         if(this.speedProjectile){
@@ -336,9 +348,8 @@ function handleSpecial(tower) {
         case "Common":
             previousSpeed = tower.attackSpeed;
             tower.attackSpeed = 20;
-            let interval = setInterval(() => {
+            setTimeout(() => {
                 tower.attackSpeed = previousSpeed;
-                clearInterval(interval);
             }, tower.fireRateTime);
             break;
         case "Ice":

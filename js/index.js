@@ -266,10 +266,7 @@ function animate(){
                                 placementTiles[tileIndex].isOccupied = false;
                             }
                         }
-                        layer3Anim.push(new Effect({
-                            x: projectile.enemy.position.x,
-                            y: projectile.enemy.position.y
-                        }, 0, 480, img.explosions, 160, 160, 192, 192, 6, 400));
+                        projectile.enemy.explode();
                     }
                     
                     enemy.projectiles.splice(i, 1);
@@ -383,10 +380,7 @@ function animate(){
                         coins += projectile.enemy.coinDrop;
                         qCoins.text(coins);
                     }
-                    layer3Anim.push(new Effect({
-                        x: projectile.enemy.position.x + projectile.enemy.constOffset + 43,
-                        y: projectile.enemy.position.y + projectile.enemy.constOffset - 5
-                    }, 0, 480, img.explosions, 160, 160, 130, 130, 6, 400));
+                    projectile.enemy.explode();
                 }
 
                 tower.projectiles.splice(i, 1);

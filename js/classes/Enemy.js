@@ -45,6 +45,8 @@ class Enemy extends Sprite{
         this.waveStep = 1;
         this.lastUpdate = this.spawnTime;
         
+        this.hasExploded = false;
+        
         this.slowedSprite = img[type + "EnemySlowed"];
         this.strikedSprite = img[type + "EnemyStriked"];
 
@@ -128,6 +130,16 @@ class Enemy extends Sprite{
     changeState(state, expiry) {
         this.state = state;
         this.stateExpiry = window.performance.now() + expiry;
+    }
+    
+    explode() {
+        if(this.hasExploded == true) return;
+        this.hasExploded = true;
+        
+        layer3Anim.push(new Effect({
+            x: this.position.x + this.constOffset + 50,
+            y: this.position.y + this.constOffset - this.waveHeight
+        }, 0, 480, img.explosions, 160, 160, 120, 120, 6, 400));
     }
 
     draw(){
@@ -244,6 +256,7 @@ class Enemy extends Sprite{
             const index = enemies.indexOf(this);
             if (index !== -1) {
                 enemies.splice(index, 1);
+                this.explode();
             }
         }
         
