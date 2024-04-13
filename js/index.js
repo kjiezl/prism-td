@@ -145,6 +145,11 @@ function spawnEnemies(){
             })
         );
     }
+
+    enemies.forEach(enemy => {
+        enemy.health += 5 * currentWave;
+        enemy.maxHealth += 5 * currentWave;
+    })
 }
 
 function startNextWave(){
@@ -497,16 +502,13 @@ $("#attackBoostButton").click(() => {upgradeSpecial("AttackBoost")});
 $("#speedProjectileButton").click(() => {upgradeSpecial("SpeedProjectile")});
 
 function upgradeSpecial(specialClass){
-    towers.forEach(tower => {tower.showTowerRange = false});
     let tower = selectedTower;
-    if(coins >= tower.specialCost){
-        coins -= tower.specialCost;
-        qCoins.text(coins);
-        tower.health = 0;
-        let newTower = createTower({position: tower.position, towerType: specialClass});
-        towers.push(newTower);
-        $(".shopMenu").css("display", "none");
-    }
+    tower.health = 0;
+    coins -= tower.specialCost;
+    qCoins.text(coins);
+    let newTower = createTower({position: tower.position, towerType: specialClass});
+    towers.push(newTower);
+    $(".shopMenu").css("display", "none");
 }
 
 $("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});

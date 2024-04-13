@@ -98,13 +98,13 @@ class Tower extends Sprite {
             case "Heal":
                 this.maxHealth = 300;
                 this.upgradeCost = 40;
-                this.specialTimer = 30 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.specialHealAmount = 50;
                 break;
             case "AttackBoost":
                 this.maxHealth = 300;
                 this.upgradeCost = 40;
-                this.specialTimer = 10 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = true;
                 break;
