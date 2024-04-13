@@ -67,6 +67,7 @@ var files = {
     images: {
         level1: "sprites/map/level1.png",
         portal: "sprites/gameobj/portal1.png",
+        portal1: "sprites/gameobj/portal.png",
         flowers: "sprites/gameobj/flowers.png",
         base: "sprites/gameobj/base.png",
         explosions: "sprites/effects/explosions.png",
@@ -82,6 +83,8 @@ var files = {
         alien1: "sprites/gameobj/alien-1-34x50.png",
         lightningStrike: "sprites/effects/lightning-strike2.png",
         iced: "sprites/effects/iced.png",
+        coins: "sprites/gameobj/coins.png",
+        crystal: "sprites/gameobj/crystal.png",
     }
 };
 
@@ -272,10 +275,15 @@ $(() => {
         y: 192 * 1,
     }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
     
+    // layer1Anim.push(new Effect({
+    //     x: -35,
+    //     y: 130,
+    // }, 0, 0, img.portal, 192, 192, 250, 270, 3, 0, 5)); // 3 frames, 5 frames per second
+
     layer1Anim.push(new Effect({
-        x: -35,
-        y: 130,
-    }, 0, 0, img.portal, 192, 192, 250, 270, 3, 0, 5)); // 3 frames, 5 frames per second
+        x: -100,
+        y: 130
+    }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
 
     let fl = [
         [0, 0, 0, 192],
@@ -290,10 +298,20 @@ $(() => {
         }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
     });
     
+    // layer3Anim.push(new Effect({
+    //     x: 192 * 8 + 20,
+    //     y: 192 * 1 + 20,
+    // }, 0, 0, img.alien1, 34, 50, 34, 50, 8, 0, 8));
+
     layer3Anim.push(new Effect({
         x: 192 * 8 + 20,
-        y: 192 * 1 + 20,
-    }, 0, 0, img.alien1, 34, 50, 34, 50, 8, 0, 8));
+        y: 192 + 20
+    }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+
+    layer3Anim.push(new Effect({
+        x: 192 * 8 + 150,
+        y: 192 + 130
+    }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
     
     let loaderId = setInterval(() => {
         let total = Object.keys(files.images).length;
@@ -564,6 +582,16 @@ $(window).on('keypress', (e) => {
     if(e.key === 'p' || e.key === 'P'){
         gamePaused = !gamePaused;
         gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
+    }
+    if(e.key === 'i'){
+        shakeCanvas();
+        $(canvas).css({filter:"invert(1)"});
+        $(".specialClass").css({filter:"invert(1)"});
+    }
+    if(e.key === 'o'){
+        shakeCanvas();
+        $(canvas).css({filter:"invert(0)"});
+        $(".specialClass").css({filter:"invert(0)"});
     }
 });
 

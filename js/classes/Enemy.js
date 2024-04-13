@@ -128,6 +128,11 @@ class Enemy extends Sprite{
             x: this.position.x + this.constOffset + 50,
             y: this.position.y + this.constOffset - this.waveHeight
         }, 0, 480, img.explosions, 160, 160, 120, 120, 6, 400));
+
+        layer3Anim.push(new Effect({
+            x: this.position.x + this.constOffset + 90,
+            y: this.position.y + this.constOffset - this.waveHeight - 30
+        }, 0, 0, img.coins, 16, 16, 24, 24, 6, 400, 18));
     }
 
     draw(){

@@ -166,7 +166,7 @@ class Tower extends Sprite {
     }
 
     handleSpecial(){
-        this.counting = true;
+        this.counting = true; 
         switch(this.towerClass){
             case "Common":
                 this.commonActive = true;
