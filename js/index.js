@@ -511,9 +511,15 @@ function upgradeSpecial(specialClass){
     $(".shopMenu").css("display", "none");
 }
 
-$("#musicButton").click(() => {if(!bgm.bgm1.playing()){bgm.bgm1.play()}});
-$("#musicPause").click(() => bgm.bgm1.pause());
-
+$(".musicToggle").click(() => {
+    if(!bgm.bgm1.playing()){
+        bgm.bgm1.play()
+    } else{
+        bgm.bgm1.pause();
+    }
+    $("#musicPause").toggle();
+    $("#musicButton").toggle();
+});
 
 $("#resumeButton").click((e) => {
     gamePaused = false;
