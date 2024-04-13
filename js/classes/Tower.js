@@ -23,6 +23,7 @@ class Tower extends Sprite {
         this.counting = true;
         this.specialCost = 200;
         this.speedProjectile = false;
+        this.showTowerRange = false;
         
         this.hasExploded = false;
         
@@ -44,11 +45,11 @@ class Tower extends Sprite {
         switch(towerClass){
             case "Common":
                 this.projectileColor = 'rgb(150, 150, 150)';
-                this.attackSpeed = 250;
+                this.attackSpeed = 200;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 5 * 1000;
+                this.specialTimer = 20 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -57,11 +58,11 @@ class Tower extends Sprite {
                 break;
             case "Ice":
                 this.projectileColor = 'rgb(50, 170, 255)';
-                this.attackSpeed = 280;
+                this.attackSpeed = 230;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 5 * 1000;
+                this.specialTimer = 20 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -71,11 +72,11 @@ class Tower extends Sprite {
                 break;
             case "Lightning":
                 this.projectileColor = 'rgb(255, 255, 100)';
-                this.attackSpeed = 280;
+                this.attackSpeed = 230;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 5 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -85,11 +86,11 @@ class Tower extends Sprite {
                 break;
             case "Sniper":
                 this.projectileColor = 'rgb(100, 255, 100)';
-                this.attackSpeed = 600;
+                this.attackSpeed = 400;
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 5 * 1000;
+                this.specialTimer = 30 * 1000;
                 this.towerDamage = 10;
                 this.radius = 700;
                 this.projectileSpeed = 10;
@@ -126,11 +127,6 @@ class Tower extends Sprite {
 
     draw(){
         super.draw();
-        // attack radius
-        // ctx.beginPath();
-        // ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-        // ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        // ctx.fill();
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -138,6 +134,16 @@ class Tower extends Sprite {
 
         ctx.fillStyle = 'rgb(0, 230, 46)';
         ctx.fillRect(this.position.x + 60, this.position.y - 20, (this.width - 120) * this.health / this.maxHealth, 10);
+    }
+
+    showRange(){
+        ctx.beginPath();
+        ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.stroke();
     }
 
     createSpecial() {
@@ -322,6 +328,9 @@ class Tower extends Sprite {
         }
 
         this.checkSpecials();
+        if(this.showTowerRange){
+            this.showRange();
+        }
     }
 
     checkSpecials(){

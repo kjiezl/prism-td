@@ -310,21 +310,24 @@ let mouse = {
 
 $(canvas).on('click', (event) => {
     if(activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused){
+        towers.forEach(tower => {tower.showTowerRange = false});
         showTowerSelection();
     }
     else if(activeTile && activeTile.isOccupied && !gamePaused){
-        showTowerMenu();   
+        towers.forEach(tower => {tower.showTowerRange = false});
+        showTowerMenu();
     }
     else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
         qUpgradeMenu.fadeOut(150);
+        towers.forEach(tower => {tower.showTowerRange = false});
         $(".upgradeItem, #towerSelectionMenu, .upgradeBox, .shopMenu").css("display", "none");
     }
 });
 
 function showTowerSelection(){
     selectedTower = placementTiles.find(tile =>
-    tile.position.x === activeTile.position.x &&
-    tile.position.y === activeTile.position.y);
+        tile.position.x === activeTile.position.x &&
+        tile.position.y === activeTile.position.y);
     qUpgradeMenu.fadeOut(150);
     $(".upgradeBox, .upgradeItem, .shopMenu").css("display", "none");
     $("#towerSelectionMenu").css("display", "block");
@@ -336,6 +339,7 @@ function showTowerMenu(){
     const tower = towers.find(tower => tower.position.x === activeTile.position.x 
         && tower.position.y === activeTile.position.y);
     if(tower){
+        tower.showTowerRange = true;
         qUpgradeMenu.fadeIn(150);
         $(".normalTowerClass").css("display", "flex");
         $(".upgradeBox").css({
@@ -429,6 +433,7 @@ $("#lightningTowerButton").click(() => placeTower("Lightning"));
 $("#sniperTowerButton").click(() => placeTower("Sniper"));
 
 function placeTower(towerClass){
+    towers.forEach(tower => {tower.showTowerRange = false});
     sfx.towerPlace.play();
     if (activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused) {
         coins -= 5;
@@ -446,6 +451,7 @@ $("#shopButton").click(() => {
 })
 
 $("#upgradeButton").click(() => {
+    towers.forEach(tower => {tower.showTowerRange = false});
     let tower = selectedTower;
     if(coins >= tower.upgradeCost){
         sfx.towerUpgrade.play();
@@ -457,6 +463,7 @@ $("#upgradeButton").click(() => {
 })
 
 $("#sellButton").click(() => {
+    towers.forEach(tower => {tower.showTowerRange = false});
     sfx.towerDestroyed.play();
     if (selectedTower) {
         const index = towers.indexOf(selectedTower);
@@ -490,6 +497,7 @@ $("#attackBoostButton").click(() => {upgradeSpecial("AttackBoost")});
 $("#speedProjectileButton").click(() => {upgradeSpecial("SpeedProjectile")});
 
 function upgradeSpecial(specialClass){
+    towers.forEach(tower => {tower.showTowerRange = false});
     let tower = selectedTower;
     if(coins >= tower.specialCost){
         coins -= tower.specialCost;
