@@ -2,7 +2,7 @@ levels = [
     {
         waves: [
             {
-                common: 5,
+                common: 5
             },
             {
                 common: 6,
@@ -63,9 +63,7 @@ levels = [
                 range: 15
             },
             { //boss battle
-                common: 1,
-                fast: 1,
-                range: 1,
+                star: 1
             }
         ],
         waveCount: 15

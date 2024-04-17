@@ -74,17 +74,21 @@ var files = {
         commonEnemy: "sprites/enemies/common-enemy.png",
         fastEnemy: "sprites/enemies/fast-enemy.png",
         rangeEnemy: "sprites/enemies/range-enemy.png",
+        starEnemy: "sprites/enemies/star-enemy.png",
         commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
+        starEnemyStriked: "sprites/enemies/star-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
+        starEnemySlowed: "sprites/enemies/star-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
         lightningStrike: "sprites/effects/lightning-strike2.png",
         iced: "sprites/effects/iced.png",
         coins: "sprites/gameobj/coins.png",
         crystal: "sprites/gameobj/crystal.png",
+        towerDisabled: "sprites/towers/tower-disabled.png"
     }
 };
 
@@ -159,6 +163,22 @@ function startNextWave(){
     currentWave++;
     if(currentWave < levels[currentLevel].waveCount){
         spawnEnemies();
+        if(currentWave === 14){
+            const validTowers = towers.filter((tower) => {
+                return !tower.isGonnaBeDead;
+            })
+    
+            // const numTargets = Math.ceil(validTowers.length / 2);
+            const numTargets = 1;
+    
+            const random = validTowers.sort(() => Math.random() - 0.5);
+    
+            for (let i = 0; i < numTargets; i++) {
+                if (random[i]) {
+                    random[i].disableTower();
+                }
+            }
+        }
     } else{
         currentLevel++;
     }
@@ -168,6 +188,7 @@ const towers = [];
 let activeTile = undefined;
 let hearts = 15;
 let coins = 1000;
+let score = 0;
 let selectedTower = {};
 
 let msPrev = window.performance.now();
@@ -187,8 +208,6 @@ function animate(){
     const msPassed = msNow - msPrev;
     
     if(msPassed > 1000) {
-        // pause game
-        // console.log("game paused");
         gamePaused = true;
         $("#gamePausedDiv").css("display", "flex");
     }
@@ -206,6 +225,9 @@ function animate(){
     msPrev = msNow;
 
     $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
+    $("#scoreID").text(score);
+    qCoins.text(coins);
+    $("#hearts").text(hearts);
     
     for(let i = 0; i < layer1Anim.length; i++) {
         layer1Anim[i].update();
@@ -222,6 +244,13 @@ function animate(){
         tower.update();
     });
 
+    for(let i = 0; i < layer2Anim.length; i++) {
+        layer2Anim[i].update();
+        if(layer2Anim[i].isDone()) {
+            layer2Anim.splice(i, 1);
+        }
+    }
+
     for(let i = enemies.length - 1; i >= 0; i--){
         let enemy = enemies[i];
         enemy.update();
@@ -229,8 +258,11 @@ function animate(){
         if(enemy.position.x > canvas.width - 400){
             hearts -= 1;
             enemies.splice(i, 1);
-            $("#hearts").text(hearts);
             shakeCanvas();
+
+            if(enemy.type === "star"){
+                hearts = 0;
+            }
         }
     }
     
@@ -303,7 +335,7 @@ $(() => {
     //     y: 192 * 1 + 20,
     // }, 0, 0, img.alien1, 34, 50, 34, 50, 8, 0, 8));
 
-    layer3Anim.push(new Effect({
+    layer1Anim.push(new Effect({
         x: 192 * 8 + 20,
         y: 192 + 20
     }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
@@ -337,8 +369,10 @@ $(canvas).on('click', (event) => {
         showTowerSelection();
     }
     else if(activeTile && activeTile.isOccupied && !gamePaused){
-        towers.forEach(tower => {tower.showTowerRange = false});
-        showTowerMenu();
+        towers.forEach(tower => {
+            tower.showTowerRange = false;
+            if(!tower.isDisabled) showTowerMenu();
+        });
     }
     else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
         qUpgradeMenu.fadeOut(150);
@@ -420,7 +454,7 @@ function showTowerMenu(){
                 $("#specialUpgrade").text("Increases damage dealt");
                 break;
             case "Sniper":
-                $("#special").text("Destroys all enemies in the area");
+                $("#special").text("Destroys more than half of the enemies in the area");
                 $("#specialUpgrade").text("Decreases cooldown time");
                 $("#ability").text("2x more than common towers");
                 $("#abilityDiv").text("Tower Range: ");
@@ -479,7 +513,6 @@ $("#upgradeButton").click(() => {
     if(coins >= tower.upgradeCost){
         sfx.towerUpgrade.play();
         tower.upgrade();
-        qCoins.text(coins);
         qUpgradeMenu.fadeOut(150);
         $(".upgradeBox, .upgradeItem").css("display", "none");
     }
@@ -506,7 +539,6 @@ $("#sellButton").click(() => {
             }
 
             coins += selectedTower.towerPrice;
-            qCoins.text(coins);
 
             selectedTower = null;
             qUpgradeMenu.fadeOut(150);
@@ -523,7 +555,6 @@ function upgradeSpecial(specialClass){
     let tower = selectedTower;
     tower.health = 0;
     coins -= tower.specialCost;
-    qCoins.text(coins);
     let newTower = createTower({position: tower.position, towerType: specialClass});
     towers.push(newTower);
     $(".shopMenu").css("display", "none");
@@ -592,6 +623,22 @@ $(window).on('keypress', (e) => {
         shakeCanvas();
         $(canvas).css({filter:"invert(0)"});
         $(".specialClass").css({filter:"invert(0)"});
+    }
+    if(e.key === 'l'){
+        const validTowers = towers.filter((tower) => {
+            return !tower.isGonnaBeDead;
+        })
+
+        // const numTargets = Math.ceil(validTowers.length / 2);
+        const numTargets = 1;
+
+        const random = validTowers.sort(() => Math.random() - 0.5);
+
+        for (let i = 0; i < numTargets; i++) {
+            if (random[i]) {
+                random[i].disableTower();
+            }
+        }
     }
 });
 

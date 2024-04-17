@@ -124,7 +124,7 @@ class TowerProjectile extends Projectile {
         const yDiff = this.enemy.center.y - this.position.y + this.enemy.constOffset/2; // include y offset from spawning
         const distance = Math.hypot(xDiff, yDiff);
 
-        if(distance <= this.enemy.radius + this.radius - 15){ // -15 for nearer impact
+        if(distance <= this.enemy.radius + this.radius - 15){
             this.enemyHit();
             let eX = this.enemy.position.x > this.position.x ? 32 : -32;
             let eY = this.enemy.position.y > this.position.y ? 32 : -32;
@@ -175,19 +175,19 @@ class TowerProjectile extends Projectile {
                     }, 0, 160, img.explosions, 160, 160, 64, 64, 6, 200));
                     this.enemy.health -= this.from.towerDamage;
             }
-            if(this.enemy.health <= 0){
-                const enemyIndex = enemies.findIndex((enemy) => {
-                    return this.enemy === enemy;
-                });
+            // if(this.enemy.health <= 0){
+            //     const enemyIndex = enemies.findIndex((enemy) => {
+            //         return this.enemy === enemy;
+            //     });
 
-                if(enemyIndex > -1){
-                    enemies.splice(enemyIndex, 1);
-                    sfx.enemyDeath.play();
-                    coins += this.enemy.coinDrop;
-                    qCoins.text(coins);
-                }
-                this.enemy.explode();
-            }
+                // if(enemyIndex > -1){
+                //     enemies.splice(enemyIndex, 1);
+                //     sfx.enemyDeath.play();
+                //     coins += this.enemy.coinDrop;
+                //     score += this.enemy.points;
+                // }
+                // this.enemy.explode();
+            // }
             
             super.explode();
         }

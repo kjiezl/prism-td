@@ -50,6 +50,9 @@ class Enemy extends Sprite{
 
         this.getEnemyStats(type);
         this.maxHealth = this.health;
+
+        this.inverted = false;
+        this.lastTime = window.performance.now();
     }
 
     getEnemyStats(type){
@@ -57,26 +60,39 @@ class Enemy extends Sprite{
             case "common":
                 this.coinDrop = 2;
                 this.health = 15;
+                this.points = 5;
                 break;
             case "fast":
                 this.coinDrop = 3;
                 this.health = 10;
+                this.points = 10;
                 break;
             case "range":
                 this.coinDrop = 5;
                 this.health = 20;
+                this.attackSpeed = 200;
+                this.points = 15;
                 break;
             case "def":
                 this.coinDrop = 7;
                 this.health = 30;
+                this.points = 20;
                 break;
             case "shell":
                 this.coinDrop = 15;
                 this.health = 20;
+                this.points = 25;
+                break;
+            case "star":
+                this.coinDrop = 2;
+                this.health = 500;
+                this.attackSpeed = 100;
+                this.points = 100;
                 break;
             default:
                 this.coinDrop = 2;
                 this.health = 15;
+                this.points = 5;
                 break;
         }
     }
@@ -93,6 +109,8 @@ class Enemy extends Sprite{
                 return 1.5;
             case 'shell':
                 return 2;
+            case 'star':
+                return 1;
             default:
                 return 2;
         }
@@ -110,6 +128,8 @@ class Enemy extends Sprite{
                 return 0.5;
             case 'shell':
                 return 1;
+            case 'star':
+                return 0.5;
             default:
                 return 1;
         }
@@ -178,7 +198,7 @@ class Enemy extends Sprite{
     }
 
     update(){
-        
+
         let msNow = window.performance.now();
         if(this.spawnDelay > 0 && !gamePaused) {
             this.spawnDelay -= msNow - this.spawnTime;
@@ -211,7 +231,7 @@ class Enemy extends Sprite{
         })
 
         //enemy.target = validTowers[0];
-        this.target = validTowers[Math.floor(Math.random() * validTowers.length)]; // randomize target
+        this.target = validTowers[Math.floor(Math.random() * validTowers.length)];
         
 
         const waypoint = waypoints[this.waypointIndex];
@@ -236,9 +256,9 @@ class Enemy extends Sprite{
             this.waypointIndex++;
         }
 
-        if (this.type === "range" && this.state !== "iced") {
-            //let msNow = window.performance.now(); // declared up top
-            if(this.lastShot + 3000 < msNow && this.target) {
+        if (this.type === "range" || this.type === "star" && this.state !== "iced") {
+            if(this.lastShot + this.attackSpeed * 15 < msNow && this.target 
+                && !this.target.isDisabled) {
                 projectiles.push(
                     new Projectile({
                         position: {
@@ -259,6 +279,9 @@ class Enemy extends Sprite{
             const index = enemies.indexOf(this);
             if (index !== -1) {
                 enemies.splice(index, 1);
+                score += this.points;
+                coins += this.coinDrop;
+                sfx.enemyDeath.play();
                 this.explode();
             }
         }
@@ -290,5 +313,34 @@ class Enemy extends Sprite{
             this.lastUpdate = msNow;
         }
         
+        if(this.type === "star"){
+            this.starBoss();
+        }
+    }
+
+    starBoss() {
+        let currentTime = window.performance.now();
+        let deltaTime = currentTime - this.lastTime;
+    
+        if (!this.initialDelayElapsed) {
+            if (deltaTime >= 5000) {
+                this.initialDelayElapsed = true;
+                this.lastTime = currentTime;
+            }
+        } else if (deltaTime >= 2000) {
+            this.lastTime = currentTime;
+    
+            if (this.inverted) {
+                shakeCanvas();
+                $(canvas).css({ filter: "invert(0)" });
+                $(".specialClass").css({ filter: "invert(0)" });
+                this.inverted = false;
+            } else {
+                shakeCanvas();
+                $(canvas).css({ filter: "invert(1)" });
+                $(".specialClass").css({ filter: "invert(1)" });
+                this.inverted = true;
+            }
+        }
     }
 }

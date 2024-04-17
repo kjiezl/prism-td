@@ -1,3 +1,5 @@
+"use strict";
+
 class Tower extends Sprite {
     constructor({position = {x: 0, y:0}, imageSrc, towerClass}){
         super({position, imageSrc});
@@ -26,6 +28,7 @@ class Tower extends Sprite {
         this.showTowerRange = false;
         
         this.hasExploded = false;
+        this.isDisabled = false;
         
         this.levelSprites = [
             imageSrc,
@@ -90,7 +93,7 @@ class Tower extends Sprite {
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 30 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.towerDamage = 10;
                 this.radius = 700;
                 this.projectileSpeed = 10;
@@ -100,6 +103,7 @@ class Tower extends Sprite {
                 this.upgradeCost = 40;
                 this.specialTimer = 25 * 1000;
                 this.specialHealAmount = 50;
+                this.towerPrice = 100;
                 break;
             case "AttackBoost":
                 this.maxHealth = 300;
@@ -107,10 +111,12 @@ class Tower extends Sprite {
                 this.specialTimer = 25 * 1000;
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = true;
+                this.towerPrice = 100;
                 break;
             case "SpeedProjectile":
                 this.maxHealth = 300;
                 this.upgradeCost = 40;
+                this.towerPrice = 100;
                 break;
         }
     }
@@ -118,7 +124,7 @@ class Tower extends Sprite {
     explode() {
         if(this.hasExploded == true) return;
         this.hasExploded = true;
-        layer3Anim.push(new Effect({
+        layer2Anim.push(new Effect({
             x: this.position.x,
             y: this.position.y
         }, 0, 480, img.explosions, 160, 160, 192, 192, 6, 700));
@@ -155,6 +161,12 @@ class Tower extends Sprite {
         specialButton.style.left = this.position.x + 130;
         specialButton.className = "specialClass";
         specialButton.textContent = this.specialTimer / 1000;
+
+        enemies.forEach(enemy => {
+            if(enemy.inverted){
+                specialButton.style.filter = "invert(1)";
+            }
+        })
 
         this.specialButton = specialButton;
 
@@ -199,11 +211,16 @@ class Tower extends Sprite {
                 break;
             case "Sniper":
                 sfx.towerSniper.play();
-                enemies.forEach(enemy => {
-                    if(enemy.spawnDelay <= 0) {
-                        enemy.health = 0;
+                for(let i = 0; i <= enemies.length / 2; i++){
+                    if(enemies[i].spawnDelay <= 0){
+                        enemies[i].health = 0;
                     }
-                });
+                }
+                // enemies.forEach(enemy => {
+                //     if(enemy.spawnDelay <= 0) {
+                //         enemy.health = 0;
+                //     }
+                // });
                 break;
         }
         this.startCountdown(this.timer);
@@ -240,7 +257,8 @@ class Tower extends Sprite {
         this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
         
         if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead
-             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
+             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile"
+             && !this.isDisabled) {
             sfx.towerShoot.play();
             projectiles.push(
                 new TowerProjectile({
@@ -335,20 +353,35 @@ class Tower extends Sprite {
 
     checkSpecials(){
         if(towers.some(tower => tower.towerClass.includes("Heal"))){
-            document.querySelector("#specialHealButton").disabled = true;
+            $("#specialHealButton").css("visibility", "hidden");
+            $("#specialHealLabel").text("[unavailable]");
         } else{
-            document.querySelector("#specialHealButton").disabled = false;
+            $("#specialHealButton").css("visibility", "visible");
+            $("#specialHealLabel").text("Heal Tower");
         }
         if(towers.some(tower => tower.towerClass.includes("AttackBoost"))){
-            document.querySelector("#attackBoostButton").disabled = true;
+            $("#attackBoostButton").css("visibility", "hidden");
+            $("#attackBoostLabel").text("[unavailable]");
         } else{
-            document.querySelector("#attackBoostButton").disabled = false;
+            $("#attackBoostButton").css("visibility", "visible");
+            $("#attackBoostLabel").text("Attack Boost Tower");
         }
         if(towers.some(tower => tower.towerClass.includes("SpeedProjectile"))){
-            document.querySelector("#speedProjectileButton").disabled = true;
+            $("#speedProjectileButton").css("visibility", "hidden");
+            $("#speedProjectileLabel").text("[unavailable]");
         } else{
-            document.querySelector("#speedProjectileButton").disabled = false;
+            $("#speedProjectileButton").css("visibility", "visible");
+            $("#speedProjectileLabel").text("Speed Projectile Tower");
         }
+    }
+
+    disableTower(){
+        layer2Anim.push(new Effect({
+            x: this.position.x,
+            y: this.position.y
+        }, 0, 0, img.towerDisabled, 192, 192, 192, 192, 1, 0, 1));
+        this.specialButton.style.display = "none";
+        this.isDisabled = true;
     }
 
     upgrade(){
