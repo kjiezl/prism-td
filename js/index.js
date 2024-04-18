@@ -89,7 +89,6 @@ var files = {
         coins: "sprites/gameobj/coins.png",
         crystal: "sprites/gameobj/crystal.png",
         towerDisabled: "sprites/towers/tower-disabled.png",
-        nightTint: "sprites/effects/night-tint.png"
     }
 };
 
@@ -371,11 +370,6 @@ $(() => {
         x: 192 * 8 + 150,
         y: 192 + 130
     }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
-
-    // layer3Anim.push(new Effect({
-    //     x: 0,
-    //     y: 0
-    // }, 0, 0, img.nightTint, 1920, 1080, canvas.width, canvas.height, 1, 0, 1));
     
     let loaderId = setInterval(() => {
         let total = Object.keys(files.images).length;
@@ -401,10 +395,19 @@ $(canvas).on('click', (event) => {
         showTowerSelection();
     }
     else if(activeTile && activeTile.isOccupied && !gamePaused){
+        qUpgradeMenu.css("display", "none");
+        $(".upgradeBox").css("display", "none");
         towers.forEach(tower => {
             tower.showTowerRange = false;
-            if(!tower.isDisabled) showTowerMenu();
+            // if(!tower.isDisabled) showTowerMenu();
         });
+        const tower = towers.find(tower => tower.position.x === activeTile.position.x 
+            && tower.position.y === activeTile.position.y);
+        if(!tower.isDisabled){
+            showTowerMenu();
+        } else{
+            // console.log("tower disabled");
+        }
     }
     else if(!isClickOnTowerTile(event) && !isClickOnUpgradeMenu(event) && !gamePaused){
         qUpgradeMenu.fadeOut(150);
