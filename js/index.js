@@ -88,7 +88,8 @@ var files = {
         iced: "sprites/effects/iced.png",
         coins: "sprites/gameobj/coins.png",
         crystal: "sprites/gameobj/crystal.png",
-        towerDisabled: "sprites/towers/tower-disabled.png"
+        towerDisabled: "sprites/towers/tower-disabled.png",
+        nightTint: "sprites/effects/night-tint.png"
     }
 };
 
@@ -132,6 +133,7 @@ var projectiles = [];
 
 let currentWave = 0;
 let currentLevel = 0;
+
 
 function spawnEnemies(){
     let wave = levels[currentLevel].waves[currentWave];
@@ -200,6 +202,9 @@ let frameMultiplier = 1;
 const ControlledFPS = true;
 
 var gamePaused = false;
+
+let fade = true;
+let lastTime = window.performance.now();
 
 function animate(){
     const animationID = window.requestAnimationFrame(animate);
@@ -291,6 +296,28 @@ function animate(){
             layer3Anim.splice(i, 1);
         }
     }
+
+    let currentTime = window.performance.now();
+    let deltaTime = currentTime - lastTime;
+
+    if (deltaTime >= 60 * 1000) {
+        lastTime = currentTime;
+
+        if (fade) {
+            $("#nightTint").fadeIn(2000);
+            fade = false;
+        } else {
+            $("#nightTint").fadeOut(2000);
+            fade = true;
+        }
+    }
+
+    // const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width);
+    // gradient.addColorStop(0, 'rgba(0, 0, 0, 0.5)'); // transparent black at center
+    // gradient.addColorStop(0.5, 'rgba(128, 0, 128, 0.5)'); // transparent purple
+    // gradient.addColorStop(1, 'rgba(0, 0, 0, 0.5)'); // transparent black at edges
+    // ctx.fillStyle = gradient;
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 $(() => {
@@ -344,6 +371,11 @@ $(() => {
         x: 192 * 8 + 150,
         y: 192 + 130
     }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+
+    // layer3Anim.push(new Effect({
+    //     x: 0,
+    //     y: 0
+    // }, 0, 0, img.nightTint, 1920, 1080, canvas.width, canvas.height, 1, 0, 1));
     
     let loaderId = setInterval(() => {
         let total = Object.keys(files.images).length;

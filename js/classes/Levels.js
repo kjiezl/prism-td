@@ -58,9 +58,12 @@ levels = [
                 range: 10
             },
             {
-                common: 20,
-                fast: 20,
-                range: 15
+                // common: 20,
+                // fast: 20,
+                // range: 15
+                common: 5,
+                fast: 5,
+                range: 5
             },
             { //boss battle
                 star: 1
