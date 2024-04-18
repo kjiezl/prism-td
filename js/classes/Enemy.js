@@ -58,33 +58,33 @@ class Enemy extends Sprite{
     getEnemyStats(type){
         switch(type){
             case "common":
-                this.coinDrop = 2;
+                this.coinDrop = 5;
                 this.health = 15;
                 this.points = 5;
                 break;
             case "fast":
-                this.coinDrop = 3;
+                this.coinDrop = 5;
                 this.health = 10;
                 this.points = 10;
                 break;
             case "range":
-                this.coinDrop = 5;
+                this.coinDrop = 10;
                 this.health = 20;
                 this.attackSpeed = 200;
                 this.points = 15;
                 break;
             case "def":
-                this.coinDrop = 7;
+                this.coinDrop = 15;
                 this.health = 30;
                 this.points = 20;
                 break;
             case "shell":
-                this.coinDrop = 15;
+                this.coinDrop = 20;
                 this.health = 20;
                 this.points = 25;
                 break;
             case "star":
-                this.coinDrop = 2;
+                this.coinDrop = 100;
                 this.health = 500;
                 this.attackSpeed = 100;
                 this.points = 100;

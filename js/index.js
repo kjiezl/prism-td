@@ -141,7 +141,7 @@ function spawnEnemies(){
     for(let enemyType in wave){
         spawnCount += wave[enemyType];
     }
-
+    
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
@@ -520,9 +520,13 @@ function showTowerMenu(){
 }
 
 $("#commonTowerButton").click(() => placeTower("Common"));
+$("#commonTowerButton").hover(() => previewStats("COMMON TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#iceTowerButton").click(() => placeTower("Ice"));
+$("#iceTowerButton").hover(() => previewStats("ICE TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#lightningTowerButton").click(() => placeTower("Lightning"));
+$("#lightningTowerButton").hover(() => previewStats("LIGHTNING TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#sniperTowerButton").click(() => placeTower("Sniper"));
+$("#sniperTowerButton").hover(() => previewStats("SNIPER TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 
 function placeTower(towerClass){
     towers.forEach(tower => {tower.showTowerRange = false});
@@ -537,9 +541,50 @@ function placeTower(towerClass){
     $("#towerSelectionMenu").css("display", "none");
 }
 
+function previewStats(towerClass){
+    $(".previewMenu").fadeIn(10);
+    let description = $("#previewDescription");
+    $("#previewTower").text(towerClass);
+    switch(towerClass){
+        case "COMMON TOWER":
+            description.text(
+                "Common towers at level 1 can be upgraded into special towers. " +
+                "Special attack increases fire rate for a certain time.")
+            break;
+        case "ICE TOWER":
+            description.text(
+                "Ice towers slow down enemies once hit. " + 
+                "Special attack freezes all enemies in the area for a certain time.")
+            break;
+        case "LIGHTNING TOWER":
+            description.text(
+                "Lightning towers can strike multiple enemies at once with a smaller range. " + 
+                "Special attack strikes all enemies in the area. " + 
+                "Lightning will undo ice tower attacks.")
+            break;
+        case "SNIPER TOWER":
+            description.text(
+                "Sniper towers have longer range and damage but less fire rate. " +
+                "Special attack eliminates more than half of the enemy in the area.")
+            break;
+        case "HEAL TOWER":
+            description.text(
+                "Heal towers passively heals all towers within a certain time.")
+            break;
+        case "ATTACK BOOST TOWER":
+            description.text(
+                "Attack boost towers passively increases attack speed for all towers within a certain time.")
+            break;
+        case "SPEED PROJECTILE TOWER":
+            description.text(
+                "Speed projectile towers increases the projectile speed for all towers when it is active.")
+            break;
+    }
+}
+
 $("#shopButton").click(() => {
     qUpgradeMenu.fadeOut(150);
-    $(".shopMenu").css("display", "block");
+    $(".shopMenu").css("display", "flex");
 })
 
 $("#upgradeButton").click(() => {
@@ -583,8 +628,11 @@ $("#sellButton").click(() => {
 });
 
 $("#specialHealButton").click(() => {upgradeSpecial("Heal")});
+$("#specialHealButton").hover(() => {previewStats("HEAL TOWER")}, () => {$(".previewMenu").fadeOut(10)});
 $("#attackBoostButton").click(() => {upgradeSpecial("AttackBoost")});
+$("#attackBoostButton").hover(() => {previewStats("ATTACK BOOST TOWER")}, () => {$(".previewMenu").fadeOut(10)});
 $("#speedProjectileButton").click(() => {upgradeSpecial("SpeedProjectile")});
+$("#speedProjectileButton").hover(() => {previewStats("SPEED PROJECTILE TOWER")}, () => {$(".previewMenu").fadeOut(10)});
 
 function upgradeSpecial(specialClass){
     let tower = selectedTower;

@@ -90,6 +90,23 @@ body{
     text-shadow: 2px 3px rgb(67, 109, 40);
 }
 
+.previewMenu{
+    position: absolute;
+    bottom: 40;
+    left: 20;
+    width: 400px;
+    font-size: 1em;
+    color: white;
+    display: none;
+    font-family: "Radio Canada", sans-serif;
+    align-items: center;
+    text-align: left;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 50px;
+}
+
 .upgradeMenu{
     position: absolute;
     bottom: 40;
@@ -135,9 +152,9 @@ body{
 
 .shopMenu{
     position: absolute;
-    bottom: 40;
+    bottom: 180;
     left: 20;
-    width: auto;
+    width: 400px;
     font-size: 1em;
     color: white;
     display: none;
@@ -149,12 +166,18 @@ body{
     align-items: center;
 }
 
+#specialHealButton, #attackBoostButton, #speedProjectileButton{
+    margin: 28px;
+    margin-top: 5px;
+    margin-bottom: 5px;;
+}
+
 #specialHealLabel, #attackBoostLabel, #speedProjectileLabel{
     font-size: 0.8em; 
     color:aliceblue;
     text-align: center;
-    display: flex;
-    margin: 3px;
+    display:grid;
+    position: relative;
 }
 
 #upgradeButton{
