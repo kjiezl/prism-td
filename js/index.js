@@ -48,6 +48,10 @@ let sfx = {
     baseHit: new Howl({
         src: ['sfx/base-hit.mp3'],
         volume: 0.5
+    }),
+    countdown: new Howl({
+        src: ['sfx/countdown.mp3'],
+        volume: 0.5
     })
 }
 
@@ -130,9 +134,8 @@ var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
 
-let currentWave = 0;
+let currentWave = -1;
 let currentLevel = 0;
-
 
 function spawnEnemies(){
     let wave = levels[currentLevel].waves[currentWave];
@@ -160,9 +163,37 @@ function spawnEnemies(){
     })
 }
 
+let waveStartTime = 0;
+let waveCountdown = 10 * 1000;
+
+function startCountdown(){
+    if (waveStartTime === 0) {
+        waveStartTime = window.performance.now();
+        return;
+    }
+
+    let elapsedTime = window.performance.now() - waveStartTime;
+    let countdown = Math.ceil((waveCountdown - elapsedTime) / 1000);
+
+    if (countdown >= 0) {
+        // console.log(countdown);
+        $("#countdown").text(countdown);
+        return;
+    }
+    
+    startNextWave();
+}
+
+$("#countdownSVG").click(() => {
+    startNextWave();
+});
+
 function startNextWave(){
+    $("#countdown").text(Math.ceil((waveCountdown / 1000)));   
+    waveStartTime = 0;
     currentWave++;
-    if(currentWave < levels[currentLevel].waveCount){
+
+    if (currentWave < levels[currentLevel].waveCount) {
         spawnEnemies();
         if(currentWave === 14){
             const validTowers = towers.filter((tower) => {
@@ -180,7 +211,7 @@ function startNextWave(){
                 }
             }
         }
-    } else{
+    } else {
         currentLevel++;
     }
 }
@@ -275,7 +306,7 @@ function animate(){
     });
 
     if(enemies.length === 0){
-        startNextWave();
+        startCountdown();
     }
 
     if(hearts === 0){
@@ -321,7 +352,7 @@ function animate(){
 
 $(() => {
 
-    spawnEnemies();
+    // spawnEnemies();
     
     layer1Anim.push(new Effect({
         x: 0,

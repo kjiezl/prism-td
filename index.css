@@ -90,6 +90,32 @@ body{
     text-shadow: 2px 3px rgb(67, 109, 40);
 }
 
+.waveCountdown{
+    right: 70px;
+    bottom: 70px;
+    display: flex;
+    position: absolute;
+    font-family: 'Micro 5', sans-serif;
+    font-size: 5em;
+    color: white;
+    text-align: left;
+}
+
+#countdownSVG{
+    width: 40px; 
+    margin-right: 15px;
+    margin-top: 20px; 
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#countdownSVG:hover{
+    color: rgb(88, 86, 228);
+    transform: scale(1.3);
+
+}
+
 .previewMenu{
     position: absolute;
     bottom: 40;
