@@ -328,11 +328,11 @@ class Enemy extends Sprite{
         let deltaTime = currentTime - this.lastTime;
     
         if (!this.initialDelayElapsed) {
-            if (deltaTime >= 5000) {
+            if (deltaTime >= 3000) {
                 this.initialDelayElapsed = true;
                 this.lastTime = currentTime;
             }
-        } else if (deltaTime >= 2000) {
+        } else if (deltaTime >= 1000) {
             this.lastTime = currentTime;
     
             if (this.inverted) {

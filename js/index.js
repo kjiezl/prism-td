@@ -52,6 +52,10 @@ let sfx = {
     countdown: new Howl({
         src: ['sfx/countdown.mp3'],
         volume: 0.5
+    }),
+    nextWave: new Howl({
+        src: ['sfx/nextwave.mp3'],
+        volume: 0.2
     })
 }
 
@@ -59,7 +63,7 @@ let bgm = {
     bgm1: new Howl({
         src: ['bgm/level1-bgm1.mp3'],
         loop: true,
-        volume: 0.7
+        volume: 0.5
     }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
@@ -139,7 +143,7 @@ var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
 
-let currentWave = 13;
+let currentWave = -1;
 let currentLevel = 0;
 
 let currentBGM = bgm.bgm1;
@@ -196,6 +200,7 @@ $("#countdownSVG").click(() => {
 });
 
 function startNextWave(){
+    sfx.nextWave.play();
     $("#countdown").text(Math.ceil((waveCountdown / 1000)));   
     waveStartTime = 0;
     currentWave++;
@@ -347,7 +352,7 @@ function animate(){
     if(hearts === 0){
         // cancelAnimationFrame(animationID);
         gamePaused = true;
-        bgm.bgm1.stop();
+        currentBGM.stop();
         qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu").css("display", "none");
         $("#gameOver").css("display", "flex");  
