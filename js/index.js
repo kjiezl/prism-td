@@ -706,6 +706,11 @@ $(".musicToggle").click(() => {
     $("#musicButton").toggle();
 });
 
+$("#pause").click(() => {
+    gamePaused = !gamePaused;
+    gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
+});
+
 $("#resumeButton").click((e) => {
     gamePaused = false;
     $("#gamePausedDiv").css("display", "none");

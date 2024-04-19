@@ -297,31 +297,17 @@ label{
     font-weight: bold;
 }
 
-#musicButton{
+#musicButton, #musicPause{
     width: 30px; 
     margin: 10px; 
     color: rgb(70, 122, 21); 
-    cursor: pointer;
     transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
-#musicButton:hover{
+#musicButton:hover, #musicPause:hover, #pause:hover{
     color:rgb(2, 11, 146);
     transform: scale(110%);
-}
-
-#musicPause{
-    width: 30px; 
-    margin: 10px; 
-    color: rgb(70, 122, 21); 
     cursor: pointer;
-    /* margin-right: 30px; */
-    transition: transform 200ms, filter 200ms, background-color 200ms;
-}
-
-#musicPause:hover{
-    color:rgb(2, 11, 146);
-    transform: scale(110%);
 }
 
 .specialClass{
