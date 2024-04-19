@@ -298,16 +298,18 @@ label{
 }
 
 #musicButton, #musicPause{
-    width: 30px; 
+    width: 50px; 
     margin: 10px; 
-    color: rgb(70, 122, 21); 
+    /* color: rgb(70, 122, 21);  */
+    color: greenyellow;
     transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
 #musicButton:hover, #musicPause:hover, #pause:hover{
-    color:rgb(2, 11, 146);
+    /* color:rgb(49, 114, 6); */
     transform: scale(110%);
     cursor: pointer;
+    filter: brightness(140%);
 }
 
 .specialClass{

@@ -278,6 +278,11 @@ class Enemy extends Sprite{
         if (this.health <= 0) {
             const index = enemies.indexOf(this);
             if (index !== -1) {
+                if(this.type === "star"){
+                    $(canvas).css({ filter: "invert(0)"});
+                    $(".specialClass").css({ filter: "invert(0)"});
+                    this.inverted = false;
+                }
                 enemies.splice(index, 1);
                 score += this.points;
                 coins += this.coinDrop;

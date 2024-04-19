@@ -65,6 +65,10 @@ let bgm = {
         src: ['bgm/gameover.mp3'],
         volume: 0.3,
         loop: false
+    }),
+    boss1: new Howl({
+        src: ['bgm/boss1.mp3'],
+        volume: 0.5
     })
 }
 
@@ -135,8 +139,10 @@ var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
 
-let currentWave = -1;
+let currentWave = 13;
 let currentLevel = 0;
+
+let currentBGM = bgm.bgm1;
 
 function spawnEnemies(){
     let wave = levels[currentLevel].waves[currentWave];
@@ -197,6 +203,13 @@ function startNextWave(){
     if (currentWave < levels[currentLevel].waveCount) {
         spawnEnemies();
         if(currentWave === 14){
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.boss1;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.boss1;
+            }
             const validTowers = towers.filter((tower) => {
                 return !tower.isGonnaBeDead;
             })
@@ -697,11 +710,16 @@ function upgradeSpecial(specialClass){
 }
 
 $(".musicToggle").click(() => {
-    if(!bgm.bgm1.playing()){
-        bgm.bgm1.play()
+    if(!currentBGM.playing()){
+        currentBGM.play();
     } else{
-        bgm.bgm1.pause();
+        currentBGM.pause();
     }
+    // if(!bgm.bgm1.playing()){
+    //     bgm.bgm1.play();
+    // } else{
+    //     bgm.bgm1.pause();
+    // }
     $("#musicPause").toggle();
     $("#musicButton").toggle();
 });
