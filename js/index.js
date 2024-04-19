@@ -63,7 +63,8 @@ let bgm = {
     }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
-        volume: 0.3
+        volume: 0.3,
+        loop: false
     })
 }
 
@@ -223,6 +224,27 @@ let coins = 1000;
 let score = 0;
 let selectedTower = {};
 
+$(".restartButton").click(() => restartLevel());
+
+function restartLevel(){
+    towers.forEach(tower => {
+        tower.health = 0;
+    })
+    enemies.splice(0, enemies.length);
+    placementTiles.forEach(tile => {
+        tile.isOccupied = false;
+    })
+    projectiles.splice(0, projectiles.length);
+    gamePaused = false;
+    $("#gamePausedDiv").css("display", "none");
+    $("#gameOver").css("display", "none");
+    currentWave = 0;
+    score = 0;
+    coins = 1000;
+    hearts = 15;
+    currentWave = -1;
+}
+
 let msPrev = window.performance.now();
 const fps = 60;
 const msPerFrame = 1000 / fps;
@@ -310,9 +332,9 @@ function animate(){
     }
 
     if(hearts === 0){
-        cancelAnimationFrame(animationID);
+        // cancelAnimationFrame(animationID);
+        gamePaused = true;
         bgm.bgm1.stop();
-        bgm.gameOver.play();
         qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu").css("display", "none");
         $("#gameOver").css("display", "flex");  
@@ -689,7 +711,6 @@ $("#resumeButton").click((e) => {
     $("#gamePausedDiv").css("display", "none");
 });
 
-
 function isClickOnTowerTile(event){
     const towerTiles = placementTiles.filter(tile => tile.isOccupied);
     return towerTiles.some(tile => {
@@ -753,6 +774,9 @@ $(window).on('keypress', (e) => {
                 random[i].disableTower();
             }
         }
+    }
+    if(e.key === 'h'){
+        hearts -= 1;
     }
 });
 

@@ -4,19 +4,35 @@ body{
     margin: 0;
     background-color: black;
 }
-#resumeButton {
+.pauseMenuButton{
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 10px;
-    font-size: 0.5em;
+    margin-bottom: 30px;
+    font-size: 0.3em;
     font-family: 'Micro 5', sans-serif;
     color: rgb(67, 109, 13);
     background-color: greenyellow;
     transition: transform 200ms, filter 200ms;
 }
-#resumeButton:hover {
+.pauseMenuButton:hover{
+    transform: scale(110%);
+    filter: brightness(120%);
+}
+.restartButton{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    font-size: 0.3em;
+    font-family: 'Micro 5', sans-serif;
+    color: rgb(67, 109, 13);
+    background-color: greenyellow;
+    transition: transform 200ms, filter 200ms;
+}
+.restartButton:hover{
     transform: scale(110%);
     filter: brightness(120%);
 }
@@ -26,6 +42,7 @@ body{
     bottom: 0; 
     left: 0; 
     right: 0;
+    flex-direction: column;
     display: none; 
     align-items: center; 
     justify-content: center;
@@ -34,7 +51,7 @@ body{
     background-color: rgba(0, 0, 30, 0.5);
     color: white;
     cursor: default;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 #gamePausedDiv{
