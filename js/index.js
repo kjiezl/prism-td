@@ -149,6 +149,7 @@ var layer1Anim = [];
 var layer2Anim = [];
 var layer3Anim = [];
 var projectiles = [];
+var pausedTime = 0;
 
 let currentWave = -1;
 let currentLevel = 0;
@@ -184,18 +185,19 @@ function spawnEnemies(){
 let waveStartTime = 0;
 let waveCountdown = 10 * 1000;
 let levelComplete = false;
-let gameRestarted = false;
+let isGameOver = false;
 
 function startCountdown(){
-    if(waveStartTime === 0) {
+    if(waveStartTime === 0){
         waveStartTime = window.performance.now();
         return;
     }
 
-    let elapsedTime = window.performance.now() - waveStartTime;
+    let elapsedTime = gamePaused ? pausedTime : window.performance.now() - waveStartTime;
+    // let elapsedTime = window.performance.now() - waveStartTime;
     let countdown = Math.ceil((waveCountdown - elapsedTime) / 1000);
 
-    if(countdown >= 0) {
+    if(countdown >= 0){
         // console.log(countdown);
         $("#countdown").text(countdown);
         return;
@@ -252,7 +254,8 @@ function startNextWave(){
         $(canvas).css({ filter: "invert(0)"});
         $(".specialClass").css({ filter: "invert(0)"});
         levelComplete = true;
-        gamePaused = true;
+        // gamePaused = true;
+        pauseGame();
     }
 }
 
@@ -266,9 +269,10 @@ let selectedTower = {};
 $(".restartButton, #levelCompleteRestart").click(() => restartLevel());
 
 function restartLevel(){
-    gameRestarted = true;
-    $(canvas).css({ filter: "invert(0)" });
-    $(".specialClass").css({ filter: "invert(0)" });
+    levelComplete = false;
+    isGameOver = false;
+    $(canvas).css({filter: "invert(0)"});
+    $(".specialClass").css({filter: "invert(0)"});
     $("#nightTint").fadeOut(100);
     fade = true;
     towers.forEach(tower => {
@@ -279,14 +283,13 @@ function restartLevel(){
         tile.isOccupied = false;
     })
     projectiles.splice(0, projectiles.length);
-    gamePaused = false;
-    levelComplete = false;
     $("#gamePausedDiv, #gameOver, .levelCompleteMenu").css("display", "none");
     currentWave = 0;
     score = 0;
     coins = 1000;
     hearts = 15;
     currentWave = -1;
+    pauseGame();
     restartCountdown();
 }
 
@@ -309,9 +312,8 @@ function animate(){
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
     
-    if(msPassed > 1000 && !levelComplete){
-        gamePaused = true;
-        $("#gamePausedDiv").css("display", "flex");
+    if(msPassed > 1000 && !levelComplete && !isGameOver){
+        pauseGame();
     }
     
     if(!!ControlledFPS) {
@@ -372,17 +374,17 @@ function animate(){
         projectile.update();
     });
 
-    if(enemies.length === 0 && !levelComplete || gameRestarted){
+    if(enemies.length === 0 && !levelComplete){
         startCountdown();
     }
 
     if(hearts === 0){
-        // cancelAnimationFrame(animationID);
-        gamePaused = true;
+        pauseGame();
         currentBGM.stop();
         qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
-        $("#gameOver").css("display", "flex");  
+        $("#gameOver").fadeIn(150).css("display", "flex");  
+        isGameOver = true;
     }
     
     for(let i = 0; i < layer3Anim.length; i++) {
@@ -415,10 +417,29 @@ function animate(){
     // ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-$(() => {
+function pauseGame(){
+    gamePaused = !gamePaused;
+    if(isGameOver || levelComplete){
+        $("#gamePausedDiv").css("display", "none");
+        gamePaused = true;
+    } else{
+        gamePaused ? $("#gamePausedDiv").fadeIn(150).css("display", "flex") : $("#gamePausedDiv").fadeOut(150);
+    }
+    if(gamePaused){
+        pausedTime = window.performance.now() - waveStartTime;
+        towers.forEach(tower => {
+            tower.startTime = window.performance.now();
+        })
+    } else{
+        waveStartTime = window.performance.now() - pausedTime;
+        towers.forEach(tower => {
+            tower.timer += tower.pausedTime;
+            console.log("timer: " + tower.timer + " pausedtime: " + tower.pausedTime)
+        })
+    }
+}
 
-    // spawnEnemies();
-    
+$(() => {
     layer1Anim.push(new Effect({
         x: 0,
         y: 0,
@@ -760,15 +781,7 @@ $(".musicToggle").click(() => {
     $("#musicButton").toggle();
 });
 
-$("#pause").click(() => {
-    gamePaused = !gamePaused;
-    gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
-});
-
-$("#resumeButton").click((e) => {
-    gamePaused = false;
-    $("#gamePausedDiv").css("display", "none");
-});
+$("#pause, #resumeButton").click(() => {pauseGame();});
 
 function isClickOnTowerTile(event){
     const towerTiles = placementTiles.filter(tile => tile.isOccupied);
@@ -805,8 +818,7 @@ $(window).on('mousemove', (event) => {
 
 $(window).on('keypress', (e) => {
     if(e.key === 'p' || e.key === 'P' && !levelComplete){
-        gamePaused = !gamePaused;
-        gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
+        pauseGame();
     }
     if(e.key === 'i'){
         shakeCanvas();
@@ -839,7 +851,9 @@ $(window).on('keypress', (e) => {
     }
     if(e.key === 'c'){
         showLevelCompleteMenu();
-        sfx.levelCompleteSound.play();
+        // sfx.levelCompleteSound.play();
+        levelComplete = true;
+        pauseGame();
     }
 });
 

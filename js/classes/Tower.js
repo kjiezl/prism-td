@@ -29,6 +29,9 @@ class Tower extends Sprite {
         
         this.hasExploded = false;
         this.isDisabled = false;
+
+        this.pausedTime = 0;
+        this.startTime = 0;
         
         this.levelSprites = [
             imageSrc,
@@ -245,10 +248,15 @@ class Tower extends Sprite {
 
     update(){
         this.draw();
-        
-        if(gamePaused) return;
+
+        if(gamePaused){
+            this.pausedTime = window.performance.now() - this.startTime;
+            // console.log("pausedtime: " + this.pausedTime + " msnow: " + window.performance.now() + " starttime: " + this.startTime)
+            return;
+        }
+
         let msNow = window.performance.now();
-        
+
         this.target = null;
         const validEnemies = enemies.filter((enemy) => {
             const xDiff = enemy.center.x - this.center.x;
