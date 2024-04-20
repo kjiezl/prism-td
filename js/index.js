@@ -3,7 +3,6 @@
 const canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 
-// canvas.width = window.innerWidth;
 canvas.width = 1920;
 canvas.height = canvas.width / 2;
 
@@ -74,7 +73,7 @@ let bgm = {
     }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
-        volume: 0.3,
+        volume: 0.2,
         loop: false
     }),
     boss1: new Howl({
@@ -262,7 +261,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = 15;
-let coins = 1000;
+let coins = 20;
 let score = 0;
 let selectedTower = {};
 
@@ -283,12 +282,20 @@ function restartLevel(){
         tile.isOccupied = false;
     })
     projectiles.splice(0, projectiles.length);
+    layer2Anim.splice(0, layer2Anim.length);
     $("#gamePausedDiv, #gameOver, .levelCompleteMenu").css("display", "none");
     currentWave = 0;
     score = 0;
-    coins = 1000;
+    coins = 20;
     hearts = 15;
     currentWave = -1;
+    if(currentBGM.playing()){
+        currentBGM.stop();
+        currentBGM = bgm.bgm1;
+        currentBGM.play();
+    } else{
+        currentBGM = bgm.bgm1;
+    }
     pauseGame();
     restartCountdown();
 }
@@ -434,7 +441,6 @@ function pauseGame(){
         waveStartTime = window.performance.now() - pausedTime;
         towers.forEach(tower => {
             tower.timer += tower.pausedTime;
-            console.log("timer: " + tower.timer + " pausedtime: " + tower.pausedTime)
         })
     }
 }
@@ -759,11 +765,13 @@ $("#speedProjectileButton").hover(() => {previewStats("SPEED PROJECTILE TOWER")}
 
 function upgradeSpecial(specialClass){
     let tower = selectedTower;
-    tower.health = 0;
-    coins -= tower.specialCost;
-    let newTower = createTower({position: tower.position, towerType: specialClass});
-    towers.push(newTower);
-    $(".shopMenu").css("display", "none");
+    if(coins - tower.specialCost >= 0){
+        tower.health = 0;
+        coins -= tower.specialCost;
+        let newTower = createTower({position: tower.position, towerType: specialClass});
+        towers.push(newTower);
+        $(".shopMenu").css("display", "none");
+    }
 }
 
 $(".musicToggle").click(() => {
@@ -772,11 +780,6 @@ $(".musicToggle").click(() => {
     } else{
         currentBGM.pause();
     }
-    // if(!bgm.bgm1.playing()){
-    //     bgm.bgm1.play();
-    // } else{
-    //     bgm.bgm1.pause();
-    // }
     $("#musicPause").toggle();
     $("#musicButton").toggle();
 });

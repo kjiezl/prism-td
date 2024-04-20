@@ -96,7 +96,7 @@ class Tower extends Sprite {
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 25 * 1000;
+                this.specialTimer = 30 * 1000;
                 this.towerDamage = 10;
                 this.radius = 700;
                 this.projectileSpeed = 10;
@@ -107,6 +107,7 @@ class Tower extends Sprite {
                 this.specialTimer = 20 * 1000;
                 this.specialHealAmount = 70;
                 this.towerPrice = 100;
+                this.radius = 500;
                 break;
             case "AttackBoost":
                 this.maxHealth = 300;
@@ -115,11 +116,13 @@ class Tower extends Sprite {
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = true;
                 this.towerPrice = 100;
+                this.radius = 500;
                 break;
             case "SpeedProjectile":
                 this.maxHealth = 300;
                 this.upgradeCost = 40;
                 this.towerPrice = 100;
+                this.radius = 500;
                 break;
         }
     }
@@ -214,7 +217,7 @@ class Tower extends Sprite {
                 break;
             case "Sniper":
                 sfx.towerSniper.play();
-                for(let i = 0; i <= enemies.length / 2; i++){
+                for(let i = 0; i <= enemies.length / 3; i++){
                     if(enemies[i].spawnDelay <= 0){
                         if(enemies[i].type !== "star"){
                             enemies[i].health = 0;
