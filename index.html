@@ -123,18 +123,10 @@
     </div>
 
     <div id="wavesDiv">Wave: &ensp;<span id="wavesID"></span></div>
-    <div id="ScoreDiv">Score: &ensp;<span id="scoreID">0</span></div>
+    <div id="ScoreDiv">Score: &ensp;<span class="score">0</span></div>
 
     <div class="waveCountdown">
         <div>
-            <!-- <svg id="countdownSVG"
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="currentColor"
-            viewBox="0 0 384 512">
-            <path d="M0 32C0 14.3 14.3 0 32 0H64 320h32c17.7 0 32 14.3 32 32s-14.3 32-32 32V75c0 42.4-16.9 83.1-46.9 113.1L237.3 256l67.9 67.9c30 30 46.9 70.7 46.9 
-            113.1v11c17.7 0 32 14.3 32 32s-14.3 32-32 32H320 64 32c-17.7 0-32-14.3-32-32s14.3-32 32-32V437c0-42.4 16.9-83.1 46.9-113.1L146.7 256 78.9 188.1C48.9 158.1 
-            32 117.4 32 75V64C14.3 64 0 49.7 0 32zM96 64V75c0 25.5 10.1 49.9 28.1 67.9L192 210.7l67.9-67.9c18-18 28.1-42.4 28.1-67.9V64H96zm0 
-            384H288V437c0-25.5-10.1-49.9-28.1-67.9L192 301.3l-67.9 67.9c-18 18-28.1 42.4-28.1 67.9v11z"/></svg> -->
             <svg id="countdownSVG"
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 24 24" 
@@ -176,7 +168,40 @@
                   </svg>              
             </div>
         </div>
-        
+    </div>
+
+    <div class="levelCompleteMenu">
+        <div class="levelCompleteBox">
+            <div id="levelCompleteText">LEVEL 1 COMPLETE</div>
+            <div id="levelScore">Score: &ensp;<span class="score"></span></div>
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="currentColor" 
+                style="margin-left: 18%;"
+                class="levelCompleteButtons">
+                <path d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
+                <path d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+            </svg>
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="currentColor" 
+                style="margin-left: 43%; width: 120px; margin-top: 37%;"
+                class="levelCompleteButtons">
+                <path d="M5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628L12 14.471v2.34c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256l-7.108-4.061C13.555 6.346 12 7.249 12 8.689v2.34L5.055 7.061Z" />
+              </svg>
+              <svg
+                id="levelCompleteRestart"
+                class="levelCompleteButtons"
+                fill="currentColor"
+                style="margin-left: 73%;"
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 512 512">
+                <path d="M463.5 224H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 
+                0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5z"/>
+            </svg>
+        </div>
     </div>
     
 </div>

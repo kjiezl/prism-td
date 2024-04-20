@@ -56,6 +56,13 @@ let sfx = {
     nextWave: new Howl({
         src: ['sfx/nextwave.mp3'],
         volume: 0.2
+    }),
+    levelCompleteSound: new Howl({
+        src: ['sfx/level-complete.mp3'],
+        volume: 0.6
+    }),
+    buttonClick: new Howl({
+        src: ['sfx/button-click.mp3']
     })
 }
 
@@ -176,9 +183,11 @@ function spawnEnemies(){
 
 let waveStartTime = 0;
 let waveCountdown = 10 * 1000;
+let levelComplete = false;
+let gameRestarted = false;
 
 function startCountdown(){
-    if (waveStartTime === 0) {
+    if(waveStartTime === 0) {
         waveStartTime = window.performance.now();
         return;
     }
@@ -186,13 +195,18 @@ function startCountdown(){
     let elapsedTime = window.performance.now() - waveStartTime;
     let countdown = Math.ceil((waveCountdown - elapsedTime) / 1000);
 
-    if (countdown >= 0) {
+    if(countdown >= 0) {
         // console.log(countdown);
         $("#countdown").text(countdown);
         return;
     }
     
     startNextWave();
+}
+
+function restartCountdown() {
+    waveStartTime = 0;
+    startCountdown();
 }
 
 $("#countdownSVG").click(() => {
@@ -203,9 +217,10 @@ function startNextWave(){
     sfx.nextWave.play();
     $("#countdown").text(Math.ceil((waveCountdown / 1000)));   
     waveStartTime = 0;
-    currentWave++;
+    // currentWave++;
 
-    if (currentWave < levels[currentLevel].waveCount) {
+    if (currentWave < levels[currentLevel].waveCount - 1) {
+        currentWave++;
         spawnEnemies();
         if(currentWave === 14){
             if(currentBGM.playing()){
@@ -231,7 +246,13 @@ function startNextWave(){
             }
         }
     } else {
-        currentLevel++;
+        // currentLevel++;
+        sfx.levelCompleteSound.play();
+        showLevelCompleteMenu();
+        $(canvas).css({ filter: "invert(0)"});
+        $(".specialClass").css({ filter: "invert(0)"});
+        levelComplete = true;
+        gamePaused = true;
     }
 }
 
@@ -242,9 +263,14 @@ let coins = 1000;
 let score = 0;
 let selectedTower = {};
 
-$(".restartButton").click(() => restartLevel());
+$(".restartButton, #levelCompleteRestart").click(() => restartLevel());
 
 function restartLevel(){
+    gameRestarted = true;
+    $(canvas).css({ filter: "invert(0)" });
+    $(".specialClass").css({ filter: "invert(0)" });
+    $("#nightTint").fadeOut(100);
+    fade = true;
     towers.forEach(tower => {
         tower.health = 0;
     })
@@ -254,13 +280,14 @@ function restartLevel(){
     })
     projectiles.splice(0, projectiles.length);
     gamePaused = false;
-    $("#gamePausedDiv").css("display", "none");
-    $("#gameOver").css("display", "none");
+    levelComplete = false;
+    $("#gamePausedDiv, #gameOver, .levelCompleteMenu").css("display", "none");
     currentWave = 0;
     score = 0;
     coins = 1000;
     hearts = 15;
     currentWave = -1;
+    restartCountdown();
 }
 
 let msPrev = window.performance.now();
@@ -282,7 +309,7 @@ function animate(){
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
     
-    if(msPassed > 1000) {
+    if(msPassed > 1000 && !levelComplete){
         gamePaused = true;
         $("#gamePausedDiv").css("display", "flex");
     }
@@ -300,7 +327,7 @@ function animate(){
     msPrev = msNow;
 
     $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
-    $("#scoreID").text(score);
+    $(".score").text(score);
     qCoins.text(coins);
     $("#hearts").text(hearts);
     
@@ -345,7 +372,7 @@ function animate(){
         projectile.update();
     });
 
-    if(enemies.length === 0){
+    if(enemies.length === 0 && !levelComplete || gameRestarted){
         startCountdown();
     }
 
@@ -354,10 +381,8 @@ function animate(){
         gamePaused = true;
         currentBGM.stop();
         qUpgradeMenu.fadeOut(150);
-        $("#towerSelectionMenu").css("display", "none");
+        $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
         $("#gameOver").css("display", "flex");  
-        $(".upgradeItem").css("display", "none");
-        $(".specialClass").css("display", "none");
     }
     
     for(let i = 0; i < layer3Anim.length; i++) {
@@ -653,6 +678,12 @@ function previewStats(towerClass){
     }
 }
 
+function showLevelCompleteMenu(){
+    $(".levelCompleteMenu").css("display", "flex");
+}
+
+$(".restartButton, #resumeButton, svg").click(() => {sfx.buttonClick.play()});
+
 $("#shopButton").click(() => {
     qUpgradeMenu.fadeOut(150);
     $(".shopMenu").css("display", "flex");
@@ -773,7 +804,7 @@ $(window).on('mousemove', (event) => {
 });
 
 $(window).on('keypress', (e) => {
-    if(e.key === 'p' || e.key === 'P'){
+    if(e.key === 'p' || e.key === 'P' && !levelComplete){
         gamePaused = !gamePaused;
         gamePaused ? $("#gamePausedDiv").css("display", "flex") : $("#gamePausedDiv").css("display", "none");
     }
@@ -805,6 +836,10 @@ $(window).on('keypress', (e) => {
     }
     if(e.key === 'h'){
         hearts -= 1;
+    }
+    if(e.key === 'c'){
+        showLevelCompleteMenu();
+        sfx.levelCompleteSound.play();
     }
 });
 

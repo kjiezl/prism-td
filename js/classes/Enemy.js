@@ -282,6 +282,10 @@ class Enemy extends Sprite{
                     $(canvas).css({ filter: "invert(0)"});
                     $(".specialClass").css({ filter: "invert(0)"});
                     this.inverted = false;
+                    levelComplete = true;
+                    sfx.levelCompleteSound.play();
+                    gamePaused = true;
+                    showLevelCompleteMenu();
                 }
                 enemies.splice(index, 1);
                 score += this.points;

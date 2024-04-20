@@ -15,10 +15,11 @@ body{
     color: rgb(67, 109, 13);
     background-color: greenyellow;
     transition: transform 200ms, filter 200ms;
-}
-.pauseMenuButton:hover{
-    transform: scale(110%);
-    filter: brightness(120%);
+
+    &:hover{
+        transform: scale(110%);
+        filter: brightness(120%);
+    }
 }
 .restartButton{
     padding: 10px 20px;
@@ -31,10 +32,11 @@ body{
     color: rgb(67, 109, 13);
     background-color: greenyellow;
     transition: transform 200ms, filter 200ms;
-}
-.restartButton:hover{
-    transform: scale(110%);
-    filter: brightness(120%);
+
+    &:hover{
+        transform: scale(110%);
+        filter: brightness(120%);
+    }
 }
 #gameOver{
     position: absolute;
@@ -70,6 +72,97 @@ body{
     color: white;
     cursor: default;
     /*pointer-events: none;*/
+}
+
+.levelCompleteMenu{
+    position: absolute;
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    flex-direction: column;
+    display: none; 
+    align-items: center; 
+    justify-content: center;
+    font-family: 'Micro 5', sans-serif;
+    background-color: rgba(0, 0, 30, 0.5);
+    color: white;
+    cursor: default;
+    animation: fadeIn 200ms forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.levelCompleteButtons{
+    align-items: center; 
+    display: flex;
+    margin-top: 40%;
+    position: absolute;
+    color: yellowgreen;
+    transform: skew(10deg);
+    width: 80px;
+    transition: transform 200ms, filter 200ms;
+
+    &:hover{
+        filter: brightness(150%);
+        transform: scale(1.3) skew(10deg);
+        cursor: pointer;
+    }
+}
+
+.levelCompleteBox{
+    position: relative;
+    width: 800px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    /* justify-content: center; */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* top: 50%; */
+    /* left: 50%; */
+    /* transform: translate(-50%, -50%) skew(-10deg); */
+    transform: scale(0.8) skew(-10deg);
+    border-radius: 5%;
+    opacity: 0;
+    animation: popUp 200ms forwards;
+}
+
+@keyframes popUp {
+    from {
+        transform: scale(0.2) skew(0deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) skew(-10deg);
+        opacity: 1;
+    }
+}
+
+#levelScore{
+    font-family: "Radio Canada", sans-serif;
+    font-size: 3em;
+    color: white;
+    transform: skew(10deg);
+    margin-left: 35%;
+    margin-top: 10%;
+}
+
+#levelCompleteText{
+    margin-left: -30px;
+    margin-top: -20px;
+    right: 0;
+    padding: 10px; 
+    background-color: #333; 
+    width:auto; 
+    text-align: center;
+    border: 1px solid #222;
+    font-size: 7em;
+    box-shadow: 10px 10px #222;
+    border-radius: 5%;
 }
 
 #playerInfo{
@@ -125,12 +218,11 @@ body{
     color: white;
     cursor: pointer;
     transition: transform 0.2s;
-}
 
-#countdownSVG:hover{
-    color: rgb(88, 86, 228);
-    transform: scale(1.3);
-
+    &:hover{
+        color: rgb(88, 86, 228);
+        transform: scale(1.3);
+    }
 }
 
 .previewMenu{
@@ -184,13 +276,13 @@ body{
     color: yellow;
     display: none;
     transition: transform 200ms, color 200ms;
-}
 
-#shopButton:hover{
-    color: white;
-    /* width: 33px; */
-    transform: scale(120%);
-    cursor: pointer;
+    &:hover{
+        color: white;
+        /* width: 33px; */
+        transform: scale(120%);
+        cursor: pointer;
+    }
 }
 
 .shopMenu{
@@ -234,11 +326,11 @@ body{
     border-color: rgb(117, 204, 3);
     padding: 8.5px;
     transition: transform 200ms, filter 200ms, background-color 200ms;
-}
 
-#upgradeButton:hover{
-    background-color: rgb(180, 255, 170);
-    cursor: pointer;
+    &:hover{
+        background-color: rgb(180, 255, 170);
+        cursor: pointer;
+    }
 }
 
 #sellButton{
@@ -252,11 +344,11 @@ body{
     padding: 8.5px;
     border-color: rgb(199, 16, 16);
     transition: transform 200ms, filter 200ms, background-color 200ms;
-}
 
-#sellButton:hover{
-    background-color: rgb(255, 150, 130);
-    cursor: pointer;
+    &:hover{
+        background-color: rgb(255, 150, 130);
+        cursor: pointer;   
+    }
 }
 
 #towerSelectionMenu{
@@ -281,13 +373,13 @@ img{
     margin-top: -5px;
     transition: transform 200ms, filter 200ms, background-color 200ms;
     border-radius: 20px;
-}
 
-img:hover{
-    background-color: rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    /*width: 75px;*/
-    transform: scale(110%);
+    &:hover{
+        background-color: rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        /*width: 75px;*/
+        transform: scale(110%);
+    }
 }
 
 label{
