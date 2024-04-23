@@ -53,6 +53,9 @@ class Enemy extends Sprite{
 
         this.inverted = false;
         this.lastTime = window.performance.now();
+
+        this.startTime = 0;
+        this.pausedTime = 0;
     }
 
     getEnemyStats(type){
@@ -157,7 +160,7 @@ class Enemy extends Sprite{
 
     draw(){
         
-        if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now()) {
+        if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now() && !gamePaused) {
             this.stateExpiry = 0;
             this.state = "normal";
         }
@@ -178,10 +181,6 @@ class Enemy extends Sprite{
                 break;
             case "striked":
                 ctx.drawImage(this.strikedSprite, posX, posY);
-                // layer1Anim.push(new Effect({
-                //     x: posX + 100,
-                //     y: posY - 50
-                // }, 0, 0, img.lightningStrike, 137.4, 363, 20, 100, 5, 200, 25));
                 layer3Anim.push(new Effect({
                     x: posX + 80,
                     y: posY - 50
@@ -200,6 +199,13 @@ class Enemy extends Sprite{
     update(){
 
         let msNow = window.performance.now();
+
+        if(gamePaused){
+            this.pausedTime = window.performance.now() - this.startTime;
+            this.draw();
+            return;
+        }
+
         if(this.spawnDelay > 0 && !gamePaused) {
             this.spawnDelay -= msNow - this.spawnTime;
             this.spawnTime = msNow;

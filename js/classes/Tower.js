@@ -217,7 +217,7 @@ class Tower extends Sprite {
                 break;
             case "Sniper":
                 sfx.towerSniper.play();
-                for(let i = 0; i <= enemies.length / 3; i++){
+                for(let i = 0; i <= enemies.length / 4; i++){
                     if(enemies[i].spawnDelay <= 0){
                         if(enemies[i].type !== "star"){
                             enemies[i].health = 0;

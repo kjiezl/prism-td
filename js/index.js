@@ -404,7 +404,7 @@ function animate(){
     let currentTime = window.performance.now();
     let deltaTime = currentTime - lastTime;
 
-    if (deltaTime >= 60 * 1000) {
+    if (deltaTime >= 60 * 1000 && !gamePaused) {
         lastTime = currentTime;
 
         if (fade) {
@@ -437,10 +437,16 @@ function pauseGame(){
         towers.forEach(tower => {
             tower.startTime = window.performance.now();
         })
+        enemies.forEach(enemy => {
+            enemy.startTime = window.performance.now();
+        })
     } else{
         waveStartTime = window.performance.now() - pausedTime;
         towers.forEach(tower => {
             tower.timer += tower.pausedTime;
+        })
+        enemies.forEach(enemy => {
+            enemy.stateExpiry += enemy.pausedTime;
         })
     }
 }
@@ -612,7 +618,7 @@ function showTowerMenu(){
                 $("#specialUpgrade").text("Increases damage dealt");
                 break;
             case "Sniper":
-                $("#special").text("Destroys more than half of the enemies in the area");
+                $("#special").text("Eliminates 25% of the enemies in the area");
                 $("#specialUpgrade").text("Decreases cooldown time");
                 $("#ability").text("2x more than common towers");
                 $("#abilityDiv").text("Tower Range: ");
@@ -688,7 +694,7 @@ function previewStats(towerClass){
         case "SNIPER TOWER":
             description.text(
                 "Sniper towers have longer range and damage but less fire rate. " +
-                "Special attack eliminates more than half of the enemy in the area.")
+                "Special attack eliminates 25% of the enemies in the area.")
             break;
         case "HEAL TOWER":
             description.text(
