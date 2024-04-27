@@ -356,9 +356,9 @@ body{
 
 #towerSelectionMenu{
     position: absolute;
-    width: 192;
-    height: 192;
-    left: 20;
+    width: 192px;
+    height: 192px;
+    left: 20px;
     font-size: 1.5em;
     color: white;
     display: flex;
