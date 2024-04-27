@@ -407,7 +407,7 @@ function animate(){
         let enemy = enemies[i];
         enemy.update();
 
-        if(levels[currentLevel].enemyCheck(enemy.position)){
+        if(enemy.waypointIndex == waypoints.length-1 && levels[currentLevel].enemyCheck(enemy.position)){
             hearts -= 1;
             enemies.splice(i, 1);
             shakeCanvas();
@@ -540,8 +540,8 @@ $(() => {
                     y: 192 * 1,
                 }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
                 layer1Anim.push(new Effect({
-                    x: -100,
-                    y: 130
+                    x: 500,
+                    y: 1250
                 }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
                 layer1Anim.push(new Effect({
                     x: 192 * 9 + 20,

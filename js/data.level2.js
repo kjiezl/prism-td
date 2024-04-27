@@ -78,7 +78,13 @@ require("levels", function(res) {
     window.levels[1].waypoints = waypoints;
     window.levelLoaded = true;
     
+    // will only be checked if on final waypoint
     window.levels[1].enemyCheck = function(position) {
+        if(position.x <= waypoints[waypoints.length-1].x + 50) {
+            return true;
+        } else {
+            return false;
+        }
         return position.x > canvas.width - 400 ? true : false;
     };
     
