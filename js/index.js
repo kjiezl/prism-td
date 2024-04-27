@@ -6,6 +6,10 @@ var ctx = canvas.getContext('2d');
 canvas.width = 1920;
 canvas.height = canvas.width / 2;
 
+// level 2
+// canvas.width = 2496;
+// canvas.height = 1728;
+
 ctx.fillStyle = 'white';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -344,7 +348,7 @@ let fade = true;
 let lastTime = window.performance.now();
 
 function animate(){
-    const animationID = window.requestAnimationFrame(animate);
+    window.requestAnimationFrame(animate);
 
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
@@ -482,54 +486,76 @@ function pauseGame(){
 }
 
 $(() => {
+    switch(parseInt(levelParam)){
+        case 1:
+            layer1Anim.push(new Effect({
+                x: 0,
+                y: 0,
+            }, 0, 0, img.level1, 1920, 960, 1920, 960, 1, 0, 1));
+            layer1Anim.push(new Effect({
+                x: 192 * 8,
+                y: 192 * 1,
+            }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+            layer1Anim.push(new Effect({
+                x: -100,
+                y: 130
+            }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
+            let fl = [
+                [0, 0, 0, 192],
+                [192 * 3, 192 * 4, 0, 192],
+                [192 * 4, 192 * 0, 0, 0],
+                [192 * 9, 192 * 1, 0, 192],
+            ];
+            fl.forEach(d => {
+                layer1Anim.push(new Effect({
+                    x: d[0],
+                    y: d[1],
+                }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
+            });
+            layer1Anim.push(new Effect({
+                x: 192 * 8 + 20,
+                y: 192 + 20
+            }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+        
+            layer3Anim.push(new Effect({
+                x: 192 * 8 + 150,
+                y: 192 + 130
+            }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+            break;
+        case 2:
+            layer1Anim.push(new Effect({
+                x: 0,
+                y: 0,
+            }, 0, 0, img.level2, 2496, 1728, canvas.width, canvas.height, 1, 0, 1));
+            layer1Anim.push(new Effect({
+                x: 192 * 9,
+                y: 192 * 1,
+            }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+            layer1Anim.push(new Effect({
+                x: -100,
+                y: 130
+            }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
+            layer1Anim.push(new Effect({
+                x: 192 * 9 + 20,
+                y: 192 + 20
+            }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+        
+            layer3Anim.push(new Effect({
+                x: 192 * 9 + 150,
+                y: 192 + 130
+            }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+            break;
+    }
 
-    layer1Anim.push(new Effect({
-        x: 0,
-        y: 0,
-    }, 0, 0, img.level1, 1920, 960, 1920, 960, 1, 0, 1));
-    
-    layer1Anim.push(new Effect({
-        x: 192 * 8,
-        y: 192 * 1,
-    }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
-    
     // layer1Anim.push(new Effect({
     //     x: -35,
     //     y: 130,
     // }, 0, 0, img.portal, 192, 192, 250, 270, 3, 0, 5)); // 3 frames, 5 frames per second
-
-    layer1Anim.push(new Effect({
-        x: -100,
-        y: 130
-    }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
-
-    let fl = [
-        [0, 0, 0, 192],
-        [192 * 3, 192 * 4, 0, 192],
-        [192 * 4, 192 * 0, 0, 0],
-        [192 * 9, 192 * 1, 0, 192],
-    ];
-    fl.forEach(d => {
-        layer1Anim.push(new Effect({
-            x: d[0],
-            y: d[1],
-        }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
-    });
     
     // layer3Anim.push(new Effect({
     //     x: 192 * 8 + 20,
     //     y: 192 * 1 + 20,
     // }, 0, 0, img.alien1, 34, 50, 34, 50, 8, 0, 8));
-
-    layer1Anim.push(new Effect({
-        x: 192 * 8 + 20,
-        y: 192 + 20
-    }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-
-    layer3Anim.push(new Effect({
-        x: 192 * 8 + 150,
-        y: 192 + 130
-    }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
     
     let loaderId = setInterval(() => {
         let total = Object.keys(files.images).length;
@@ -849,8 +875,8 @@ $(window).on('mousemove', (event) => {
     for(let i = 0; i <= placementTiles.length; i++){
         const tile = placementTiles[i];
         try {
-            if(mouse.x >= tile.position.x && mouse.x <= tile.position.x + tile.size &&
-                mouse.y >= tile.position.y && mouse.y <= tile.position.y + tile.size){
+            if(mouse.x >= tile.position.x && mouse.x <= tile.position.x + tile.sizeX &&
+                mouse.y >= tile.position.y && mouse.y <= tile.position.y + tile.sizeY){
                     activeTile = tile;
                     break;
             }
