@@ -39,4 +39,9 @@ require("levels", function(res) {
     window.levels[0].placementTilesData = placementTilesData;
     window.levels[0].waypoints = waypoints;
     window.levelLoaded = true;
+    
+    window.levels[0].enemyCheck = function(position) {
+        return position.x > canvas.width - 400 ? true : false;
+    };
+    
 });

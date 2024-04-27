@@ -396,7 +396,7 @@ function animate(){
         let enemy = enemies[i];
         enemy.update();
 
-        if(enemy.position.x > canvas.width - 400){
+        if(levels[currentLevel].enemyCheck(enemy.position)){
             hearts -= 1;
             enemies.splice(i, 1);
             shakeCanvas();
