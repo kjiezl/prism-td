@@ -17,7 +17,7 @@ $(function() {
             
             if(winW > winH) {
                 // landscape
-                body.css({rotate: "0deg"});
+                //body.css({rotate: "0deg"});
                 if(winW / 2 > winH) {
                     // screen height is ok
                     
