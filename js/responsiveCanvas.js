@@ -3,7 +3,7 @@ var screenZoom = 1;
 $(function() {
     require("canvas", function(canvas) {
         let lastWidth = 0;
-        let body = $("body");
+        let body = $("#gameContainer");
         setInterval((window) => {
             
             let winW = window.innerWidth;
@@ -45,9 +45,8 @@ $(function() {
                 winW = source;
                 */
             }
-            screenZoom = source / target;
-            body.css({zoom: screenZoom, width: winW, height: winH});
-            console.log(screenZoom);
+            //screenZoom = source / target;
+            //body.css({zoom: screenZoom, width: winW, height: winH});
             
         }, 100, window);
     });

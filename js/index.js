@@ -134,7 +134,7 @@ function getParam(param){
 var levelParam = getParam("level");
 console.log("level: " + parseInt(levelParam));
 
-levelParam = levelParam == null ? 1 : levelParam;
+levelParam = levelParam == null ? 1 : parseInt(levelParam);
 
 var enemies = [];
 var layer1Anim = [];
@@ -144,18 +144,21 @@ var projectiles = [];
 var pausedTime = 0;
 
 let currentWave = -1;
-let currentLevel = (parseInt(levelParam) - 1);
+let currentLevel = levelParam - 1;
 let currentBGM = bgm.bgm1;
 
 var placementTiles = [];
 var waypoints = [];
 
 require("levelLoaded", () => {
+    // resize canvas first
+    canvas.width = levels[currentLevel].mapSize[0];
+    canvas.height = levels[currentLevel].mapSize[1];
+    
     waypoints = levels[currentLevel].waypoints;
     for(let y = 0; y < levels[currentLevel].tileSize[1]; y++) {
         for(let x = 0; x < levels[currentLevel].tileSize[0]; x++) {
             let currentIndex = (y * levels[currentLevel].tileSize[0]) + x;
-            console.log(currentIndex);
             if(levels[currentLevel].placementTilesData[currentIndex] == 9) {
                 placementTiles.push(new placementTile({
                     position: {
@@ -166,6 +169,8 @@ require("levelLoaded", () => {
             }
         }
     }
+    
+    
 });
 /*
 var placementTilesData2D = [];
@@ -300,7 +305,7 @@ let selectedTower = {};
 
 $(".restartButton, #levelCompleteRestart").click(() => restartLevel());
 $("#levelCompleteNext").click(() => {
-    window.location.href="index.html?level=" + (parseInt(levelParam) + 1)}
+    window.location.href="index.html?level=" + (levelParam + 1)}
 );
 
 function restartLevel(){
@@ -488,67 +493,68 @@ function pauseGame(){
 }
 
 $(() => {
-    switch(parseInt(levelParam)){
-        case 1:
-            layer1Anim.push(new Effect({
-                x: 0,
-                y: 0,
-            }, 0, 0, img.level1, 1920, 960, 1920, 960, 1, 0, 1));
-            layer1Anim.push(new Effect({
-                x: 192 * 8,
-                y: 192 * 1,
-            }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
-            layer1Anim.push(new Effect({
-                x: -100,
-                y: 130
-            }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
-            let fl = [
-                [0, 0, 0, 192],
-                [192 * 3, 192 * 4, 0, 192],
-                [192 * 4, 192 * 0, 0, 0],
-                [192 * 9, 192 * 1, 0, 192],
-            ];
-            fl.forEach(d => {
+    require("levelLoaded", () => {
+        switch(levelParam){
+            case 1:
                 layer1Anim.push(new Effect({
-                    x: d[0],
-                    y: d[1],
-                }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
-            });
-            layer1Anim.push(new Effect({
-                x: 192 * 8 + 20,
-                y: 192 + 20
-            }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-        
-            layer3Anim.push(new Effect({
-                x: 192 * 8 + 150,
-                y: 192 + 130
-            }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
-            break;
-        case 2:
-            layer1Anim.push(new Effect({
-                x: 0,
-                y: 0,
-            }, 0, 0, img.level2, 2496, 1728, canvas.width, canvas.height, 1, 0, 1));
-            layer1Anim.push(new Effect({
-                x: 192 * 9,
-                y: 192 * 1,
-            }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
-            layer1Anim.push(new Effect({
-                x: -100,
-                y: 130
-            }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
-            layer1Anim.push(new Effect({
-                x: 192 * 9 + 20,
-                y: 192 + 20
-            }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-        
-            layer3Anim.push(new Effect({
-                x: 192 * 9 + 150,
-                y: 192 + 130
-            }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
-            break;
-    }
-
+                    x: 0,
+                    y: 0,
+                }, 0, 0, img.level1, 1920, 960, 1920, 960, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: 192 * 8,
+                    y: 192 * 1,
+                }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: -100,
+                    y: 130
+                }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
+                let fl = [
+                    [0, 0, 0, 192],
+                    [192 * 3, 192 * 4, 0, 192],
+                    [192 * 4, 192 * 0, 0, 0],
+                    [192 * 9, 192 * 1, 0, 192],
+                ];
+                fl.forEach(d => {
+                    layer1Anim.push(new Effect({
+                        x: d[0],
+                        y: d[1],
+                    }, d[2], d[3], img.flowers, 192, 192, 192, 192, 4, 0, 3)); // 4 frames, 3 frames per second
+                });
+                layer1Anim.push(new Effect({
+                    x: 192 * 8 + 20,
+                    y: 192 + 20
+                }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+            
+                layer3Anim.push(new Effect({
+                    x: 192 * 8 + 150,
+                    y: 192 + 130
+                }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+                break;
+            case 2:
+                layer1Anim.push(new Effect({
+                    x: 0,
+                    y: 0,
+                }, 0, 0, img.level2, levels[currentLevel].mapSize[0], levels[currentLevel].mapSize[1], canvas.width, canvas.height, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: 192 * 9,
+                    y: 192 * 1,
+                }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: -100,
+                    y: 130
+                }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
+                layer1Anim.push(new Effect({
+                    x: 192 * 9 + 20,
+                    y: 192 + 20
+                }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+            
+                layer3Anim.push(new Effect({
+                    x: 192 * 9 + 150,
+                    y: 192 + 130
+                }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+                break;
+        }
+    });
     // layer1Anim.push(new Effect({
     //     x: -35,
     //     y: 130,
@@ -869,9 +875,34 @@ function isClickOnUpgradeMenu(event){
     return event.target === upgradeMenu || upgradeMenu.contains(event.target);
 }
 
+var autoScroll = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    speed: 8,
+};
+setInterval(() => {
+    if(gamePaused) {
+        autoScroll.up = autoScroll.down = autoScroll.left = autoScroll.right = false;
+        return;
+    }
+    if(autoScroll.up) {
+        window.scrollBy(0, -autoScroll.speed);
+    }
+    if(autoScroll.down) {
+        window.scrollBy(0, autoScroll.speed);
+    }
+    if(autoScroll.left) {
+        window.scrollBy(-autoScroll.speed, 0);
+    }
+    if(autoScroll.right) {
+        window.scrollBy(autoScroll.speed, 0);
+    }
+}, 1000/fps);
 $(window).on('mousemove', (event) => {
-    mouse.x = event.clientX / screenZoom;
-    mouse.y = event.clientY / screenZoom;
+    mouse.x = (event.clientX + window.scrollX) / screenZoom;
+    mouse.y = (event.clientY + window.scrollY) / screenZoom;
     activeTile = null;
 
     for(let i = 0; i <= placementTiles.length; i++){
@@ -883,6 +914,36 @@ $(window).on('mousemove', (event) => {
                     break;
             }
         } catch(e) { };
+    }
+    
+    //console.log(event.clientX + " - " + event.clientY);
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    
+    let mX = event.clientX;
+    let mY = event.clientY;
+    
+        autoScroll.up = autoScroll.down = autoScroll.left = autoScroll.right = false;
+    
+    if(mX < w * 5 / 100) {
+        // in 5% left part of window;
+        autoScroll.left = true;
+        autoScroll.right = false;
+    }
+    if(mX > w * 95 / 100) {
+        // in 5% right part
+        autoScroll.right = true;
+        autoScroll.left = false;
+    }
+    if(mY < h * 5 / 100) {
+        // in top part of window
+        autoScroll.up = true;
+        autoScroll.down = false;
+    }
+    if(mY > h * 95 / 100) {
+        // in bottom part of window
+        autoScroll.down = true;
+        autoScroll.up = false;
     }
 });
 

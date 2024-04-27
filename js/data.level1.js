@@ -36,6 +36,7 @@ require("levels", function(res) {
          }
     ];
     window.levels[0].tileSize = [10, 5];
+    window.levels[0].mapSize = [1920, 960];
     window.levels[0].placementTilesData = placementTilesData;
     window.levels[0].waypoints = waypoints;
     window.levelLoaded = true;

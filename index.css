@@ -39,11 +39,11 @@ body{
     }
 }
 #gameOver{
-    position: absolute;
+    position: fixed;
     top: 0; 
-    bottom: 0; 
     left: 0; 
-    right: 0;
+    width: 100vw;
+    height: 100vh;
     flex-direction: column;
     display: none; 
     align-items: center; 
@@ -57,11 +57,11 @@ body{
 }
 
 #gamePausedDiv{
-    position: absolute;
+    position: fixed;
     top: 0; 
-    bottom: 0; 
     left: 0; 
-    right: 0;
+    width: 100vw;
+    height: 100vh;
     flex-direction: column;
     display: none; 
     align-items: center; 
@@ -75,11 +75,11 @@ body{
 }
 
 .levelCompleteMenu{
-    position: absolute;
+    position: fixed;
     top: 0; 
-    bottom: 0; 
     left: 0; 
-    right: 0;
+    width: 100vw;
+    height: 100vh;
     flex-direction: column;
     display: none; 
     align-items: center; 
@@ -166,7 +166,7 @@ body{
 }
 
 #playerInfo{
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
     font-family: 'Micro 5', sans-serif;
@@ -178,7 +178,7 @@ body{
 }
 
 #wavesDiv{
-    position: absolute;
+    position: fixed;
     top: 7%;
     left: 7%;
     font-family: "Radio Canada", sans-serif;
@@ -190,7 +190,7 @@ body{
 }
 
 #scoreDiv{
-    position: absolute;
+    position: fixed;
     top: 2%;
     left: 7%;
     font-family: "Radio Canada", sans-serif;
@@ -204,7 +204,7 @@ body{
     right: 70px;
     bottom: 70px;
     display: flex;
-    position: absolute;
+    position: fixed;
     font-family: 'Micro 5', sans-serif;
     font-size: 5em;
     color: white;
