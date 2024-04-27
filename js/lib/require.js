@@ -1,7 +1,7 @@
 function require(fn, ex, i=0) {
     const interval = 100;
     const timeout = 5000; // throw error after 2 seconds if not yet loaded
-    if(typeof(window[fn]) == "function") {
+    if(typeof(window[fn]) != "undefined") {
         ex(fn);
     } else if(i*interval < timeout) {
         // function not yet loaded
