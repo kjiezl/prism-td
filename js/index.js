@@ -130,6 +130,8 @@ function getParam(param){
 var levelParam = getParam("level");
 console.log("level: " + parseInt(levelParam));
 
+levelParam = levelParam == null ? 1 : levelParam;
+
 var enemies = [];
 var layer1Anim = [];
 var layer2Anim = [];
