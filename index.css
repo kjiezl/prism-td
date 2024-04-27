@@ -184,7 +184,7 @@ body{
     left: 40px;
     /*font-family: "Radio Canada", sans-serif; */
     font-family: 'Micro 5', sans-serif;
-    font-size: 5em;
+    font-size: 3em;
     display: block;
     color: white;
     text-shadow: 2px 3px rgba(67, 109, 40, 40%);
@@ -192,13 +192,14 @@ body{
 
 #scoreDiv{
     position: fixed;
-    top: 2%;
-    left: 7%;
-    font-family: "Radio Canada", sans-serif;
-    font-size: 2em;
+    top: 60px;
+    left: 40px;
+    /*font-family: "Radio Canada", sans-serif; */
+    font-family: 'Micro 5', sans-serif;
+    font-size: 3em;
     display: block;
     color: white;
-    text-shadow: 2px 3px rgb(67, 109, 40);
+    text-shadow: 2px 3px rgba(67, 109, 40, 40%);
 }
 
 .waveCountdown{
@@ -245,9 +246,9 @@ body{
 }
 
 .upgradeMenu{
-    position: absolute;
-    bottom: 40;
-    left: 20;
+    position: fixed;
+    bottom: 40px;
+    left: 20px;
     font-size: 1em;
     color: white;
     display: flex;
@@ -407,7 +408,7 @@ label{
 }
 
 .specialClass{
-    position: absolute;
+    position: fixed;
     padding: 7px;
     width: 35px;
     border-radius: 50%;
