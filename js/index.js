@@ -1,6 +1,6 @@
 "use strict";
 
-const canvas = document.querySelector('canvas');
+var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 
 canvas.width = 1920;
@@ -122,35 +122,12 @@ Object.keys(files.images).forEach(key => {
     img[key].src = files.images[key];
 });
 
-
-var placementTilesData2D = [];
-
-for(let i = 0; i < placementTilesData.length; i += 10){
-    placementTilesData2D.push(placementTilesData.slice(i, i + 20))
-}
-
-var placementTiles = [];
-
-placementTilesData2D.forEach((row, y) => {
-    row.forEach((symbol, x) => {
-        if(symbol === 9){
-            placementTiles.push(new placementTile({
-                position: {
-                    x: x * canvas.width / 10,
-                    y: y * canvas.width / 10
-                }
-            }))
-        }
-    })
-});
-
 function getParam(param){
     let urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
 }
 
 var levelParam = getParam("level");
-
 console.log("level: " + parseInt(levelParam));
 
 var enemies = [];
@@ -163,6 +140,47 @@ var pausedTime = 0;
 let currentWave = -1;
 let currentLevel = (parseInt(levelParam) - 1);
 let currentBGM = bgm.bgm1;
+
+var placementTiles = [];
+var waypoints = [];
+
+require("levelLoaded", () => {
+    waypoints = levels[currentLevel].waypoints;
+    for(let y = 0; y < levels[currentLevel].tileSize[1]; y++) {
+        for(let x = 0; x < levels[currentLevel].tileSize[0]; x++) {
+            let currentIndex = (y * levels[currentLevel].tileSize[0]) + x;
+            console.log(currentIndex);
+            if(levels[currentLevel].placementTilesData[currentIndex] == 9) {
+                placementTiles.push(new placementTile({
+                    position: {
+                        x: x * canvas.width / levels[currentLevel].tileSize[0],
+                        y: y * canvas.height / levels[currentLevel].tileSize[1],
+                    }
+                }));
+            }
+        }
+    }
+});
+/*
+var placementTilesData2D = [];
+
+for(let i = 0; i < levelplacementTilesData.length; i += 10){
+    placementTilesData2D.push(placementTilesData.slice(i, i + 20))
+}
+
+placementTilesData2D.forEach((row, y) => {
+    row.forEach((symbol, x) => {
+        if(symbol === 9){
+            placementTiles.push(new placementTile({
+                position: {
+                    x: x * canvas.width / 10,
+                    y: y * canvas.width / 10
+                }
+            }))
+        }
+    })
+});*/
+
 
 function spawnEnemies(){
     let wave = levels[currentLevel].waves[currentWave];
@@ -518,7 +536,9 @@ $(() => {
         if(loaded >= total) {
             console.log("All assets loaded");
             clearInterval(loaderId);
-            animate();
+            require(() => {
+                return placementTiles.length > 0 ? true : false;
+            }, animate);
         } else {
             console.log("Loaded " + loaded + " of " + total + " assets");
         }

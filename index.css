@@ -167,8 +167,8 @@ body{
 
 #playerInfo{
     position: absolute;
-    top: 20;
-    right: 20;
+    top: 20px;
+    right: 20px;
     font-family: 'Micro 5', sans-serif;
     font-size: 5em;
     color: white;
