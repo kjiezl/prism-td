@@ -244,7 +244,7 @@ class Tower extends Sprite {
     }
 
     startCountdown(specialTimer) {
-        this.specialButton.disabled = true;
+        this.specialButton.attr("disabled", true);
         this.timer = window.performance.now() + specialTimer;
         this.specialButton.css({background: this.projectileColor});
     }
@@ -316,7 +316,7 @@ class Tower extends Sprite {
             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile") {
             this.counting = false;
             this.timer = this.specialTimer;
-            this.specialButton.disabled = false;
+            this.specialButton.attr("disabled", false);
             this.specialButton.html("S");
             this.specialButton.css({background:"rgb(255, 255, 0)"});
         }
