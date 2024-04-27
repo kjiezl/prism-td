@@ -85,6 +85,7 @@ let bgm = {
 var files = {
     images: {
         level1: "sprites/map/level1.png",
+        level2: "sprites/map/level2.png",
         portal: "sprites/gameobj/portal1.png",
         portal1: "sprites/gameobj/portal.png",
         flowers: "sprites/gameobj/flowers.png",
@@ -143,6 +144,15 @@ placementTilesData2D.forEach((row, y) => {
     })
 });
 
+function getParam(param){
+    let urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+var levelParam = getParam("level");
+
+console.log("level: " + parseInt(levelParam));
+
 var enemies = [];
 var layer1Anim = [];
 var layer2Anim = [];
@@ -151,8 +161,7 @@ var projectiles = [];
 var pausedTime = 0;
 
 let currentWave = -1;
-let currentLevel = 0;
-
+let currentLevel = (parseInt(levelParam) - 1);
 let currentBGM = bgm.bgm1;
 
 function spawnEnemies(){
@@ -266,6 +275,9 @@ let score = 0;
 let selectedTower = {};
 
 $(".restartButton, #levelCompleteRestart").click(() => restartLevel());
+$("#levelCompleteNext").click(() => {
+    window.location.href="index.html?level=" + (parseInt(levelParam) + 1)}
+);
 
 function restartLevel(){
     levelComplete = false;
@@ -452,6 +464,7 @@ function pauseGame(){
 }
 
 $(() => {
+
     layer1Anim.push(new Effect({
         x: 0,
         y: 0,

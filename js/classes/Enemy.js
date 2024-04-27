@@ -239,7 +239,6 @@ class Enemy extends Sprite{
         //enemy.target = validTowers[0];
         this.target = validTowers[Math.floor(Math.random() * validTowers.length)];
         
-
         const waypoint = waypoints[this.waypointIndex];
         const yDistance = waypoint.y - this.center.y;
         const xDistance = waypoint.x - this.center.x;
