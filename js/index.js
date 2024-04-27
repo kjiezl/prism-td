@@ -299,7 +299,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = 15;
-let coins = 200;
+let coins = 20;
 let score = 0;
 let selectedTower = {};
 
