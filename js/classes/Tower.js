@@ -159,24 +159,31 @@ class Tower extends Sprite {
     }
 
     createSpecial() {
+        var specialButton = $("<button class='specialClass'>");
+        specialButton.css({background: this.projectileColor, borderColor: this.projectileColor});
+        specialButton.css({top: this.position.y + 15 + "px"});
+        specialButton.css({left: this.position.x + 130 + "px"});
+        specialButton.html(this.specialTimer / 1000);
+        $(".specialButtonDiv").append(specialButton);
+        /*
         const specialButton = document.createElement('button');
-        document.querySelector('.specialButtonDiv').appendChild(specialButton);
         specialButton.style.backgroundColor = this.projectileColor;
         specialButton.style.borderColor = this.projectileColor;
         specialButton.style.top = this.position.y + 15;
         specialButton.style.left = this.position.x + 130;
         specialButton.className = "specialClass";
         specialButton.textContent = this.specialTimer / 1000;
+        document.querySelector('.specialButtonDiv').appendChild(specialButton);*/
 
         enemies.forEach(enemy => {
             if(enemy.inverted){
-                specialButton.style.filter = "invert(1)";
+                specialButton.css({filter: "invert(1)"});
             }
         })
 
         this.specialButton = specialButton;
 
-        specialButton.addEventListener('click', () => {
+        specialButton.on('click', () => {
             if(!gamePaused) this.handleSpecial();
         });
 
@@ -239,7 +246,7 @@ class Tower extends Sprite {
     startCountdown(specialTimer) {
         this.specialButton.disabled = true;
         this.timer = window.performance.now() + specialTimer;
-        this.specialButton.style.backgroundColor = this.projectileColor;
+        this.specialButton.css({background: this.projectileColor});
     }
 
     boostAttack(){
@@ -295,7 +302,7 @@ class Tower extends Sprite {
             const index = towers.indexOf(this);
             if (index !== -1) {
                 if(this.towerClass !== "SpeedProjectile"){
-                    this.specialButton.style.display = "none";
+                    this.specialButton.hide();
                 }
                 sfx.towerDestroyed.play();
                 towers.splice(index, 1);
@@ -310,8 +317,8 @@ class Tower extends Sprite {
             this.counting = false;
             this.timer = this.specialTimer;
             this.specialButton.disabled = false;
-            this.specialButton.textContent = "S";
-            this.specialButton.style.backgroundColor = "rgb(255, 255, 0)";
+            this.specialButton.html("S");
+            this.specialButton.css({background:"rgb(255, 255, 0)"});
         }
 
         if(this.timer < msNow && this.counting && this.towerClass === "Heal"){
@@ -337,7 +344,7 @@ class Tower extends Sprite {
         }
 
         if(this.counting && this.towerClass !== "SpeedProjectile"){
-            this.specialButton.textContent = Math.ceil((this.timer - msNow) / 1000);
+            this.specialButton.html(Math.ceil((this.timer - msNow) / 1000));
         }
 
         if(towers.some(tower => tower.towerClass.includes("SpeedProjectile"))){
@@ -395,7 +402,7 @@ class Tower extends Sprite {
             x: this.position.x,
             y: this.position.y
         }, 0, 0, img.towerDisabled, 192, 192, 192, 192, 1, 0, 1));
-        this.specialButton.style.display = "none";
+        this.specialButton.hide();
         this.isDisabled = true;
     }
 

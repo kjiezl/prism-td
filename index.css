@@ -408,7 +408,7 @@ label{
 }
 
 .specialClass{
-    position: fixed;
+    position: absolute;
     padding: 7px;
     width: 35px;
     border-radius: 50%;
