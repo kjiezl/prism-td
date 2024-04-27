@@ -299,7 +299,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = 15;
-let coins = 20;
+let coins = 200;
 let score = 0;
 let selectedTower = {};
 
@@ -844,6 +844,8 @@ function upgradeSpecial(specialClass){
         let newTower = createTower({position: tower.position, towerType: specialClass});
         towers.push(newTower);
         $(".shopMenu").css("display", "none");
+    } else {
+        console.log("Need " + (tower.specialCost - coins) + " more coins!");
     }
 }
 
