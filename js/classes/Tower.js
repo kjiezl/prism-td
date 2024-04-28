@@ -103,7 +103,7 @@ class Tower extends Sprite {
                 break;
             case "Heal":
                 this.maxHealth = 300;
-                this.upgradeCost = 40;
+                this.upgradeCost = 70;
                 this.specialTimer = 20 * 1000;
                 this.specialHealAmount = 70;
                 this.towerPrice = 100;
@@ -111,7 +111,7 @@ class Tower extends Sprite {
                 break;
             case "AttackBoost":
                 this.maxHealth = 300;
-                this.upgradeCost = 40;
+                this.upgradeCost = 70;
                 this.specialTimer = 20 * 1000;
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = true;
@@ -120,7 +120,7 @@ class Tower extends Sprite {
                 break;
             case "SpeedProjectile":
                 this.maxHealth = 300;
-                this.upgradeCost = 40;
+                this.upgradeCost = 70;
                 this.towerPrice = 100;
                 this.radius = 500;
                 break;
@@ -149,13 +149,27 @@ class Tower extends Sprite {
     }
 
     showRange(){
-        ctx.beginPath();
-        ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.stroke();
+        switch(levelParam){
+            case 1:
+                ctx.beginPath();
+                ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.stroke();
+                break;
+            case 2:
+                ctx.beginPath();
+                ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.stroke();
+                break;
+        }
+        
     }
 
     createSpecial() {
@@ -165,15 +179,6 @@ class Tower extends Sprite {
         specialButton.css({left: this.position.x + 130 + "px"});
         specialButton.html(this.specialTimer / 1000);
         $(".specialButtonDiv").append(specialButton);
-        /*
-        const specialButton = document.createElement('button');
-        specialButton.style.backgroundColor = this.projectileColor;
-        specialButton.style.borderColor = this.projectileColor;
-        specialButton.style.top = this.position.y + 15;
-        specialButton.style.left = this.position.x + 130;
-        specialButton.className = "specialClass";
-        specialButton.textContent = this.specialTimer / 1000;
-        document.querySelector('.specialButtonDiv').appendChild(specialButton);*/
 
         enemies.forEach(enemy => {
             if(enemy.inverted){

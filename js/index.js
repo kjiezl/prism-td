@@ -70,8 +70,13 @@ let sfx = {
 }
 
 let bgm = {
-    bgm1: new Howl({
+    level1bgm: new Howl({
         src: ['bgm/level1-bgm1.mp3'],
+        loop: true,
+        volume: 0.5
+    }),
+    level2bgm: new Howl({
+        src: ['bgm/level2-bgm1.mp3'],
         loop: true,
         volume: 0.5
     }),
@@ -98,14 +103,17 @@ var files = {
         commonEnemy: "sprites/enemies/common-enemy.png",
         fastEnemy: "sprites/enemies/fast-enemy.png",
         rangeEnemy: "sprites/enemies/range-enemy.png",
+        defEnemy: "sprites/enemies/def-enemy.png",
         starEnemy: "sprites/enemies/star-enemy.png",
         commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
+        defEnemyStriked: "sprites/enemies/def-enemy-striked1.png",
         starEnemyStriked: "sprites/enemies/star-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
+        defEnemySlowed: "sprites/enemies/def-enemy-slowed.png",
         starEnemySlowed: "sprites/enemies/star-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
         lightningStrike: "sprites/effects/lightning-strike2.png",
@@ -145,15 +153,16 @@ var pausedTime = 0;
 
 let currentWave = -1;
 let currentLevel = levelParam - 1;
-let currentBGM = bgm.bgm1;
+let currentBGM = null;
 
 var placementTiles = [];
 var waypoints = [];
 
 require("levelLoaded", () => {
-    // resize canvas first
     canvas.width = levels[currentLevel].mapSize[0];
     canvas.height = levels[currentLevel].mapSize[1];
+    $("#nightTint").css("width", levels[currentLevel].mapSize[0]);
+    $("#nightTint").css("height", levels[currentLevel].mapSize[1]);
     
     waypoints = levels[currentLevel].waypoints;
     for(let y = 0; y < levels[currentLevel].tileSize[1]; y++) {
@@ -169,28 +178,7 @@ require("levelLoaded", () => {
             }
         }
     }
-    
-    
 });
-/*
-var placementTilesData2D = [];
-
-for(let i = 0; i < levelplacementTilesData.length; i += 10){
-    placementTilesData2D.push(placementTilesData.slice(i, i + 20))
-}
-
-placementTilesData2D.forEach((row, y) => {
-    row.forEach((symbol, x) => {
-        if(symbol === 9){
-            placementTiles.push(new placementTile({
-                position: {
-                    x: x * canvas.width / 10,
-                    y: y * canvas.width / 10
-                }
-            }))
-        }
-    })
-});*/
 
 
 function spawnEnemies(){
@@ -204,13 +192,23 @@ function spawnEnemies(){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        enemies.push(
-            new Enemy({
-                position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
-                type: randomType,
-                delay: 500 * i + Math.random() * 3000
-            })
-        );
+        if(levelParam === 1){
+            enemies.push(
+                new Enemy({
+                    position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
+                    type: randomType,
+                    delay: 500 * i + Math.random() * 3000
+                })
+            );
+        } else if(levelParam === 2){
+            enemies.push(
+                new Enemy({
+                    position: {x: (waypoints[0].x) - Math.random() * 100, y: (waypoints[0].y - 96)},
+                    type: randomType,
+                    delay: 500 * i + Math.random() * 3000
+                })
+            );
+        }
     }
 
     enemies.forEach(enemy => {
@@ -261,7 +259,7 @@ function startNextWave(){
     if (currentWave < levels[currentLevel].waveCount - 1) {
         currentWave++;
         spawnEnemies();
-        if(currentWave === 14){
+        if(currentWave === 14 && levelParam === 1){
             if(currentBGM.playing()){
                 currentBGM.stop();
                 currentBGM = bgm.boss1;
@@ -285,14 +283,14 @@ function startNextWave(){
             }
         }
     } else {
-        // currentLevel++;
-        sfx.levelCompleteSound.play();
-        showLevelCompleteMenu();
-        $(canvas).css({ filter: "invert(0)"});
-        $(".specialClass").css({ filter: "invert(0)"});
-        levelComplete = true;
-        // gamePaused = true;
-        pauseGame();
+        if(!gameOver){
+            sfx.levelCompleteSound.play();
+            showLevelCompleteMenu();
+            $(canvas).css({ filter: "invert(0)"});
+            $(".specialClass").css({ filter: "invert(0)"});
+            levelComplete = true;
+            pauseGame();
+        }
     }
 }
 
@@ -304,9 +302,10 @@ let score = 0;
 let selectedTower = {};
 
 $(".restartButton, #levelCompleteRestart").click(() => restartLevel());
+$(".homeButton").click(() => {window.location.href = "main-menu.html"})
 $("#levelCompleteNext").click(() => {
-    window.location.href="index.html?level=" + (levelParam + 1)}
-);
+    window.location.href="index.html?level=" + (levelParam + 1)
+});
 
 function restartLevel(){
     levelComplete = false;
@@ -315,9 +314,8 @@ function restartLevel(){
     $(".specialClass").css({filter: "invert(0)"});
     $("#nightTint").fadeOut(100);
     fade = true;
-    towers.forEach(tower => {
-        tower.health = 0;
-    })
+    towers.splice(0, towers.length);
+    $(".specialClass").hide();
     enemies.splice(0, enemies.length);
     placementTiles.forEach(tile => {
         tile.isOccupied = false;
@@ -330,13 +328,24 @@ function restartLevel(){
     coins = 20;
     hearts = 15;
     currentWave = -1;
-    if(currentBGM.playing()){
-        currentBGM.stop();
-        currentBGM = bgm.bgm1;
-        currentBGM.play();
-    } else{
-        currentBGM = bgm.bgm1;
+    if(levelParam === 1){
+        if(currentBGM.playing()){
+            currentBGM.stop();
+            currentBGM = bgm.level1bgm;
+            currentBGM.play();
+        } else{
+            currentBGM = bgm.level1bgm;
+        }
+    } else if(levelParam === 2){
+        if(currentBGM.playing()){
+            currentBGM.stop();
+            currentBGM = bgm.level2bgm;
+            currentBGM.play();
+        } else{
+            currentBGM = bgm.level2bgm;
+        }
     }
+    
     pauseGame();
     restartCountdown();
 }
@@ -380,6 +389,7 @@ function animate(){
     $(".score").text(score);
     qCoins.text(coins);
     $("#hearts").text(hearts);
+    $("#currentLevel").text(levelParam);
     
     for(let i = 0; i < layer1Anim.length; i++) {
         layer1Anim[i].update();
@@ -429,6 +439,8 @@ function animate(){
     if(hearts === 0){
         pauseGame();
         currentBGM.stop();
+        $("#musicPause").toggle();
+        $("#musicButton").toggle();
         qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
         $("#gameOver").fadeIn(150).css("display", "flex");  
@@ -456,13 +468,6 @@ function animate(){
             fade = true;
         }
     }
-
-    // const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width);
-    // gradient.addColorStop(0, 'rgba(0, 0, 0, 0.5)'); // transparent black at center
-    // gradient.addColorStop(0.5, 'rgba(128, 0, 128, 0.5)'); // transparent purple
-    // gradient.addColorStop(1, 'rgba(0, 0, 0, 0.5)'); // transparent black at edges
-    // ctx.fillStyle = gradient;
-    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function pauseGame(){
@@ -529,6 +534,8 @@ $(() => {
                     x: 192 * 8 + 150,
                     y: 192 + 130
                 }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+
+                currentBGM = bgm.level1bgm;
                 break;
             case 2:
                 layer1Anim.push(new Effect({
@@ -540,8 +547,8 @@ $(() => {
                     y: 192 * 1,
                 }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
                 layer1Anim.push(new Effect({
-                    x: 500,
-                    y: 1250
+                    x: 192 * 3,
+                    y: 1260
                 }, 0, 0, img.portal1, 192, 192, 350, 270, 6, 0, 12));
                 layer1Anim.push(new Effect({
                     x: 192 * 9 + 20,
@@ -552,6 +559,8 @@ $(() => {
                     x: 192 * 9 + 150,
                     y: 192 + 130
                 }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+
+                currentBGM = bgm.level2bgm;
                 break;
         }
     });
@@ -586,6 +595,11 @@ let mouse = {
 }
 
 $(canvas).on('click', (event) => {
+    // if(!currentBGM.playing()){
+    //     currentBGM.play();
+    //     $("#musicPause").toggle();
+    //     $("#musicButton").toggle();
+    // }
     if(activeTile && !activeTile.isOccupied && coins - 5 >= 0 && !gamePaused){
         towers.forEach(tower => {tower.showTowerRange = false});
         showTowerSelection();
@@ -808,7 +822,7 @@ $("#sellButton").click(() => {
         if (index !== -1) {
             towers.splice(index, 1);
             if(selectedTower.towerClass !== "SpeedProjectile"){
-                selectedTower.specialButton.style.display = "none";
+                selectedTower.specialButton.hide();
             }
 
             const tile = placementTiles.find(tile =>
@@ -884,6 +898,7 @@ var autoScroll = {
     right: false,
     speed: 8,
 };
+
 setInterval(() => {
     if(gamePaused) {
         autoScroll.up = autoScroll.down = autoScroll.left = autoScroll.right = false;
@@ -902,6 +917,7 @@ setInterval(() => {
         window.scrollBy(autoScroll.speed, 0);
     }
 }, 1000/fps);
+
 $(window).on('mousemove', (event) => {
     mouse.x = (event.clientX + window.scrollX) / screenZoom;
     mouse.y = (event.clientY + window.scrollY) / screenZoom;

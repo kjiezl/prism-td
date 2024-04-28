@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Modak&family=MuseoModerno:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Micro+5&display=swap');
 :root {
-    --font-size-xsmall: 12px;
+    --font-size-xsmall: 11px;
     --font-size-small: 16px;
     --font-size-medium: 32px;
     --font-size-large: 64px;
-    --font-size-xlarge: 16vw;
+    --font-size-mlarge: 100px;
+    --font-size-xlarge: 10vw;
 }
 
 body{
@@ -29,23 +30,7 @@ body{
         filter: brightness(120%);
     }
 }
-.restartButton{
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 30px;
-    font-size: var(--font-size-large);
-    font-family: 'Micro 5', sans-serif;
-    color: rgb(67, 109, 13);
-    background-color: greenyellow;
-    transition: transform 200ms, filter 200ms;
 
-    &:hover{
-        transform: scale(110%);
-        filter: brightness(120%);
-    }
-}
 #gameOver{
     position: fixed;
     top: 0; 
@@ -155,7 +140,7 @@ body{
     font-size: var(--font-size-large);
     color: white;
     transform: skew(10deg);
-    margin-left: 35%;
+    margin-left: 30%;
     margin-top: 10%;
 }
 
@@ -168,7 +153,7 @@ body{
     width:auto; 
     text-align: center;
     border: 1px solid #222;
-    font-size: var(--font-size-xlarge);
+    font-size: var(--font-size-mlarge);
     box-shadow: 10px 10px #222;
     border-radius: 5%;
 }
@@ -178,6 +163,7 @@ body{
     top: 20px;
     right: 20px;
     font-family: 'Micro 5', sans-serif;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
     font-size: var(--font-size-large);
     color: white;
     display: flex;
@@ -192,6 +178,7 @@ body{
     left: 40px;
     /*font-family: "Radio Canada", sans-serif; */
     font-family: 'Micro 5', sans-serif;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
     font-size: var(--font-size-large);
     display: block;
     color: white;
@@ -200,10 +187,11 @@ body{
 
 #scoreDiv{
     position: fixed;
-    top: 60px;
+    top: 70px;
     left: 40px;
     /*font-family: "Radio Canada", sans-serif; */
     font-family: 'Micro 5', sans-serif;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
     font-size: var(--font-size-large);
     display: block;
     color: white;
@@ -217,6 +205,7 @@ body{
     position: fixed;
     font-family: 'Micro 5', sans-serif;
     font-size: var(--font-size-large);
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
     color: white;
     text-align: left;
     text-shadow: 2px 3px rgba(67, 109, 40, 40%);
@@ -228,6 +217,7 @@ body{
     margin-top: 13px; 
     color: white;
     cursor: pointer;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
     transition: transform 0.2s;
 
     &:hover{
@@ -241,7 +231,7 @@ body{
     bottom: 20px;
     left: 20px;
     width: 420px;
-    font-size: var(--font-size-xsmall);
+    font-size: var(--font-size-small);
     color: white;
     display: none;
     font-family: "Radio Canada", sans-serif;
@@ -298,7 +288,7 @@ body{
 
 .shopMenu{
     position: fixed;
-    bottom: 120px;
+    bottom: 150px;
     left: 20px;
     width: 400px;
     font-size: var(--font-size-small);
@@ -408,7 +398,18 @@ label{
     transition: transform 200ms, filter 200ms, background-color 200ms;
 }
 
-#musicButton:hover, #musicPause:hover, #pause:hover{
+#pause{
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+    transition: transform 200ms, color 200ms;
+
+    &:hover{
+        transform: scale(115%);
+        color: rgb(88, 86, 228);
+        cursor: pointer;
+    }
+}
+
+#musicButton:hover, #musicPause:hover{
     /* color:rgb(49, 114, 6); */
     transform: scale(110%);
     cursor: pointer;
@@ -443,7 +444,8 @@ label{
     left: 0; 
     width: 100vw;
     height: 100vh;
-    background-image: url("sprites/effects/night-tint.png"); 
+    background-image: radial-gradient(ellipse at center, rgba(0,0,10,0.5) 0%, rgba(10, 0, 40, 0.7) 100%);
+    /* background-image: url("sprites/effects/night-tint.png");  */
     pointer-events: none;
     display: none;
 }

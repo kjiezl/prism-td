@@ -88,7 +88,7 @@ class Enemy extends Sprite{
                 break;
             case "star":
                 this.coinDrop = 100;
-                this.health = 2500;
+                this.health = 2000;
                 this.attackSpeed = 100;
                 this.points = 100;
                 break;
@@ -236,7 +236,6 @@ class Enemy extends Sprite{
             return (distance <= tower.radius + this.radius) && !tower.isGonnaBeDead;
         })
 
-        //enemy.target = validTowers[0];
         this.target = validTowers[Math.floor(Math.random() * validTowers.length)];
         
         // const waypoint = waypoints[this.waypointIndex];
@@ -262,7 +261,8 @@ class Enemy extends Sprite{
             this.waypointIndex++;
         }
 
-        if (this.type === "range" || this.type === "star" && this.state !== "iced") {
+        if (this.type === "range" || this.type === "star" 
+        && this.state !== "iced" && this.state !== "slowed") {
             if(this.lastShot + this.attackSpeed * 15 < msNow && this.target 
                 && !this.target.isDisabled) {
                 projectiles.push(
