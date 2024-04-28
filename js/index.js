@@ -218,7 +218,7 @@ function spawnEnemies(){
 }
 
 let waveStartTime = 0;
-let waveCountdown = 10 * 1000;
+let waveCountdown = 20 * 1000;
 let levelComplete = false;
 let isGameOver = false;
 
@@ -432,7 +432,10 @@ function animate(){
         projectile.update();
     });
 
-    if(enemies.length === 0 && !levelComplete){
+    // if(enemies.length === 0 && !levelComplete){
+    //     startCountdown();
+    // }
+    if(!levelComplete){
         startCountdown();
     }
 

@@ -86,7 +86,7 @@ levels = [
             },
             {
                 common: 10,
-                fast: 10,
+                fast: 5,
                 range: 6
             },
             {
@@ -97,9 +97,9 @@ levels = [
                 def: 10
             },
             {
-                common: 20,
+                common: 15,
                 fast: 10,
-                def: 10
+                def: 6
             },
             {
                 fast: 20,
@@ -112,45 +112,45 @@ levels = [
             {
                 common: 10,
                 fast: 15,
-                range: 20,
+                range: 10,
                 def: 5
             },
             {
-                common: 25,
-                fast: 20,
+                common: 20,
+                fast: 10,
                 def: 25
             },
             {
                 common: 20,
-                fast: 20,
-                range: 25,
+                fast: 10,
+                range: 15,
                 def: 20
             },
             {
-                common: 35,
-                fast: 20,
+                common: 25,
+                fast: 10,
                 range: 15,
-                def: 25
+                def: 15
             },
             {
-                common: 40,
+                common: 20,
+                fast: 20,
+                range: 10,
+                def: 20
+            },
+            {
+                def: 35
+            },
+            {
+                common: 20,
                 fast: 30,
                 range: 20,
-                def: 30
             },
             {
-                def: 60
-            },
-            {
-                common: 45,
-                fast: 40,
-                range: 40,
-            },
-            {
-                common: 50,
-                fast: 35,
-                range: 30,
-                def: 35
+                common: 25,
+                fast: 20,
+                range: 20,
+                def: 25
             },
             { //boss battle
                 star: 1
