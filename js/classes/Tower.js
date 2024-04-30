@@ -115,9 +115,9 @@ class Tower extends Sprite {
             case "AttackBoost":
                 this.maxHealth = 300;
                 this.upgradeCost = 70;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 10 * 1000;
                 this.boostAttackAmount = 3 * 1000;
-                this.attackBoost = true;
+                this.attackBoost = false;
                 this.towerPrice = 100;
                 this.radius = 500;
                 break;
@@ -281,10 +281,12 @@ class Tower extends Sprite {
     }
 
     boostAttack(){
+        duration = window.performance.now() + this.boostAttackAmount;
         towers.forEach(tower => {
-            duration = window.performance.now() + this.boostAttackAmount;
-            tower.attackSpeed = 20;
+            // tower.attackSpeed = 20;
+            tower.attackBoost = true;
         })
+        
     }
 
     update(){
@@ -309,25 +311,28 @@ class Tower extends Sprite {
         //tower.target = validEnemies[0];
         this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
         
-        if(this.lastShot + this.attackSpeed * 15 < msNow && this.target && !this.target.isGonnaBeDead
-             && this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile"
-             && !this.isDisabled) {
-            sfx.towerShoot.play();
-            projectiles.push(
-                new TowerProjectile({
-                    position: {
-                        x: this.center.x,
-                        y: this.center.y
-                    },
-                    enemy: this.target,
-                    from: this,
-                    projectileColor: this.projectileColor,
-                    damage: this.towerDamage,
-                    moveSpeed: this.projectileSpeed
-                })
-            )
-            this.lastShot = msNow;
-        }
+        if((!this.attackBoost && this.lastShot + this.attackSpeed * 15 < msNow) || 
+           (this.attackBoost && this.lastShot + 20 * 15 < msNow)) {
+            if(this.target && !this.target.isGonnaBeDead &&
+               this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile" &&
+               !this.isDisabled) {
+                sfx.towerShoot.play();
+                projectiles.push(
+                    new TowerProjectile({
+                        position: {
+                            x: this.center.x,
+                            y: this.center.y
+                        },
+                        enemy: this.target,
+                        from: this,
+                        projectileColor: this.projectileColor,
+                        damage: this.towerDamage,
+                        moveSpeed: this.projectileSpeed
+                    })
+                );
+                this.lastShot = msNow;
+            }
+        }       
 
         if (this.health <= 0) {
             const index = towers.indexOf(this);
@@ -370,8 +375,9 @@ class Tower extends Sprite {
             this.startCountdown(this.timer);
         }
 
-        if(duration < msNow && !this.commonActive){
-            this.attackSpeed = this.previousSpeed;
+        if(duration < msNow && !this.commonActive && this.attackBoost){
+            // this.attackSpeed = this.previousSpeed;
+            this.attackBoost = false;
         }
 
         if(this.counting && this.towerClass !== "SpeedProjectile"){

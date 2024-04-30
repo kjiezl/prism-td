@@ -85,7 +85,6 @@ require("levels", function(res) {
         } else {
             return false;
         }
-        return position.x > canvas.width - 400 ? true : false;
     };
     
 });

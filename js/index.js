@@ -160,9 +160,11 @@ var layer3Anim = [];
 var projectiles = [];
 var pausedTime = 0;
 
-let currentWave = 16;
+let currentWave = -1;
 let currentLevel = levelParam - 1;
 let currentBGM = null;
+
+let wavesDone = false;
 
 var placementTiles = [];
 var waypoints = [];
@@ -188,7 +190,6 @@ require("levelLoaded", () => {
         }
     }
 });
-
 
 function spawnEnemies(){
     let wave = levels[currentLevel].waves[currentWave];
@@ -274,6 +275,7 @@ function startNextWave(){
         const random = validTowers.sort(() => Math.random() - 0.5);
 
         if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 1){
+            wavesDone = true;
             if(currentBGM.playing()){
                 currentBGM.stop();
                 currentBGM = bgm.boss1;
@@ -293,6 +295,7 @@ function startNextWave(){
             }
         }
         else if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 2){
+            wavesDone = true;
             if(currentBGM.playing()){
                 currentBGM.stop();
                 currentBGM = bgm.boss2;
@@ -322,7 +325,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = 15;
-let coins = 20;
+let coins = 2000;
 let score = 0;
 let selectedTower = {};
 
@@ -353,6 +356,7 @@ function restartLevel(){
     coins = 20;
     hearts = 15;
     currentWave = -1;
+    wavesDone = false;
     if(levelParam === 1){
         if(currentBGM.playing()){
             currentBGM.stop();
@@ -460,7 +464,7 @@ function animate(){
     // if(enemies.length === 0 && !levelComplete){
     //     startCountdown();
     // }
-    if(!levelComplete){
+    if(!wavesDone){
         startCountdown();
     }
 
@@ -592,6 +596,8 @@ $(() => {
                 break;
         }
     });
+
+    wavesDone = false;
     // layer1Anim.push(new Effect({
     //     x: -35,
     //     y: 130,
