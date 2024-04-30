@@ -115,7 +115,7 @@ class Tower extends Sprite {
             case "AttackBoost":
                 this.maxHealth = 300;
                 this.upgradeCost = 70;
-                this.specialTimer = 10 * 1000;
+                this.specialTimer = 20 * 1000;
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = false;
                 this.towerPrice = 100;
@@ -224,12 +224,7 @@ class Tower extends Sprite {
         this.counting = true; 
         switch(this.towerClass){
             case "Common":
-                this.commonActive = true;
-                this.attackSpeed = 20;
-                setTimeout(() => {
-                    this.attackSpeed = this.previousSpeed;
-                    this.commonActive = false;
-                }, this.fireRateTime);
+                this.boostAttack();
                 break;
             case "Ice":
                 sfx.towerSlow.play();
@@ -281,11 +276,16 @@ class Tower extends Sprite {
     }
 
     boostAttack(){
-        duration = window.performance.now() + this.boostAttackAmount;
-        towers.forEach(tower => {
-            // tower.attackSpeed = 20;
-            tower.attackBoost = true;
-        })
+        if(this.towerClass === "AttackBoost"){
+            duration = window.performance.now() + this.boostAttackAmount;
+            towers.forEach(tower => {
+                tower.attackBoost = true;
+            })
+        }
+        if(this.towerClass === "Common"){
+            duration2 = window.performance.now() + this.fireRateTime;
+            this.commonActive = true;
+        }
         
     }
 
@@ -312,7 +312,9 @@ class Tower extends Sprite {
         this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
         
         if((!this.attackBoost && this.lastShot + this.attackSpeed * 15 < msNow) || 
-           (this.attackBoost && this.lastShot + 20 * 15 < msNow)) {
+           (this.attackBoost && this.lastShot + 20 * 15 < msNow ||
+            !this.commonActive && this.lastShot + this.attackSpeed * 15 < msNow) ||
+            (this.commonActive && this.lastShot + 20 * 15 < msNow)) {
             if(this.target && !this.target.isGonnaBeDead &&
                this.towerClass !== "Heal" && this.towerClass !== "AttackBoost" && this.towerClass !== "SpeedProjectile" &&
                !this.isDisabled) {
@@ -376,8 +378,10 @@ class Tower extends Sprite {
         }
 
         if(duration < msNow && !this.commonActive && this.attackBoost){
-            // this.attackSpeed = this.previousSpeed;
             this.attackBoost = false;
+        }
+        if(duration2 < msNow && this.commonActive){
+            this.commonActive = false;
         }
 
         if(this.counting && this.towerClass !== "SpeedProjectile"){
@@ -491,6 +495,7 @@ class Tower extends Sprite {
 }
 
 let duration = 0;
+let duration2 = 0;
 
 function createTower({position, towerType}) {
     return new Tower({position, imageSrc: "sprites/towers/" + towerType + "-tower-1.png", towerClass: towerType});
