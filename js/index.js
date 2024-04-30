@@ -87,7 +87,13 @@ let bgm = {
     }),
     boss1: new Howl({
         src: ['bgm/boss1.mp3'],
-        volume: 0.5
+        volume: 0.5,
+        loop: true
+    }),
+    boss2: new Howl({
+        src: ['bgm/boss2.mp3'],
+        volume: 0.4,
+        loop: true
     })
 }
 
@@ -105,16 +111,19 @@ var files = {
         rangeEnemy: "sprites/enemies/range-enemy.png",
         defEnemy: "sprites/enemies/def-enemy.png",
         starEnemy: "sprites/enemies/star-enemy.png",
+        lightningEnemy: "sprites/enemies/lightning-enemy.png",
         commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
         defEnemyStriked: "sprites/enemies/def-enemy-striked1.png",
         starEnemyStriked: "sprites/enemies/star-enemy-striked1.png",
+        lightningEnemyStriked: "sprites/enemies/lightning-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
         defEnemySlowed: "sprites/enemies/def-enemy-slowed.png",
         starEnemySlowed: "sprites/enemies/star-enemy-slowed.png",
+        lightningEnemySlowed: "sprites/enemies/lightning-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
         lightningStrike: "sprites/effects/lightning-strike2.png",
         iced: "sprites/effects/iced.png",
@@ -151,7 +160,7 @@ var layer3Anim = [];
 var projectiles = [];
 var pausedTime = 0;
 
-let currentWave = -1;
+let currentWave = 16;
 let currentLevel = levelParam - 1;
 let currentBGM = null;
 
@@ -259,7 +268,12 @@ function startNextWave(){
     if (currentWave < levels[currentLevel].waveCount - 1) {
         currentWave++;
         spawnEnemies();
-        if(currentWave === 14 && levelParam === 1){
+        const validTowers = towers.filter((tower) => {
+            return !tower.isGonnaBeDead;
+        })
+        const random = validTowers.sort(() => Math.random() - 0.5);
+
+        if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 1){
             if(currentBGM.playing()){
                 currentBGM.stop();
                 currentBGM = bgm.boss1;
@@ -267,15 +281,26 @@ function startNextWave(){
             } else{
                 currentBGM = bgm.boss1;
             }
-            const validTowers = towers.filter((tower) => {
-                return !tower.isGonnaBeDead;
-            })
     
             // const numTargets = Math.ceil(validTowers.length / 2);
             const numTargets = 1;
     
-            const random = validTowers.sort(() => Math.random() - 0.5);
     
+            for (let i = 0; i < numTargets; i++) {
+                if (random[i]) {
+                    random[i].disableTower();
+                }
+            }
+        }
+        else if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 2){
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.boss2;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.boss2;
+            }
+            const numTargets = Math.ceil(validTowers.length / 2);
             for (let i = 0; i < numTargets; i++) {
                 if (random[i]) {
                     random[i].disableTower();

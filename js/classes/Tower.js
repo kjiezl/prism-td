@@ -41,6 +41,9 @@ class Tower extends Sprite {
             "sprites/towers/" + towerClass + "-tower-5.png"
         ];
 
+        this.state = "normal";
+        this.stateExpiry = 0;
+
         this.getTowerStats(towerClass);
         if(towerClass !== "SpeedProjectile") this.createSpecial();
         this.prevProjSpeed = this.projectileSpeed;
@@ -126,6 +129,11 @@ class Tower extends Sprite {
                 break;
         }
     }
+
+    changeState(state, expiry) {
+        this.state = state;
+        this.stateExpiry = window.performance.now() + expiry;
+    }
     
     explode() {
         if(this.hasExploded == true) return;
@@ -138,7 +146,24 @@ class Tower extends Sprite {
         
 
     draw(){
-        super.draw();
+        if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now() && !gamePaused) {
+            this.stateExpiry = 0;
+            this.state = "normal";
+        }
+        
+        switch(this.state) {
+            case "normal":
+                super.draw();
+                break;
+            case "striked":
+                super.draw();
+                layer3Anim.push(new Effect({
+                    x: this.center.x - 13,
+                    y: this.center.y - 100
+                }, 0, 0, img.lightningStrike, 135.5, 252, 20, 100, 7, 200, 35));
+                break;
+        }
+
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -231,10 +256,11 @@ class Tower extends Sprite {
                 sfx.towerSniper.play();
                 for(let i = 0; i <= enemies.length / 4; i++){
                     if(enemies[i].spawnDelay <= 0){
-                        if(enemies[i].type !== "star"){
+                        if(enemies[i].type !== "star" || enemies[i].type !== "lightning"){
                             enemies[i].health = 0;
                         } else{
-                            enemies[i].health -= enemies[i].maxHealth / 3;
+                            // enemies[i].health -= enemies[i].maxHealth / 3;
+                            enemies[i].health -= 400;
                         }
                     }
                 }

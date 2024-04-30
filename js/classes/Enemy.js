@@ -53,7 +53,6 @@ class Enemy extends Sprite{
 
         this.inverted = false;
         this.lastTime = window.performance.now();
-
         this.startTime = 0;
         this.pausedTime = 0;
     }
@@ -92,6 +91,11 @@ class Enemy extends Sprite{
                 this.attackSpeed = 100;
                 this.points = 100;
                 break;
+            case "lightning":
+                this.coinDrop = 200;
+                this.health = 3000;
+                this.points = 200;
+                break;
             default:
                 this.coinDrop = 2;
                 this.health = 15;
@@ -114,6 +118,8 @@ class Enemy extends Sprite{
                 return 2;
             case 'star':
                 return 1;
+            case 'lightning':
+                return 1;
             default:
                 return 2;
         }
@@ -132,6 +138,8 @@ class Enemy extends Sprite{
             case 'shell':
                 return 1;
             case 'star':
+                return 0.5;
+            case 'lightning':
                 return 0.5;
             default:
                 return 1;
@@ -261,7 +269,7 @@ class Enemy extends Sprite{
             this.waypointIndex++;
         }
 
-        if (this.type === "range" || this.type === "star" 
+        if (this.type === "range" || this.type === "star" || this.type === "lightning"
         && this.state !== "iced" && this.state !== "slowed") {
             if(this.lastShot + this.attackSpeed * 15 < msNow && this.target 
                 && !this.target.isDisabled) {
@@ -284,7 +292,7 @@ class Enemy extends Sprite{
         if (this.health <= 0) {
             const index = enemies.indexOf(this);
             if (index !== -1) {
-                if(this.type === "star"){
+                if(this.type === "star" || this.type === "lightning"){
                     $(canvas).css({ filter: "invert(0)"});
                     $(".specialClass").css({ filter: "invert(0)"});
                     this.inverted = false;
@@ -331,6 +339,10 @@ class Enemy extends Sprite{
         if(this.type === "star"){
             this.starBoss();
         }
+
+        if(this.type === "lightning"){
+            this.lightningBoss();
+        }
     }
 
     starBoss() {
@@ -356,6 +368,36 @@ class Enemy extends Sprite{
                 $(".specialClass").css({ filter: "invert(1)" });
                 this.inverted = true;
             }
+        }
+    }
+
+    lightningBoss(){
+        let currentTime = window.performance.now();
+        let deltaTime = currentTime - this.lastTime;
+        
+        if (deltaTime >= 10 * 1000) {
+            this.lastTime = currentTime;
+    
+            towers.forEach(tower => {
+                if(!tower.isDisabled){
+                    tower.health -= 5;
+                    tower.changeState("striked", 200);
+                }
+            })
+        }
+
+        if(deltaTime >= 8 * 1000 && !this.inverted){
+            this.lastTime = currentTime;
+            shakeCanvas();
+            $(canvas).css({ filter: "invert(1)" });
+            $(".specialClass").css({ filter: "invert(1)" });
+            this.inverted = true;
+        } else if(deltaTime >= 4 * 1000 && this.inverted){
+            this.lastTime = currentTime;
+            shakeCanvas();
+            $(canvas).css({ filter: "invert(0)" });
+            $(".specialClass").css({ filter: "invert(0)" });
+            this.inverted = false;
         }
     }
 }

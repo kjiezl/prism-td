@@ -153,7 +153,7 @@ levels = [
                 def: 25
             },
             { //boss battle
-                star: 1
+                lightning: 1
             }
         ],
         waveCount: 18
