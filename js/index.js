@@ -522,6 +522,12 @@ function pauseGame(){
         waveStartTime = window.performance.now() - pausedTime;
         towers.forEach(tower => {
             tower.timer += tower.pausedTime;
+            if(tower.attackBoost){
+                duration += tower.pausedTime;
+            }
+            if(tower.towerClass === "Common" && tower.commonActive){
+                duration2 += tower.pausedTime;
+            }
         })
         enemies.forEach(enemy => {
             enemy.stateExpiry += enemy.pausedTime;

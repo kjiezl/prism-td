@@ -58,7 +58,7 @@ class Tower extends Sprite {
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 10 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
