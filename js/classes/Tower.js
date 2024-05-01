@@ -58,7 +58,7 @@ class Tower extends Sprite {
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 10 * 1000;
+                this.specialTimer = 20 * 1000;
                 this.towerDamage = 5;
                 this.radius = 500;
                 this.projectileSpeed = 5;
@@ -99,7 +99,7 @@ class Tower extends Sprite {
                 this.previousSpeed = this.attackSpeed;
                 this.maxHealth = 100;
                 this.upgradeCost = 10;
-                this.specialTimer = 30 * 1000;
+                this.specialTimer = 35 * 1000;
                 this.towerDamage = 10;
                 this.radius = 700;
                 this.projectileSpeed = 10;
@@ -249,14 +249,19 @@ class Tower extends Sprite {
                 break;
             case "Sniper":
                 sfx.towerSniper.play();
-                for(let i = 0; i <= enemies.length / 4; i++){
+                for(let i = 0; i <= enemies.length / 5; i++){
                     if(enemies[i].spawnDelay <= 0){
-                        if(enemies[i].type !== "star" || enemies[i].type !== "lightning"){
-                            enemies[i].health = 0;
-                        } else{
-                            // enemies[i].health -= enemies[i].maxHealth / 3;
+                        if(enemies[i].type === "star" || enemies[i].type === "lightning"){
                             enemies[i].health -= 400;
+                        } else{
+                            enemies[i].health = 0;
                         }
+                        // if(enemies[i].type !== "star" || enemies[i].type !== "lightning"){
+                        //     enemies[i].health = 0;
+                        // } else{
+                        //     enemies[i].health -= enemies[i].maxHealth / 5;
+                        //     // enemies[i].health -= 400;
+                        // }
                     }
                 }
                 // enemies.forEach(enemy => {

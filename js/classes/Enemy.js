@@ -1,5 +1,5 @@
 class Enemy extends Sprite{
-    constructor({position = {x: 0, y: 0}, type = '', delay = 0}){
+    constructor({position = {x: 0, y: 0}, type = '', delay = 0, healthMultiplier = 1}){
         const spriteSrc = `sprites/enemies/${type}-enemy.png`;
         super({position, imageSrc: spriteSrc});
 
@@ -49,6 +49,7 @@ class Enemy extends Sprite{
         this.strikedSprite = img[type + "EnemyStriked"];
 
         this.getEnemyStats(type);
+        this.health += healthMultiplier;
         this.maxHealth = this.health;
 
         this.inverted = false;

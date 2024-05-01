@@ -202,29 +202,29 @@ function spawnEnemies(){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        if(levelParam === 1){
-            enemies.push(
-                new Enemy({
-                    position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
-                    type: randomType,
-                    delay: 500 * i + Math.random() * 3000
-                })
-            );
-        } else if(levelParam === 2){
-            enemies.push(
-                new Enemy({
-                    position: {x: (waypoints[0].x) - Math.random() * 100, y: (waypoints[0].y - 96)},
-                    type: randomType,
-                    delay: 500 * i + Math.random() * 3000
-                })
-            );
+        switch(levelParam){
+            case 1:
+                enemies.push(
+                    new Enemy({
+                        position: {x: (waypoints[0].x - 200) - Math.random() * 100, y: (waypoints[0].y - 96)},
+                        type: randomType,
+                        delay: 500 * i + Math.random() * 3000,
+                        healthMultiplier: 5 * currentWave
+                    })
+                );
+                break;
+            case 2:
+                enemies.push(
+                    new Enemy({
+                        position: {x: (waypoints[0].x) - Math.random() * 100, y: (waypoints[0].y - 96)},
+                        type: randomType,
+                        delay: 500 * i + Math.random() * 3000,
+                        healthMultiplier: 5 * currentWave
+                    })
+                );
+                break;
         }
     }
-
-    enemies.forEach(enemy => {
-        enemy.health += 5 * currentWave;
-        enemy.maxHealth += 5 * currentWave;
-    })
 }
 
 let waveStartTime = 0;
@@ -341,6 +341,7 @@ function restartLevel(){
     $(canvas).css({filter: "invert(0)"});
     $(".specialClass").css({filter: "invert(0)"});
     $("#nightTint").fadeOut(100);
+    lastTime = window.performance.now();
     fade = true;
     towers.splice(0, towers.length);
     $(".specialClass").hide();
@@ -391,6 +392,7 @@ var gamePaused = false;
 
 let fade = true;
 let lastTime = window.performance.now();
+let idlePause = false;
 
 function animate(){
     window.requestAnimationFrame(animate);
@@ -399,6 +401,7 @@ function animate(){
     const msPassed = msNow - msPrev;
     
     if(msPassed > 1000 && !levelComplete && !isGameOver){
+        idlePause = true;
         pauseGame();
     }
     
@@ -446,7 +449,7 @@ function animate(){
         let enemy = enemies[i];
         enemy.update();
 
-        if(enemy.waypointIndex == waypoints.length-1 && levels[currentLevel].enemyCheck(enemy.position)){
+        if(enemy.waypointIndex == waypoints.length - 1 && levels[currentLevel].enemyCheck(enemy.position)){
             hearts -= 1;
             enemies.splice(i, 1);
             shakeCanvas();
@@ -464,7 +467,7 @@ function animate(){
     // if(enemies.length === 0 && !levelComplete){
     //     startCountdown();
     // }
-    if(!wavesDone){
+    if(!wavesDone && !levelComplete){
         startCountdown();
     }
 
@@ -487,7 +490,7 @@ function animate(){
     }
 
     let currentTime = window.performance.now();
-    let deltaTime = currentTime - lastTime;
+    let deltaTime = gamePaused ? 0 : (currentTime - lastTime);
 
     if (deltaTime >= 60 * 1000 && !gamePaused) {
         lastTime = currentTime;
@@ -503,7 +506,13 @@ function animate(){
 }
 
 function pauseGame(){
-    gamePaused = !gamePaused;
+    // gamePaused = !gamePaused;
+    if(idlePause){
+        gamePaused = true;
+        idlePause = false;
+    } else{
+        gamePaused = !gamePaused;
+    }
     if(isGameOver || levelComplete){
         $("#gamePausedDiv").css("display", "none");
         gamePaused = true;
@@ -739,7 +748,7 @@ function showTowerMenu(){
                 $("#specialUpgrade").text("Increases damage dealt");
                 break;
             case "Sniper":
-                $("#special").text("Eliminates 25% of the enemies in the area");
+                $("#special").text("Eliminates 20% of the enemies in the area");
                 $("#specialUpgrade").text("Decreases cooldown time");
                 $("#ability").text("2x more than common towers");
                 $("#abilityDiv").text("Tower Range: ");
@@ -815,7 +824,7 @@ function previewStats(towerClass){
         case "SNIPER TOWER":
             description.text(
                 "Sniper towers have longer range and damage but less fire rate. " +
-                "Special attack eliminates 25% of the enemies in the area.")
+                "Special attack eliminates 20% of the enemies in the area.")
             break;
         case "HEAL TOWER":
             description.text(
