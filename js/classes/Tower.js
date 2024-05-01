@@ -178,7 +178,7 @@ class Tower extends Sprite {
             case 1:
                 ctx.beginPath();
                 ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
                 ctx.fill();
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
@@ -187,10 +187,19 @@ class Tower extends Sprite {
             case 2:
                 ctx.beginPath();
                 ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
                 ctx.fill();
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.stroke();
+                break;
+            case 3:
+                ctx.beginPath();
+                ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
                 ctx.stroke();
                 break;
         }

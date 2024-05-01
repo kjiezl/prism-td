@@ -386,7 +386,7 @@ img{
 label{
     font-size: var(--font-size-xsmall);
     position: absolute;
-    color: rgb(16, 88, 9);
+    color: black;
     font-weight: bold;
 }
 
@@ -396,6 +396,12 @@ label{
     /* color: rgb(70, 122, 21);  */
     color: greenyellow;
     transition: transform 200ms, filter 200ms, background-color 200ms;
+
+    &:hover{
+        transform: scale(110%);
+        cursor: pointer;
+        filter: brightness(140%);
+    }
 }
 
 #pause{
@@ -407,13 +413,6 @@ label{
         color: rgb(88, 86, 228);
         cursor: pointer;
     }
-}
-
-#musicButton:hover, #musicPause:hover{
-    /* color:rgb(49, 114, 6); */
-    transform: scale(110%);
-    cursor: pointer;
-    filter: brightness(140%);
 }
 
 .specialClass{

@@ -80,6 +80,11 @@ let bgm = {
         loop: true,
         volume: 0.5
     }),
+    level3bgm: new Howl({
+        src: ['bgm/level3-bgm1.mp3'],
+        loop: true,
+        volume: 0.5
+    }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
         volume: 0.2,
@@ -94,6 +99,11 @@ let bgm = {
         src: ['bgm/boss2.mp3'],
         volume: 0.4,
         loop: true
+    }),
+    boss3: new Howl({
+        src: ['bgm/boss3.mp3'],
+        volume: 0.4,
+        loop: true
     })
 }
 
@@ -101,6 +111,7 @@ var files = {
     images: {
         level1: "sprites/map/level1.png",
         level2: "sprites/map/level2.png",
+        level3: "sprites/map/level3.png",
         portal: "sprites/gameobj/portal1.png",
         portal1: "sprites/gameobj/portal.png",
         flowers: "sprites/gameobj/flowers.png",
@@ -149,7 +160,7 @@ function getParam(param){
 }
 
 var levelParam = getParam("level");
-console.log("level: " + parseInt(levelParam));
+// console.log("level: " + parseInt(levelParam));
 
 levelParam = levelParam == null ? 1 : parseInt(levelParam);
 
@@ -223,12 +234,22 @@ function spawnEnemies(){
                     })
                 );
                 break;
+            case 3:
+                enemies.push(
+                    new Enemy({
+                        position: {x: (waypoints[0].x - 90), y: (waypoints[0].y - 96)},
+                        type: randomType,
+                        delay: 500 * i + Math.random() * 3000,
+                        healthMultiplier: 5 * currentWave
+                    })
+                );
+                break;
         }
     }
 }
 
 let waveStartTime = 0;
-let waveCountdown = 20 * 1000;
+let waveCountdown = 0;
 let levelComplete = false;
 let isGameOver = false;
 
@@ -310,6 +331,22 @@ function startNextWave(){
                 }
             }
         }
+        else if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 3){
+            wavesDone = true;
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.boss3;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.boss3;
+            }
+            // const numTargets = Math.ceil(validTowers.length / 2);
+            // for (let i = 0; i < numTargets; i++) {
+            //     if (random[i]) {
+            //         random[i].disableTower();
+            //     }
+            // }
+        }
     } else {
         if(!gameOver){
             sfx.levelCompleteSound.play();
@@ -324,7 +361,7 @@ function startNextWave(){
 
 const towers = [];
 let activeTile = undefined;
-let hearts = 15;
+let hearts = null;
 let coins = 20;
 let score = 0;
 let selectedTower = {};
@@ -352,28 +389,42 @@ function restartLevel(){
     projectiles.splice(0, projectiles.length);
     layer2Anim.splice(0, layer2Anim.length);
     $("#gamePausedDiv, #gameOver, .levelCompleteMenu").css("display", "none");
-    currentWave = 0;
     score = 0;
     coins = 20;
-    hearts = 15;
+    // hearts = 15;
     currentWave = -1;
     wavesDone = false;
-    if(levelParam === 1){
-        if(currentBGM.playing()){
-            currentBGM.stop();
-            currentBGM = bgm.level1bgm;
-            currentBGM.play();
-        } else{
-            currentBGM = bgm.level1bgm;
-        }
-    } else if(levelParam === 2){
-        if(currentBGM.playing()){
-            currentBGM.stop();
-            currentBGM = bgm.level2bgm;
-            currentBGM.play();
-        } else{
-            currentBGM = bgm.level2bgm;
-        }
+    switch(levelParam){
+        case 1:
+            hearts = 10;
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.level1bgm;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.level1bgm;
+            }
+            break;
+        case 2:
+            hearts = 15;
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.level2bgm;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.level2bgm;
+            }
+            break;
+        case 3:
+            hearts = 20;
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.level3bgm;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.level3bgm;
+            }
+            break;
     }
     
     pauseGame();
@@ -454,7 +505,7 @@ function animate(){
             enemies.splice(i, 1);
             shakeCanvas();
 
-            if(enemy.type === "star"){
+            if(enemy.type === "star" || enemy.type === "lightning" || enemy.type === "scribbles"){
                 hearts = 0;
             }
         }
@@ -583,7 +634,11 @@ $(() => {
                 }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
 
                 currentBGM = bgm.level1bgm;
+                hearts = 10;
+                waveCountdown = 20 * 1000;
+                $("label").css("color", "rgb(16, 88, 9)");
                 break;
+
             case 2:
                 layer1Anim.push(new Effect({
                     x: 0,
@@ -602,12 +657,44 @@ $(() => {
                     y: 192 + 20
                 }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
             
-                layer3Anim.push(new Effect({
+                layer1Anim.push(new Effect({
                     x: 192 * 9 + 150,
                     y: 192 + 130
                 }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
 
                 currentBGM = bgm.level2bgm;
+                hearts = 15;
+                waveCountdown = 20 * 1000;
+                $("label").css("color", "rgb(79, 9, 88)");
+                break;
+            
+            case 3:
+                layer1Anim.push(new Effect({
+                    x: 0,
+                    y: 0,
+                }, 0, 0, img.level3, levels[currentLevel].mapSize[0], levels[currentLevel].mapSize[1], canvas.width, canvas.height, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: 192 * 11,
+                    y: 192 * 4,
+                }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: 20,
+                    y: 192 * 3
+                }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                layer1Anim.push(new Effect({
+                    x: 192 * 11 + 20,
+                    y: 192 * 4 + 20
+                }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+            
+                layer1Anim.push(new Effect({
+                    x: 192 * 11 + 150,
+                    y: 192 * 4 + 130
+                }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+
+                currentBGM = bgm.level3bgm;
+                hearts = 20;
+                waveCountdown = 25 * 1000;
+                $("label").css("color", "white");
                 break;
         }
     });
