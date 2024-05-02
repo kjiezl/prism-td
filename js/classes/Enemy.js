@@ -82,9 +82,9 @@ class Enemy extends Sprite{
                 this.health = 30;
                 this.points = 20;
                 break;
-            case "shell":
+            case "flying":
                 this.coinDrop = 15;
-                this.health = 20;
+                this.health = 3;
                 this.points = 25;
                 break;
             case "star":
@@ -116,8 +116,8 @@ class Enemy extends Sprite{
                 return 2;
             case 'def':
                 return 1.5;
-            case 'shell':
-                return 2;
+            case 'flying':
+                return 4;
             case 'star':
                 return 1;
             case 'lightning':
@@ -137,8 +137,8 @@ class Enemy extends Sprite{
                 return 1;
             case 'def':
                 return 0.5;
-            case 'shell':
-                return 1;
+            case 'flying':
+                return 3;
             case 'star':
                 return 0.5;
             case 'lightning':
@@ -250,25 +250,32 @@ class Enemy extends Sprite{
         
         // const waypoint = waypoints[this.waypointIndex];
         const waypoint = levels[currentLevel].waypoints[this.waypointIndex];
-        const yDistance = waypoint.y - this.center.y;
-        const xDistance = waypoint.x - this.center.x;
-        const angle = Math.atan2(yDistance, xDistance);
 
-        this.velocity.x = Math.cos(angle) * this.speed;
-        this.velocity.y = Math.sin(angle) * this.speed;
-        this.position.x += this.velocity.x * frameMultiplier;
-        this.position.y += (this.velocity.y * frameMultiplier);
-        this.center = {
-            x: this.position.x + this.width / 2,
-            y: this.position.y + this.height / 2
-        }
-
-        if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
-        < Math.abs(this.velocity.x * 3) 
-        && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
-        < Math.abs(this.velocity.y * 3)
-        && this.waypointIndex < waypoints.length - 1){
+        if(this.waypointIndex === 8 && levelParam === 3){
+            this.position.x = waypoints[8].x - this.width / 2;
+            this.position.y = waypoints[8].y - this.height / 2;
             this.waypointIndex++;
+        } else{
+            const yDistance = waypoint.y - this.center.y;
+            const xDistance = waypoint.x - this.center.x;
+            const angle = Math.atan2(yDistance, xDistance);
+    
+            this.velocity.x = Math.cos(angle) * this.speed;
+            this.velocity.y = Math.sin(angle) * this.speed;
+            this.position.x += this.velocity.x * frameMultiplier;
+            this.position.y += (this.velocity.y * frameMultiplier);
+            this.center = {
+                x: this.position.x + this.width / 2,
+                y: this.position.y + this.height / 2
+            }
+    
+            if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
+            < Math.abs(this.velocity.x * 3) 
+            && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
+            < Math.abs(this.velocity.y * 3)
+            && this.waypointIndex < waypoints.length - 1){
+                this.waypointIndex++;
+            }
         }
 
         if (this.type === "range" || this.type === "star" || this.type === "lightning"

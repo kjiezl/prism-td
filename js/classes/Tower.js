@@ -337,8 +337,19 @@ class Tower extends Sprite {
         })
         
         //tower.target = validEnemies[0];
-        this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
+        // this.target = validEnemies[Math.floor(Math.random() * validEnemies.length)]; // randomize target
         
+        if (this.towerClass === "Sniper" && validEnemies.some(enemy => enemy.type === "flying")) {
+            const flyingEnemies = validEnemies.filter(enemy => enemy.type === "flying");
+            this.target = flyingEnemies[Math.floor(Math.random() * flyingEnemies.length)];
+        } else {
+            const nonFlyingEnemies = validEnemies.filter(enemy => enemy.type !== "flying");
+            if (nonFlyingEnemies.length > 0) {
+                this.target = nonFlyingEnemies[Math.floor(Math.random() * nonFlyingEnemies.length)];
+            }
+        }
+        
+
         if((!this.attackBoost && this.lastShot + this.attackSpeed * 15 < msNow) || 
            (this.attackBoost && this.lastShot + 20 * 15 < msNow ||
             !this.commonActive && this.lastShot + this.attackSpeed * 15 < msNow) ||

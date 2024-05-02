@@ -121,18 +121,21 @@ var files = {
         fastEnemy: "sprites/enemies/fast-enemy.png",
         rangeEnemy: "sprites/enemies/range-enemy.png",
         defEnemy: "sprites/enemies/def-enemy.png",
+        flyingEnemy: "sprites/enemies/flying-enemy.png",
         starEnemy: "sprites/enemies/star-enemy.png",
         lightningEnemy: "sprites/enemies/lightning-enemy.png",
         commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
         defEnemyStriked: "sprites/enemies/def-enemy-striked1.png",
+        flyingEnemyStriked: "sprites/enemies/flying-enemy-striked1.png",
         starEnemyStriked: "sprites/enemies/star-enemy-striked1.png",
         lightningEnemyStriked: "sprites/enemies/lightning-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
         defEnemySlowed: "sprites/enemies/def-enemy-slowed.png",
+        flyingEnemySlowed: "sprites/enemies/flying-enemy-slowed.png",
         starEnemySlowed: "sprites/enemies/star-enemy-slowed.png",
         lightningEnemySlowed: "sprites/enemies/lightning-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
@@ -142,6 +145,7 @@ var files = {
         crystal: "sprites/gameobj/crystal.png",
         towerDisabled: "sprites/towers/tower-disabled.png",
         specialEffects: "sprites/effects/special-effects.png",
+        teleportPortal: "sprites/effects/teleport-portal.png",
     }
 };
 
@@ -172,7 +176,7 @@ var layer3Anim = [];
 var projectiles = [];
 var pausedTime = 0;
 
-let currentWave = 4;
+let currentWave = -1;
 let currentLevel = levelParam - 1;
 let currentBGM = null;
 
@@ -363,7 +367,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = null;
-let coins = 2000;
+let coins = 20;
 let score = 0;
 let selectedTower = {};
 
@@ -631,7 +635,6 @@ $(() => {
                     x: 192 * 8 + 20,
                     y: 192 + 20
                 }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-            
                 layer3Anim.push(new Effect({
                     x: 192 * 8 + 150,
                     y: 192 + 130
@@ -660,7 +663,6 @@ $(() => {
                     x: 192 * 9 + 20,
                     y: 192 + 20
                 }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-            
                 layer1Anim.push(new Effect({
                     x: 192 * 9 + 150,
                     y: 192 + 130
@@ -689,11 +691,19 @@ $(() => {
                     x: 192 * 11 + 20,
                     y: 192 * 4 + 20
                 }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-            
                 layer1Anim.push(new Effect({
                     x: 192 * 11 + 150,
                     y: 192 * 4 + 130
                 }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+                
+                layer1Anim.push(new Effect({
+                    x: 3 * 192,
+                    y: 5 * 192 + 100
+                }, 0, 0, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
+                layer1Anim.push(new Effect({
+                    x: 9 * 192,
+                    y: 3 * 192
+                }, 0, 192, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
 
                 currentBGM = bgm.level3bgm;
                 hearts = 20;
@@ -915,7 +925,8 @@ function previewStats(towerClass){
         case "SNIPER TOWER":
             description.text(
                 "Sniper towers have longer range and damage but less fire rate. " +
-                "Special attack eliminates 20% of the enemies in the area.")
+                "Special attack eliminates 20% of the enemies in the area. " +
+                "Can prioritize and target flying enemy types.")
             break;
         case "HEAL TOWER":
             description.text(
