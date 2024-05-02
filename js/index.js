@@ -141,6 +141,7 @@ var files = {
         coins: "sprites/gameobj/coins.png",
         crystal: "sprites/gameobj/crystal.png",
         towerDisabled: "sprites/towers/tower-disabled.png",
+        specialEffects: "sprites/effects/special-effects.png",
     }
 };
 
@@ -171,7 +172,7 @@ var layer3Anim = [];
 var projectiles = [];
 var pausedTime = 0;
 
-let currentWave = -1;
+let currentWave = 4;
 let currentLevel = levelParam - 1;
 let currentBGM = null;
 
@@ -362,7 +363,7 @@ function startNextWave(){
 const towers = [];
 let activeTile = undefined;
 let hearts = null;
-let coins = 20;
+let coins = 2000;
 let score = 0;
 let selectedTower = {};
 
@@ -524,9 +525,11 @@ function animate(){
 
     if(hearts === 0){
         pauseGame();
-        currentBGM.stop();
-        $("#musicPause").toggle();
-        $("#musicButton").toggle();
+        if(currentBGM.playing()){
+            currentBGM.stop();
+            $("#musicPause").toggle();
+            $("#musicButton").toggle();
+        }
         qUpgradeMenu.fadeOut(150);
         $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
         $("#gameOver").fadeIn(150).css("display", "flex");  
@@ -596,6 +599,7 @@ function pauseGame(){
 }
 
 $(() => {
+    document.title = "LEVEL " + levelParam;
     require("levelLoaded", () => {
         switch(levelParam){
             case 1:
@@ -636,7 +640,7 @@ $(() => {
                 currentBGM = bgm.level1bgm;
                 hearts = 10;
                 waveCountdown = 20 * 1000;
-                $("label").css("color", "rgb(16, 88, 9)");
+                $(".selectionLabel").css("color", "rgb(16, 88, 9)");
                 break;
 
             case 2:
@@ -665,7 +669,7 @@ $(() => {
                 currentBGM = bgm.level2bgm;
                 hearts = 15;
                 waveCountdown = 20 * 1000;
-                $("label").css("color", "rgb(79, 9, 88)");
+                $(".selectionLabel").css("color", "rgb(79, 9, 88)");
                 break;
             
             case 3:
@@ -694,7 +698,7 @@ $(() => {
                 currentBGM = bgm.level3bgm;
                 hearts = 20;
                 waveCountdown = 25 * 1000;
-                $("label").css("color", "white");
+                $(".selectionLabel").css("color", "white");
                 break;
         }
     });

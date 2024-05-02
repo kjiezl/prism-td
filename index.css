@@ -386,7 +386,7 @@ img{
 label{
     font-size: var(--font-size-xsmall);
     position: absolute;
-    color: black;
+    color: white;
     font-weight: bold;
 }
 

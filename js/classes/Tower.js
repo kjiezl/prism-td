@@ -32,7 +32,7 @@ class Tower extends Sprite {
 
         this.pausedTime = 0;
         this.startTime = 0;
-        
+
         this.levelSprites = [
             imageSrc,
             "sprites/towers/" + towerClass + "-tower-2.png",
@@ -143,7 +143,26 @@ class Tower extends Sprite {
             y: this.position.y
         }, 0, 480, img.explosions, 160, 160, 192, 192, 6, 700));
     }
-        
+    
+    healthBoostEffect(){
+        layer3Anim.push(new Effect({
+            x: this.position.x + 10,
+            y: this.position.y + 35
+        }, 0, 0, img.specialEffects, 100, 100, 40, 40, 4, 1000, 4));
+        setTimeout(() =>{
+            layer3Anim.splice(layer3Anim.length - 1, 1);
+        }, 2 * 1000)
+    }
+
+    attackBoostEffect(){
+        layer3Anim.push(new Effect({
+            x: this.position.x + 35,
+            y: this.position.y + 10
+        }, 0, 100, img.specialEffects, 100, 100, 40, 40, 4, 2000, 16));
+        setTimeout(() =>{
+            layer3Anim.splice(layer3Anim.length - 1, 1);
+        }, 2 * 1000)
+    }
 
     draw(){
         if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now() && !gamePaused) {
@@ -163,7 +182,6 @@ class Tower extends Sprite {
                 }, 0, 0, img.lightningStrike, 135.5, 252, 20, 100, 7, 200, 35));
                 break;
         }
-
 
         // health bar
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -203,7 +221,6 @@ class Tower extends Sprite {
                 ctx.stroke();
                 break;
         }
-        
     }
 
     createSpecial() {
@@ -265,12 +282,6 @@ class Tower extends Sprite {
                         } else{
                             enemies[i].health = 0;
                         }
-                        // if(enemies[i].type !== "star" || enemies[i].type !== "lightning"){
-                        //     enemies[i].health = 0;
-                        // } else{
-                        //     enemies[i].health -= enemies[i].maxHealth / 5;
-                        //     // enemies[i].health -= 400;
-                        // }
                     }
                 }
                 // enemies.forEach(enemy => {
@@ -294,6 +305,9 @@ class Tower extends Sprite {
             duration = window.performance.now() + this.boostAttackAmount;
             towers.forEach(tower => {
                 tower.attackBoost = true;
+                if(!tower.isDisabled && tower.towerClass !== "Heal" && tower.towerClass !== "AttackBoost" && tower.towerClass !== "SpeedProjectile"){
+                    tower.attackBoostEffect();
+                }
             })
         }
         if(this.towerClass === "Common"){
@@ -359,8 +373,7 @@ class Tower extends Sprite {
                 sfx.towerDestroyed.play();
                 towers.splice(index, 1);
                 qUpgradeMenu.css("display", "none");
-                $(".shopMenu").css("display", "none");
-                $(".upgradeBox").css("display", "none");
+                $(".shopMenu, .upgradeBox").css("display", "none");
             }
         }
 
@@ -375,10 +388,13 @@ class Tower extends Sprite {
 
         if(this.timer < msNow && this.counting && this.towerClass === "Heal"){
             towers.forEach(tower => {
-                if(tower.health + this.specialHealAmount < tower.maxHealth){
-                    tower.health += this.specialHealAmount;
-                } else{
-                    tower.health = tower.maxHealth;
+                if(!tower.isDisabled){
+                    if(tower.health + this.specialHealAmount < tower.maxHealth){
+                        tower.health += this.specialHealAmount;
+                    } else{
+                        tower.health = tower.maxHealth;
+                    }
+                    tower.healthBoostEffect();
                 }
                 this.timer = this.specialTimer;
                 this.startCountdown(this.timer);
@@ -422,33 +438,22 @@ class Tower extends Sprite {
             })
         }
 
-        this.checkSpecials();
+        this.checkSpecials("Heal", "#specialHealButton", "#specialHealLabel", "Heal Tower");
+        this.checkSpecials("AttackBoost", "#attackBoostButton", "#attackBoostLabel", "Attack Boost Tower");
+        this.checkSpecials("SpeedProjectile", "#speedProjectileButton", "#speedProjectileLabel", "Speed Projectile Tower");
+
         if(this.showTowerRange){
             this.showRange();
         }
     }
 
-    checkSpecials(){
-        if(towers.some(tower => tower.towerClass.includes("Heal"))){
-            $("#specialHealButton").css("visibility", "hidden");
-            $("#specialHealLabel").text("[unavailable]");
-        } else{
-            $("#specialHealButton").css("visibility", "visible");
-            $("#specialHealLabel").text("Heal Tower");
-        }
-        if(towers.some(tower => tower.towerClass.includes("AttackBoost"))){
-            $("#attackBoostButton").css("visibility", "hidden");
-            $("#attackBoostLabel").text("[unavailable]");
-        } else{
-            $("#attackBoostButton").css("visibility", "visible");
-            $("#attackBoostLabel").text("Attack Boost Tower");
-        }
-        if(towers.some(tower => tower.towerClass.includes("SpeedProjectile"))){
-            $("#speedProjectileButton").css("visibility", "hidden");
-            $("#speedProjectileLabel").text("[unavailable]");
-        } else{
-            $("#speedProjectileButton").css("visibility", "visible");
-            $("#speedProjectileLabel").text("Speed Projectile Tower");
+    checkSpecials(towerClass, buttonId, labelId, labelText) {
+        if(towers.some(tower => tower.towerClass.includes(towerClass))) {
+            $(buttonId).css("visibility", "hidden");
+            $(labelId).text("[unavailable]");
+        } else {
+            $(buttonId).css("visibility", "visible");
+            $(labelId).text(labelText);
         }
     }
 

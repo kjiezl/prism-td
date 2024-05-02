@@ -54,6 +54,7 @@ class Enemy extends Sprite{
 
         this.inverted = false;
         this.lastTime = window.performance.now();
+        this.lastTime1 = window.performance.now();
         this.startTime = 0;
         this.pausedTime = 0;
     }
@@ -374,10 +375,11 @@ class Enemy extends Sprite{
 
     lightningBoss(){
         let currentTime = window.performance.now();
+        let deltaTime1 = currentTime - this.lastTime1;
         let deltaTime = currentTime - this.lastTime;
         
-        if (deltaTime >= 10 * 1000) {
-            this.lastTime = currentTime;
+        if (deltaTime1 >= 8 * 1000) {
+            this.lastTime1 = currentTime;
     
             towers.forEach(tower => {
                 if(!tower.isDisabled){
@@ -387,7 +389,7 @@ class Enemy extends Sprite{
             })
         }
 
-        if(deltaTime >= 8 * 1000 && !this.inverted){
+        if(deltaTime >= 10 * 1000 && !this.inverted){
             this.lastTime = currentTime;
             shakeCanvas();
             $(canvas).css({ filter: "invert(1)" });
