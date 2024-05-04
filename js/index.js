@@ -66,6 +66,9 @@ let sfx = {
     }),
     buttonClick: new Howl({
         src: ['sfx/button-click.mp3']
+    }),
+    towerDisable: new Howl({
+        src: ['sfx/tower-disable.mp3']
     })
 }
 
@@ -124,6 +127,9 @@ var files = {
         flyingEnemy: "sprites/enemies/flying-enemy.png",
         starEnemy: "sprites/enemies/star-enemy.png",
         lightningEnemy: "sprites/enemies/lightning-enemy.png",
+        scribblesEnemy: "sprites/enemies/scribbles-enemy.png",
+        scribblesEnemy2: "sprites/enemies/scribbles-enemy-2.png",
+        scribblesEnemy3: "sprites/enemies/scribbles-enemy-3.png",
         commonEnemyStriked: "sprites/enemies/common-enemy-striked1.png",
         fastEnemyStriked: "sprites/enemies/fast-enemy-striked1.png",
         rangeEnemyStriked: "sprites/enemies/range-enemy-striked1.png",
@@ -131,6 +137,7 @@ var files = {
         flyingEnemyStriked: "sprites/enemies/flying-enemy-striked1.png",
         starEnemyStriked: "sprites/enemies/star-enemy-striked1.png",
         lightningEnemyStriked: "sprites/enemies/lightning-enemy-striked1.png",
+        scribblesEnemyStriked: "sprites/enemies/scribbles-enemy-striked1.png",
         commonEnemySlowed: "sprites/enemies/common-enemy-slowed.png",
         fastEnemySlowed: "sprites/enemies/fast-enemy-slowed.png",
         rangeEnemySlowed: "sprites/enemies/range-enemy-slowed.png",
@@ -138,6 +145,7 @@ var files = {
         flyingEnemySlowed: "sprites/enemies/flying-enemy-slowed.png",
         starEnemySlowed: "sprites/enemies/star-enemy-slowed.png",
         lightningEnemySlowed: "sprites/enemies/lightning-enemy-slowed.png",
+        scribblesEnemySlowed: "sprites/enemies/scribbles-enemy-slowed.png",
         alien1: "sprites/gameobj/alien-1-34x50.png",
         lightningStrike: "sprites/effects/lightning-strike2.png",
         iced: "sprites/effects/iced.png",
@@ -309,11 +317,10 @@ function startNextWave(){
             } else{
                 currentBGM = bgm.boss1;
             }
+            sfx.towerDisable.play();
     
             // const numTargets = Math.ceil(validTowers.length / 2);
             const numTargets = 1;
-    
-    
             for (let i = 0; i < numTargets; i++) {
                 if (random[i]) {
                     random[i].disableTower();
@@ -329,6 +336,7 @@ function startNextWave(){
             } else{
                 currentBGM = bgm.boss2;
             }
+            sfx.towerDisable.play();
             const numTargets = Math.ceil(validTowers.length / 2);
             for (let i = 0; i < numTargets; i++) {
                 if (random[i]) {
@@ -345,12 +353,6 @@ function startNextWave(){
             } else{
                 currentBGM = bgm.boss3;
             }
-            // const numTargets = Math.ceil(validTowers.length / 2);
-            // for (let i = 0; i < numTargets; i++) {
-            //     if (random[i]) {
-            //         random[i].disableTower();
-            //     }
-            // }
         }
     } else {
         if(!gameOver){
@@ -448,7 +450,6 @@ var gamePaused = false;
 
 let fade = true;
 let lastTime = window.performance.now();
-let idlePause = false;
 
 function animate(){
     window.requestAnimationFrame(animate);
@@ -457,7 +458,6 @@ function animate(){
     const msPassed = msNow - msPrev;
     
     if(msPassed > 1000 && !levelComplete && !isGameOver){
-        idlePause = true;
         pauseGame();
     }
     
@@ -523,7 +523,7 @@ function animate(){
     // if(enemies.length === 0 && !levelComplete){
     //     startCountdown();
     // }
-    if(!wavesDone && !levelComplete){
+    if(!wavesDone && !levelComplete && !gamePaused){
         startCountdown();
     }
 
@@ -564,13 +564,7 @@ function animate(){
 }
 
 function pauseGame(){
-    // gamePaused = !gamePaused;
-    if(idlePause){
-        gamePaused = true;
-        idlePause = false;
-    } else{
-        gamePaused = !gamePaused;
-    }
+    gamePaused = !gamePaused;
     if(isGameOver || levelComplete){
         $("#gamePausedDiv").css("display", "none");
         gamePaused = true;
@@ -849,7 +843,7 @@ function showTowerMenu(){
                 $("#specialUpgrade").text("Increases damage dealt");
                 break;
             case "Sniper":
-                $("#special").text("Eliminates 20% of the enemies in the area");
+                $("#special").text("Deals great damage to 20% of the enemies in the area");
                 $("#specialUpgrade").text("Decreases cooldown time");
                 $("#ability").text("2x more than common towers");
                 $("#abilityDiv").text("Tower Range: ");
@@ -925,7 +919,7 @@ function previewStats(towerClass){
         case "SNIPER TOWER":
             description.text(
                 "Sniper towers have longer range and damage but less fire rate. " +
-                "Special attack eliminates 20% of the enemies in the area. " +
+                "Special attack deals great damage to 20% of the enemies in the area. " +
                 "Can prioritize and target flying enemy types.")
             break;
         case "HEAL TOWER":
@@ -1024,7 +1018,7 @@ $(".musicToggle").click(() => {
     $("#musicButton").toggle();
 });
 
-$("#pause, #resumeButton").click(() => {pauseGame();});
+$("#pause, #resumeButton").click(() => {pauseGame()});
 
 function isClickOnTowerTile(event){
     const towerTiles = placementTiles.filter(tile => tile.isOccupied);
@@ -1146,6 +1140,13 @@ $(window).on('keypress', (e) => {
             }
         }
     }
+    if(e.key === 'k'){
+        towers.forEach(tower => {
+            if(tower.isDisabled){
+                tower.enableTower();
+            }
+        })
+    }
     if(e.key === 'h'){
         hearts -= 1;
     }
@@ -1154,6 +1155,13 @@ $(window).on('keypress', (e) => {
         // sfx.levelCompleteSound.play();
         levelComplete = true;
         pauseGame();
+    }
+    if(e.key === '-'){
+        enemies.forEach(enemy => {
+            if(enemy.type === "scribbles"){
+                enemy.health -= enemy.maxHealth / 3;
+            }
+        })
     }
 });
 

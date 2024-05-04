@@ -165,101 +165,104 @@ levels = [
                 fast: 3
             },
             { // 3
-                flying: 3
+                flying: 5
             },
-            { // 9
+            { // 16
                 common: 6,
-                flying: 3
-            },
-            { // 11
-                fast: 6,
-                range: 5
-            },
-            { // 10
-                range: 10
-            },
-            { // 20
-                common: 10,
                 fast: 5,
-                flying: 5 
+                flying: 5
             },
             { // 17
-                flying: 7,
-                fast: 10
-            },
-            { // 23
-                fast: 7,
-                range: 3,
-                def: 10,
-                flying: 3
-            },
-            { // 33
-                common: 10,
-                fast: 10,
-                range: 5,
-                def: 8
-            },
-            { // 35
-                fast: 20,
-                range: 5,
-                flying: 10
-            },
-            { // 38
-                common: 15,
-                range: 10,
-                def: 10,
-                flying: 3
-            },
-            { // 40
-                fast: 15,
-                def: 15,
-                flying: 10
-            },
-            { // 43
-                common: 20,
-                fast: 10,
-                range: 5,
+                fast: 6,
                 def: 5,
-                flying: 3
+                range: 6
             },
-            { // 45
-                common: 15,
-                fast: 15,
-                range: 5,
-                def: 5,
-                flying: 5
-            },
-            { // 35
-                fast: 25,
-                flying: 10
-            },
-            { // 40
-                range: 15,
-                def: 25
-            },
-            { // 55
-                common: 15,
-                fast: 15,
-                range: 10,
-                def: 10,
-                flying: 5
+            { // 15
+                range: 15
             },
             { // 30
-                def: 20,
-                flying: 10
+                common: 15,
+                fast: 10,
+                flying: 5 
             },
-            { // 58
-                common: 25,
-                fast: 20,
+            { // 40
+                flying: 20,
+                fast: 20
+            },
+            { // 50
+                fast: 15,
                 range: 10,
-                flying: 3
+                def: 10,
+                flying: 15
             },
-            { // 80
+            { // 55
+                common: 20,
+                fast: 15,
+                range: 10,
+                def: 10
+            },
+            { // 55
+                fast: 20,
+                range: 15,
+                flying: 20
+            },
+            { // 75
+                common: 25,
+                range: 20,
+                def: 10,
+                flying: 20
+            },
+            { // 75
+                fast: 25,
+                def: 25,
+                flying: 25
+            },
+            { // 90
+                common: 20,
+                fast: 20,
+                range: 15,
+                def: 20,
+                flying: 15
+            },
+            { // 95
                 common: 25,
                 fast: 25,
                 range: 10,
-                def: 10,
-                flying: 10
+                def: 15,
+                flying: 20
+            },
+            { // 70
+                fast: 40,
+                flying: 30
+            },
+            { // 80
+                range: 15,
+                def: 45,
+                flying: 20
+            },
+            { // 110
+                common: 25,
+                fast: 30,
+                range: 10,
+                def: 20,
+                flying: 25
+            },
+            { // 85
+                def: 50,
+                flying: 35
+            },
+            { // 115
+                common: 40,
+                fast: 25,
+                range: 20,
+                flying: 30
+            },
+            { // 160
+                common: 35,
+                fast: 40,
+                range: 25,
+                def: 30,
+                flying: 30
             },
             { // boss battle
                 scribbles: 1

@@ -107,7 +107,7 @@ class Tower extends Sprite {
             case "Heal":
                 this.maxHealth = 300;
                 this.upgradeCost = 70;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.specialHealAmount = 70;
                 this.towerPrice = 100;
                 this.radius = 500;
@@ -115,7 +115,7 @@ class Tower extends Sprite {
             case "AttackBoost":
                 this.maxHealth = 300;
                 this.upgradeCost = 70;
-                this.specialTimer = 20 * 1000;
+                this.specialTimer = 25 * 1000;
                 this.boostAttackAmount = 3 * 1000;
                 this.attackBoost = false;
                 this.towerPrice = 100;
@@ -164,23 +164,21 @@ class Tower extends Sprite {
         }, 2 * 1000)
     }
 
+    strikedEffect(){
+        layer3Anim.push(new Effect({
+            x: this.center.x - 13,
+            y: this.center.y - 100
+        }, 0, 0, img.lightningStrike, 135.5, 252, 20, 100, 7, 200, 35));
+        setTimeout(() =>{
+            layer3Anim.splice(layer3Anim.length - 1, 1);
+        }, 2 * 1000)
+    }
+
     draw(){
+        super.draw();
         if(this.stateExpiry != 0 && this.stateExpiry < window.performance.now() && !gamePaused) {
             this.stateExpiry = 0;
             this.state = "normal";
-        }
-        
-        switch(this.state) {
-            case "normal":
-                super.draw();
-                break;
-            case "striked":
-                super.draw();
-                layer3Anim.push(new Effect({
-                    x: this.center.x - 13,
-                    y: this.center.y - 100
-                }, 0, 0, img.lightningStrike, 135.5, 252, 20, 100, 7, 200, 35));
-                break;
         }
 
         // health bar
@@ -277,10 +275,11 @@ class Tower extends Sprite {
                 sfx.towerSniper.play();
                 for(let i = 0; i <= enemies.length / 5; i++){
                     if(enemies[i].spawnDelay <= 0){
-                        if(enemies[i].type === "star" || enemies[i].type === "lightning"){
+                        if(enemies[i].type === "star" || enemies[i].type === "lightning" 
+                            || enemies[i].type === "scribbles"){
                             enemies[i].health -= 400;
                         } else{
-                            enemies[i].health = 0;
+                            enemies[i].health -= 40;
                         }
                     }
                 }
@@ -477,6 +476,15 @@ class Tower extends Sprite {
         this.isDisabled = true;
     }
 
+    enableTower(){
+        layer2Anim.splice(0, 1);
+        // layer2Anim.splice(0, layer2Anim.length);
+        this.specialButton.show();
+        this.isDisabled = false;
+        this.counting = true; 
+        this.timer = this.specialTimer;
+        this.startCountdown(this.timer);
+    }
     upgrade(){
         if(coins >= this.upgradeCost){
             if(this.towerLevel < this.levelSprites.length){

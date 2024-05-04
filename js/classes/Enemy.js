@@ -47,6 +47,8 @@ class Enemy extends Sprite{
         
         this.slowedSprite = img[type + "EnemySlowed"];
         this.strikedSprite = img[type + "EnemyStriked"];
+        this.bossSprite2 = img["scribblesEnemy2"];
+        this.bossSprite3 = img["scribblesEnemy3"];
 
         this.getEnemyStats(type);
         this.health += healthMultiplier;
@@ -57,6 +59,8 @@ class Enemy extends Sprite{
         this.lastTime1 = window.performance.now();
         this.startTime = 0;
         this.pausedTime = 0;
+
+        this.towersEnabled = true;
     }
 
     getEnemyStats(type){
@@ -83,8 +87,8 @@ class Enemy extends Sprite{
                 this.points = 20;
                 break;
             case "flying":
-                this.coinDrop = 15;
-                this.health = 3;
+                this.coinDrop = 10;
+                this.health = 5;
                 this.points = 25;
                 break;
             case "star":
@@ -94,9 +98,15 @@ class Enemy extends Sprite{
                 this.points = 100;
                 break;
             case "lightning":
-                this.coinDrop = 200;
+                this.coinDrop = 100;
                 this.health = 3000;
                 this.points = 200;
+                break;
+            case "scribbles":
+                this.coinDrop = 100;
+                this.health = 7000;
+                this.points = 300;
+                this.attackSpeed = 100;
                 break;
             default:
                 this.coinDrop = 2;
@@ -122,6 +132,8 @@ class Enemy extends Sprite{
                 return 1;
             case 'lightning':
                 return 1;
+            case 'scribbles':
+                return 1.2;
             default:
                 return 2;
         }
@@ -143,6 +155,8 @@ class Enemy extends Sprite{
                 return 0.5;
             case 'lightning':
                 return 0.5;
+            case 'scribbles':
+                return 0.7;
             default:
                 return 1;
         }
@@ -182,6 +196,13 @@ class Enemy extends Sprite{
         switch(this.state) {
             case "normal":
                 ctx.drawImage(this.image, posX, posY);
+                if (this.type === "scribbles") {
+                    if (this.health < this.maxHealth && this.health >= 2 * (this.maxHealth / 3)) {
+                        ctx.drawImage(this.bossSprite2, posX, posY);
+                    } else if (this.health < 2 * (this.maxHealth / 3) && this.health > 0) {
+                        ctx.drawImage(this.bossSprite3, posX, posY);
+                    }
+                }
                 break;
             case "slowed":
                 ctx.drawImage(this.slowedSprite, posX, posY);
@@ -278,7 +299,7 @@ class Enemy extends Sprite{
             }
         }
 
-        if (this.type === "range" || this.type === "star" || this.type === "lightning"
+        if (this.type === "range" || this.type === "star" || this.type === "lightning" || this.type === "scribbles"
         && this.state !== "iced" && this.state !== "slowed") {
             if(this.lastShot + this.attackSpeed * 15 < msNow && this.target 
                 && !this.target.isDisabled) {
@@ -301,7 +322,7 @@ class Enemy extends Sprite{
         if (this.health <= 0) {
             const index = enemies.indexOf(this);
             if (index !== -1) {
-                if(this.type === "star" || this.type === "lightning"){
+                if(this.type === "star" || this.type === "lightning" || this.type === "scribbles"){
                     $(canvas).css({ filter: "invert(0)"});
                     $(".specialClass").css({ filter: "invert(0)"});
                     this.inverted = false;
@@ -352,6 +373,10 @@ class Enemy extends Sprite{
         if(this.type === "lightning"){
             this.lightningBoss();
         }
+
+        if(this.type === "scribbles"){
+            this.scribblesBoss();
+        }
     }
 
     starBoss() {
@@ -391,7 +416,7 @@ class Enemy extends Sprite{
             towers.forEach(tower => {
                 if(!tower.isDisabled){
                     tower.health -= 5;
-                    tower.changeState("striked", 200);
+                    tower.strikedEffect();
                 }
             })
         }
@@ -403,6 +428,48 @@ class Enemy extends Sprite{
             $(".specialClass").css({ filter: "invert(1)" });
             this.inverted = true;
         } else if(deltaTime >= 4 * 1000 && this.inverted){
+            this.lastTime = currentTime;
+            shakeCanvas();
+            $(canvas).css({ filter: "invert(0)" });
+            $(".specialClass").css({ filter: "invert(0)" });
+            this.inverted = false;
+        }
+    }
+
+    scribblesBoss(){
+        let currentTime = window.performance.now();
+        let deltaTime1 = currentTime - this.lastTime1;
+        let deltaTime = currentTime - this.lastTime;
+        
+        if (deltaTime1 >= 10 * 1000 && this.towersEnabled) {
+            this.lastTime1 = currentTime;
+            this.towersEnabled = false;
+            sfx.towerDisable.play();
+            let towerClasses = ["Common", "Ice", "Lightning", "Sniper"];
+            let i = Math.floor(Math.random() * towerClasses.length);
+            let randomClass = towerClasses[i];
+
+            towers.forEach(tower => {
+                if(tower.towerClass === randomClass && !tower.isDisabled){
+                    tower.disableTower();
+                }
+            })
+        } else if(deltaTime1 >= 9.5 * 1000 && !this.towersEnabled){
+            this.towersEnabled = true;
+            towers.forEach(tower => {
+                if(tower.isDisabled){
+                    tower.enableTower();
+                }
+            })
+        }
+
+        if(deltaTime >= 8 * 1000 && !this.inverted){
+            this.lastTime = currentTime;
+            shakeCanvas();
+            $(canvas).css({ filter: "invert(1)" });
+            $(".specialClass").css({ filter: "invert(1)" });
+            this.inverted = true;
+        } else if(deltaTime >= 0.2 * 1000 && this.inverted){
             this.lastTime = currentTime;
             shakeCanvas();
             $(canvas).css({ filter: "invert(0)" });
