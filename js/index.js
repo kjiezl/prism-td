@@ -88,6 +88,11 @@ let bgm = {
         loop: true,
         volume: 0.5
     }),
+    level4bgm: new Howl({
+        src: ['endless-level.mp3'],
+        loop: true,
+        volume: 0.5
+    }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
         volume: 0.2,
@@ -115,6 +120,7 @@ var files = {
         level1: "sprites/map/level1.png",
         level2: "sprites/map/level2.png",
         level3: "sprites/map/level3.png",
+        endless: "sprites/map/level4.png",
         portal: "sprites/gameobj/portal1.png",
         portal1: "sprites/gameobj/portal.png",
         flowers: "sprites/gameobj/flowers.png",
@@ -226,6 +232,7 @@ function spawnEnemies(){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        // const enemyTypesEndless = ["common", "fast", "range", "def", "flying"];
         switch(levelParam){
             case 1:
                 enemies.push(
@@ -248,6 +255,16 @@ function spawnEnemies(){
                 );
                 break;
             case 3:
+                enemies.push(
+                    new Enemy({
+                        position: {x: (waypoints[0].x - 90), y: (waypoints[0].y - 96)},
+                        type: randomType,
+                        delay: 500 * i + Math.random() * 3000,
+                        healthMultiplier: 5 * currentWave
+                    })
+                );
+                break;
+            case 4:
                 enemies.push(
                     new Enemy({
                         position: {x: (waypoints[0].x - 90), y: (waypoints[0].y - 96)},
@@ -430,6 +447,16 @@ function restartLevel(){
                 currentBGM.play();
             } else{
                 currentBGM = bgm.level3bgm;
+            }
+            break;
+        case 4:
+            hearts = 20;
+            if(currentBGM.playing()){
+                currentBGM.stop();
+                currentBGM = bgm.level4bgm;
+                currentBGM.play();
+            } else{
+                currentBGM = bgm.level4bgm;
             }
             break;
     }
@@ -700,6 +727,42 @@ $(() => {
                 }, 0, 192, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
 
                 currentBGM = bgm.level3bgm;
+                hearts = 20;
+                waveCountdown = 25 * 1000;
+                $(".selectionLabel").css("color", "white");
+                break;
+            case 4:
+                layer1Anim.push(new Effect({
+                    x: 0,
+                    y: 0,
+                }, 0, 0, img.endless, levels[currentLevel].mapSize[0], levels[currentLevel].mapSize[1], canvas.width, canvas.height, 1, 0, 1));
+                // layer1Anim.push(new Effect({
+                //     x: 192 * 11,
+                //     y: 192 * 4,
+                // }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+                // layer1Anim.push(new Effect({
+                //     x: 20,
+                //     y: 192 * 3
+                // }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                // layer1Anim.push(new Effect({
+                //     x: 192 * 11 + 20,
+                //     y: 192 * 4 + 20
+                // }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+                // layer1Anim.push(new Effect({
+                //     x: 192 * 11 + 150,
+                //     y: 192 * 4 + 130
+                // }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+                
+                // layer1Anim.push(new Effect({
+                //     x: 3 * 192,
+                //     y: 5 * 192 + 100
+                // }, 0, 0, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
+                // layer1Anim.push(new Effect({
+                //     x: 9 * 192,
+                //     y: 3 * 192
+                // }, 0, 192, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
+
+                currentBGM = bgm.level4bgm;
                 hearts = 20;
                 waveCountdown = 25 * 1000;
                 $(".selectionLabel").css("color", "white");

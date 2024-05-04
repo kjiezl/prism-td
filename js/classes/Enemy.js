@@ -119,7 +119,7 @@ class Enemy extends Sprite{
     getSpeed(type){
         switch(type){
             case 'common':
-                return 2;
+                return 10;
             case 'fast':
                 return 2.5;
             case 'range':
@@ -276,7 +276,13 @@ class Enemy extends Sprite{
             this.position.x = waypoints[8].x - this.width / 2;
             this.position.y = waypoints[8].y - this.height / 2;
             this.waypointIndex++;
-        } else{
+        } 
+        else if(this.waypointIndex === 6 && levelParam === 4){
+            this.position.x = waypoints[6].x - this.width / 2;
+            this.position.y = waypoints[6].y - this.height / 2;
+            this.waypointIndex++;
+        }
+        else{
             const yDistance = waypoint.y - this.center.y;
             const xDistance = waypoint.x - this.center.x;
             const angle = Math.atan2(yDistance, xDistance);
