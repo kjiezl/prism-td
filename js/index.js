@@ -693,6 +693,7 @@ $(() => {
                 hearts = 15;
                 waveCountdown = 20 * 1000;
                 $(".selectionLabel").css("color", "rgb(79, 9, 88)");
+                $("#endlessTint").hide();
                 break;
             
             case 3:
@@ -730,6 +731,7 @@ $(() => {
                 hearts = 20;
                 waveCountdown = 25 * 1000;
                 $(".selectionLabel").css("color", "white");
+                $("#endlessTint").hide();
                 break;
             case 4:
                 layer1Anim.push(new Effect({
@@ -766,6 +768,7 @@ $(() => {
                 hearts = 20;
                 waveCountdown = 25 * 1000;
                 $(".selectionLabel").css("color", "white");
+                $("#endlessTint").show();
                 break;
         }
     });

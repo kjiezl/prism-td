@@ -449,6 +449,17 @@ label{
     display: none;
 }
 
+#endlessTint{
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 2496px;
+    height: 2112px;
+    background-image: linear-gradient(rgba(61, 0, 141, 0.459) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 0, 119, 0.568) 100%);
+    pointer-events: none;
+    display: none;
+}
+
 
 /* mobiles etc */
 @media only screen and (max-width: 932px) {

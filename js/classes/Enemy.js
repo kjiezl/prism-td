@@ -119,7 +119,7 @@ class Enemy extends Sprite{
     getSpeed(type){
         switch(type){
             case 'common':
-                return 10;
+                return 2;
             case 'fast':
                 return 2.5;
             case 'range':
