@@ -1,5 +1,5 @@
 class Enemy extends Sprite{
-    constructor({position = {x: 0, y: 0}, type = '', delay = 0, healthMultiplier = 1}){
+    constructor({position = {x: 0, y: 0}, type = '', delay = 0, healthMultiplier = 1, spawnPoint = 1}){
         const spriteSrc = `sprites/enemies/${type}-enemy.png`;
         super({position, imageSrc: spriteSrc});
 
@@ -61,6 +61,7 @@ class Enemy extends Sprite{
         this.pausedTime = 0;
 
         this.towersEnabled = true;
+        this.spawnPoint = spawnPoint;
     }
 
     getEnemyStats(type){
@@ -270,38 +271,96 @@ class Enemy extends Sprite{
         this.target = validTowers[Math.floor(Math.random() * validTowers.length)];
         
         // const waypoint = waypoints[this.waypointIndex];
-        const waypoint = levels[currentLevel].waypoints[this.waypointIndex];
+        if(levelParam !== 4){
+            const waypoint = levels[currentLevel].waypoints[this.waypointIndex];
 
-        if(this.waypointIndex === 8 && levelParam === 3){
-            this.position.x = waypoints[8].x - this.width / 2;
-            this.position.y = waypoints[8].y - this.height / 2;
-            this.waypointIndex++;
-        } 
-        else if(this.waypointIndex === 6 && levelParam === 4){
-            this.position.x = waypoints[6].x - this.width / 2;
-            this.position.y = waypoints[6].y - this.height / 2;
-            this.waypointIndex++;
-        }
-        else{
-            const yDistance = waypoint.y - this.center.y;
-            const xDistance = waypoint.x - this.center.x;
-            const angle = Math.atan2(yDistance, xDistance);
-    
-            this.velocity.x = Math.cos(angle) * this.speed;
-            this.velocity.y = Math.sin(angle) * this.speed;
-            this.position.x += this.velocity.x * frameMultiplier;
-            this.position.y += (this.velocity.y * frameMultiplier);
-            this.center = {
-                x: this.position.x + this.width / 2,
-                y: this.position.y + this.height / 2
-            }
-    
-            if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
-            < Math.abs(this.velocity.x * 3) 
-            && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
-            < Math.abs(this.velocity.y * 3)
-            && this.waypointIndex < waypoints.length - 1){
+            if(this.waypointIndex === 8 && levelParam === 3){
+                this.position.x = waypoints[8].x - this.width / 2;
+                this.position.y = waypoints[8].y - this.height / 2;
                 this.waypointIndex++;
+            }
+            else{
+                const yDistance = waypoint.y - this.center.y;
+                const xDistance = waypoint.x - this.center.x;
+                const angle = Math.atan2(yDistance, xDistance);
+        
+                this.velocity.x = Math.cos(angle) * this.speed;
+                this.velocity.y = Math.sin(angle) * this.speed;
+                this.position.x += this.velocity.x * frameMultiplier;
+                this.position.y += (this.velocity.y * frameMultiplier);
+                this.center = {
+                    x: this.position.x + this.width / 2,
+                    y: this.position.y + this.height / 2
+                }
+        
+                if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
+                < Math.abs(this.velocity.x * 3) 
+                && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
+                < Math.abs(this.velocity.y * 3)
+                && this.waypointIndex < waypoints.length - 1){
+                    this.waypointIndex++;
+                }
+            }
+        } else{
+            if(this.spawnPoint === 1){
+                const waypoint = levels[currentLevel].waypoints1[this.waypointIndex];
+
+                if(this.waypointIndex === 6){
+                    this.position.x = waypoints1[6].x - this.width / 2;
+                    this.position.y = waypoints1[6].y - this.height / 2;
+                    this.waypointIndex++;
+                } else{
+                    const yDistance = waypoint.y - this.center.y;
+                    const xDistance = waypoint.x - this.center.x;
+                    const angle = Math.atan2(yDistance, xDistance);
+                    
+                    this.velocity.x = Math.cos(angle) * this.speed;
+                    this.velocity.y = Math.sin(angle) * this.speed;
+                    this.position.x += this.velocity.x * frameMultiplier;
+                    this.position.y += (this.velocity.y * frameMultiplier);
+                    this.center = {
+                        x: this.position.x + this.width / 2,
+                        y: this.position.y + this.height / 2
+                    }
+                
+                    if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
+                    < Math.abs(this.velocity.x * 3) 
+                    && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
+                    < Math.abs(this.velocity.y * 3)
+                    && this.waypointIndex < waypoints1.length - 1){
+                        this.waypointIndex++;
+                    }
+                }
+            }
+            if(this.spawnPoint === 2){
+                const waypoint = levels[currentLevel].waypoints2[this.waypointIndex];
+
+                if(this.waypointIndex === 6){
+                    this.position.x = waypoints2[6].x - this.width / 2;
+                    this.position.y = waypoints2[6].y - this.height / 2;
+                    this.waypointIndex++;
+                } else{
+                    const yDistance = waypoint.y - this.center.y;
+                    const xDistance = waypoint.x - this.center.x;
+                    const angle = Math.atan2(yDistance, xDistance);
+                    
+                    this.velocity.x = Math.cos(angle) * this.speed;
+                    this.velocity.y = Math.sin(angle) * this.speed;
+                    this.position.x += this.velocity.x * frameMultiplier;
+                    this.position.y += (this.velocity.y * frameMultiplier);
+                    this.center = {
+                        x: this.position.x + this.width / 2,
+                        y: this.position.y + this.height / 2
+                    }
+                
+                    if(Math.abs(Math.round(this.center.x) - Math.round(waypoint.x)) 
+                    < Math.abs(this.velocity.x * 3) 
+                    && Math.abs(Math.round(this.center.y) - Math.round(waypoint.y))
+                    < Math.abs(this.velocity.y * 3)
+                    && this.waypointIndex < waypoints2.length - 1){
+                        this.waypointIndex++;
+                    }
+                }
             }
         }
 
@@ -328,7 +387,8 @@ class Enemy extends Sprite{
         if (this.health <= 0) {
             const index = enemies.indexOf(this);
             if (index !== -1) {
-                if(this.type === "star" || this.type === "lightning" || this.type === "scribbles"){
+                if((this.type === "star" || this.type === "lightning" || this.type === "scribbles")
+                    && levelParam !== 4){
                     $(canvas).css({ filter: "invert(0)"});
                     $(".specialClass").css({ filter: "invert(0)"});
                     this.inverted = false;
@@ -336,6 +396,15 @@ class Enemy extends Sprite{
                     sfx.levelCompleteSound.play();
                     gamePaused = true;
                     showLevelCompleteMenu();
+                }
+                if((this.type === "star" || this.type === "lightning" || this.type === "scribbles")
+                    && levelParam === 4){
+                    $(canvas).css({ filter: "invert(0)"});
+                    $(".specialClass").css({ filter: "invert(0)"});
+                    this.inverted = false;
+                    towers.forEach(tower => {
+                        tower.enableTower();
+                    })
                 }
                 enemies.splice(index, 1);
                 score += this.points;

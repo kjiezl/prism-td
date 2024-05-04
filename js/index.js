@@ -6,10 +6,6 @@ var ctx = canvas.getContext('2d');
 canvas.width = 1920;
 canvas.height = canvas.width / 2;
 
-// level 2
-// canvas.width = 2496;
-// canvas.height = 1728;
-
 ctx.fillStyle = 'white';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -89,7 +85,7 @@ let bgm = {
         volume: 0.5
     }),
     level4bgm: new Howl({
-        src: ['endless-level.mp3'],
+        src: ['bgm/endless-level.mp3'],
         loop: true,
         volume: 0.5
     }),
@@ -160,6 +156,8 @@ var files = {
         towerDisabled: "sprites/towers/tower-disabled.png",
         specialEffects: "sprites/effects/special-effects.png",
         teleportPortal: "sprites/effects/teleport-portal.png",
+        teleportPortalSide: "sprites/effects/teleport-portal-side.png",
+        teleportPortal2Side: "sprites/effects/teleport-portal2-side.png",
     }
 };
 
@@ -198,6 +196,8 @@ let wavesDone = false;
 
 var placementTiles = [];
 var waypoints = [];
+var waypoints1 = [];
+var waypoints2 = [];
 
 require("levelLoaded", () => {
     canvas.width = levels[currentLevel].mapSize[0];
@@ -205,7 +205,12 @@ require("levelLoaded", () => {
     $("#nightTint").css("width", levels[currentLevel].mapSize[0]);
     $("#nightTint").css("height", levels[currentLevel].mapSize[1]);
     
-    waypoints = levels[currentLevel].waypoints;
+    if(levelParam === 4){
+        waypoints1 = levels[currentLevel].waypoints1;
+        waypoints2 = levels[currentLevel].waypoints2;
+    } else{
+        waypoints = levels[currentLevel].waypoints;
+    }
     for(let y = 0; y < levels[currentLevel].tileSize[1]; y++) {
         for(let x = 0; x < levels[currentLevel].tileSize[0]; x++) {
             let currentIndex = (y * levels[currentLevel].tileSize[0]) + x;
@@ -232,7 +237,6 @@ function spawnEnemies(){
     for(let i = 1; i <= spawnCount; i++){
         const enemyTypes = Object.keys(wave);
         const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        // const enemyTypesEndless = ["common", "fast", "range", "def", "flying"];
         switch(levelParam){
             case 1:
                 enemies.push(
@@ -264,16 +268,6 @@ function spawnEnemies(){
                     })
                 );
                 break;
-            case 4:
-                enemies.push(
-                    new Enemy({
-                        position: {x: (waypoints[0].x - 90), y: (waypoints[0].y - 96)},
-                        type: randomType,
-                        delay: 500 * i + Math.random() * 3000,
-                        healthMultiplier: 5 * currentWave
-                    })
-                );
-                break;
         }
     }
 }
@@ -282,6 +276,9 @@ let waveStartTime = 0;
 let waveCountdown = 0;
 let levelComplete = false;
 let isGameOver = false;
+let spawnCount = 3;
+let spawnCountInc = 0.35;
+let spawnPoint = 1;
 
 function startCountdown(){
     if(waveStartTime === 0){
@@ -311,13 +308,75 @@ $("#countdownSVG").click(() => {
     startNextWave();
 });
 
+function endlessSpawn(spawnCount){
+    if((currentWave + 1) % 10 === 0){
+        let bossType;
+        if ((currentWave + 1) % 20 === 0) {
+            bossType = "lightning";
+        } else if ((currentWave + 1) % 30 === 0) {
+            bossType = "scribbles";
+        } else {
+            bossType = "star";
+        }
+
+        let i;
+        spawnPoint === 1 ? i = waypoints1 : i = waypoints2;
+
+        enemies.push(
+            new Enemy({
+                position: {x: (i[0].x - 90), y: (i[0].y - 96)},
+                type: bossType,
+                delay: 500 + Math.random() * 3000,
+                healthMultiplier: 5 * currentWave,
+                spawnPoint: spawnPoint
+            })
+        );
+    }
+    for(let i = 0; i < spawnCount; i++){
+        let enemyTypes = ["common"];
+        if(currentWave > 2 - 1) enemyTypes.push("fast");
+        if(currentWave > 5 - 1) enemyTypes.push("range");
+        if(currentWave > 8 - 1) enemyTypes.push("def");
+        if(currentWave > 12 - 1) enemyTypes.push("flying");
+        const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        let j;
+        spawnPoint === 1 ? j = waypoints1 : j = waypoints2;
+        enemies.push(
+            new Enemy({
+                position: {x: (j[0].x - 90), y: (j[0].y - 96)},
+                type: randomType,
+                delay: 500 * i + Math.random() * 3000,
+                healthMultiplier: 5 * currentWave,
+                spawnPoint: spawnPoint
+            })
+        );
+        spawnPoint++;
+        if (spawnPoint > 2) {
+            spawnPoint = 1;
+        }
+    }
+}
+
 function startNextWave(){
     sfx.nextWave.play();
     $("#countdown").text(Math.ceil((waveCountdown / 1000)));   
     waveStartTime = 0;
-    // currentWave++;
 
-    if (currentWave < levels[currentLevel].waveCount - 1) {
+    if(levelParam === 4){
+        currentWave++;
+        if(spawnCountInc < 0.1){
+            spawnCountInc += 0.02;
+        } else if(spawnCountInc >= 0.35){
+            spawnCountInc -= 0.02;
+        } else{
+            spawnCountInc -= 0.02;
+        }
+        spawnCount += Math.ceil(spawnCount * spawnCountInc);
+        console.log(spawnCountInc + " " + spawnCount);
+        endlessSpawn(spawnCount);
+    }
+
+    if (currentWave < levels[currentLevel].waveCount - 1 && levelParam !== 4) {
         currentWave++;
         spawnEnemies();
         const validTowers = towers.filter((tower) => {
@@ -451,6 +510,7 @@ function restartLevel(){
             break;
         case 4:
             hearts = 20;
+            spawnCount = 5;
             if(currentBGM.playing()){
                 currentBGM.stop();
                 currentBGM = bgm.level4bgm;
@@ -500,7 +560,11 @@ function animate(){
     }
     msPrev = msNow;
 
-    $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
+    if(levelParam !== 4){
+        $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
+    } else{
+        $("#wavesID").text(currentWave + 1);
+    }
     $(".score").text(score);
     qCoins.text(coins);
     $("#hearts").text(hearts);
@@ -532,13 +596,29 @@ function animate(){
         let enemy = enemies[i];
         enemy.update();
 
-        if(enemy.waypointIndex == waypoints.length - 1 && levels[currentLevel].enemyCheck(enemy.position)){
-            hearts -= 1;
-            enemies.splice(i, 1);
-            shakeCanvas();
-
-            if(enemy.type === "star" || enemy.type === "lightning" || enemy.type === "scribbles"){
-                hearts = 0;
+        if(levelParam !== 4){
+            if(enemy.waypointIndex == waypoints.length - 1 && levels[currentLevel].enemyCheck(enemy.position)){
+                hearts -= 1;
+                enemies.splice(i, 1);
+                shakeCanvas();
+    
+                if(enemy.type === "star" || enemy.type === "lightning" || enemy.type === "scribbles"){
+                    hearts = 0;
+                }
+            }
+        } else{
+            const lastWaypoint1 = waypoints1.length - 1;
+            const lastWaypoint2 = waypoints2.length - 1;
+        
+            if ((enemy.spawnPoint === 1 && enemy.waypointIndex === lastWaypoint1 && levels[currentLevel].enemyCheck(enemy.position)) ||
+                (enemy.spawnPoint === 2 && enemy.waypointIndex === lastWaypoint2 && levels[currentLevel].enemyCheck2(enemy.position))) {
+                hearts -= 1;
+                enemies.splice(i, 1);
+                shakeCanvas();
+        
+                if (["star", "lightning", "scribbles"].includes(enemy.type)) {
+                    hearts = 0;
+                }
             }
         }
     }
@@ -624,7 +704,7 @@ function pauseGame(){
 }
 
 $(() => {
-    document.title = "LEVEL " + levelParam;
+    levelParam !== 4 ? document.title = "LEVEL " + levelParam : document.title = "ENDLESS MODE";
     require("levelLoaded", () => {
         switch(levelParam){
             case 1:
@@ -738,31 +818,43 @@ $(() => {
                     x: 0,
                     y: 0,
                 }, 0, 0, img.endless, levels[currentLevel].mapSize[0], levels[currentLevel].mapSize[1], canvas.width, canvas.height, 1, 0, 1));
-                // layer1Anim.push(new Effect({
-                //     x: 192 * 11,
-                //     y: 192 * 4,
-                // }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
-                // layer1Anim.push(new Effect({
-                //     x: 20,
-                //     y: 192 * 3
-                // }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
-                // layer1Anim.push(new Effect({
-                //     x: 192 * 11 + 20,
-                //     y: 192 * 4 + 20
-                // }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
-                // layer1Anim.push(new Effect({
-                //     x: 192 * 11 + 150,
-                //     y: 192 * 4 + 130
-                // }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
+                layer1Anim.push(new Effect({
+                    x: 192 * 6,
+                    y: 192 * 5,
+                }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
+                layer1Anim.push(new Effect({
+                    x: 192 * 8 + 20,
+                    y: 192 * 2
+                }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                layer1Anim.push(new Effect({
+                    x: 192 * 2 + 20,
+                    y: 192 * 7 + 40
+                }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                layer1Anim.push(new Effect({
+                    x: 192 * 6 + 20,
+                    y: 192 * 5 + 20
+                }, 0, 0, img.crystal, 16, 32, 24, 40, 12, 0, 36));
+                layer1Anim.push(new Effect({
+                    x: 192 * 6 + 150,
+                    y: 192 * 5 + 130
+                }, 0, 0, img.crystal, 16, 32, 20, 36, 12, 0, 36));
                 
-                // layer1Anim.push(new Effect({
-                //     x: 3 * 192,
-                //     y: 5 * 192 + 100
-                // }, 0, 0, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
-                // layer1Anim.push(new Effect({
-                //     x: 9 * 192,
-                //     y: 3 * 192
-                // }, 0, 192, img.teleportPortal, 192, 192, 192, 100, 8, 0, 8));
+                layer1Anim.push(new Effect({
+                    x: 11 * 192,
+                    y: 5 * 192
+                }, 0, 0, img.teleportPortalSide, 192, 192, 100, 192, 8, 0, 8));
+                layer1Anim.push(new Effect({
+                    x: 8 * 192 - 100,
+                    y: 5 * 192
+                }, 0, 192, img.teleportPortalSide, 192, 192, 100, 192, 8, 0, 8));
+                layer1Anim.push(new Effect({
+                    x: 5 * 192,
+                    y: 5 * 192
+                }, 0, 0, img.teleportPortal2Side, 192, 192, 100, 192, 8, 0, 8));
+                layer1Anim.push(new Effect({
+                    x: 2 * 192 - 100,
+                    y: 5 * 192
+                }, 0, 192, img.teleportPortal2Side, 192, 192, 100, 192, 8, 0, 8));
 
                 currentBGM = bgm.level4bgm;
                 hearts = 20;
@@ -1224,7 +1316,7 @@ $(window).on('keypress', (e) => {
     }
     if(e.key === '-'){
         enemies.forEach(enemy => {
-            if(enemy.type === "scribbles"){
+            if(enemy.type === "scribbles" || enemy.type === "lightning" || enemy.type === "star"){
                 enemy.health -= enemy.maxHealth / 3;
             }
         })
