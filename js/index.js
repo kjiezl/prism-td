@@ -87,7 +87,7 @@ let bgm = {
     level4bgm: new Howl({
         src: ['bgm/endless-level.mp3'],
         loop: true,
-        volume: 0.5
+        volume: 0.3
     }),
     gameOver: new Howl({
         src: ['bgm/gameover.mp3'],
@@ -198,6 +198,8 @@ var placementTiles = [];
 var waypoints = [];
 var waypoints1 = [];
 var waypoints2 = [];
+
+var showLevelInfo = false;
 
 require("levelLoaded", () => {
     canvas.width = levels[currentLevel].mapSize[0];
@@ -317,7 +319,7 @@ function endlessSpawn(spawnCount){
             bossType = "scribbles";
         } else {
             bossType = "star";
-        }
+        }   
 
         let i;
         spawnPoint === 1 ? i = waypoints1 : i = waypoints2;
@@ -379,10 +381,6 @@ function startNextWave(){
     if (currentWave < levels[currentLevel].waveCount - 1 && levelParam !== 4) {
         currentWave++;
         spawnEnemies();
-        const validTowers = towers.filter((tower) => {
-            return !tower.isGonnaBeDead;
-        })
-        const random = validTowers.sort(() => Math.random() - 0.5);
 
         if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 1){
             wavesDone = true;
@@ -393,15 +391,6 @@ function startNextWave(){
             } else{
                 currentBGM = bgm.boss1;
             }
-            sfx.towerDisable.play();
-    
-            // const numTargets = Math.ceil(validTowers.length / 2);
-            const numTargets = 1;
-            for (let i = 0; i < numTargets; i++) {
-                if (random[i]) {
-                    random[i].disableTower();
-                }
-            }
         }
         else if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 2){
             wavesDone = true;
@@ -411,13 +400,6 @@ function startNextWave(){
                 currentBGM.play();
             } else{
                 currentBGM = bgm.boss2;
-            }
-            sfx.towerDisable.play();
-            const numTargets = Math.ceil(validTowers.length / 2);
-            for (let i = 0; i < numTargets; i++) {
-                if (random[i]) {
-                    random[i].disableTower();
-                }
             }
         }
         else if(currentWave === levels[currentLevel].waveCount - 1 && levelParam === 3){
@@ -544,7 +526,7 @@ function animate(){
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
     
-    if(msPassed > 1000 && !levelComplete && !isGameOver){
+    if(msPassed > 1000 && !levelComplete && !isGameOver && !showLevelInfo){
         pauseGame();
     }
     
@@ -560,16 +542,24 @@ function animate(){
     }
     msPrev = msNow;
 
+    if(showLevelInfo){
+        $(".levelInfo").fadeIn(500);
+        $("#gamePausedDiv").css("display", "none");
+
+        // gamePaused = false;
+    }
+
     if(levelParam !== 4){
-        $("#wavesID").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
+        $(".waves").text(currentWave + 1 + " / " + levels[currentLevel].waveCount);
     } else{
-        $("#wavesID").text(currentWave + 1);
+        $(".waves").text(currentWave + 1);
     }
     $(".score").text(score);
     qCoins.text(coins);
     $("#hearts").text(hearts);
     $("#currentLevel").text(levelParam);
-    
+    $(".wavesMax").text(levelParam !== 4 ? levels[currentLevel].waveCount : "INFINITE");
+        
     for(let i = 0; i < layer1Anim.length; i++) {
         layer1Anim[i].update();
         if(layer1Anim[i].isDone()) {
@@ -630,7 +620,7 @@ function animate(){
     // if(enemies.length === 0 && !levelComplete){
     //     startCountdown();
     // }
-    if(!wavesDone && !levelComplete && !gamePaused){
+    if(!wavesDone && !levelComplete && !gamePaused && !showLevelInfo){
         startCountdown();
     }
 
@@ -705,6 +695,7 @@ function pauseGame(){
 
 $(() => {
     levelParam !== 4 ? document.title = "LEVEL " + levelParam : document.title = "ENDLESS MODE";
+    $(".levelName").text(levelParam !== 4 ? "LEVEL " + levelParam : "ENDLESS MODE");
     require("levelLoaded", () => {
         switch(levelParam){
             case 1:
@@ -745,6 +736,8 @@ $(() => {
                 hearts = 10;
                 waveCountdown = 20 * 1000;
                 $(".selectionLabel").css("color", "rgb(16, 88, 9)");
+                $(".levelEnemies").text("COMMON, FAST, RANGED");
+                $(".levelBoss").text("STAR");
                 break;
 
             case 2:
@@ -774,6 +767,8 @@ $(() => {
                 waveCountdown = 20 * 1000;
                 $(".selectionLabel").css("color", "rgb(79, 9, 88)");
                 $("#endlessTint").hide();
+                $(".levelEnemies").text("COMMON, FAST, RANGED, DEF");
+                $(".levelBoss").text("CROSS LIGHTNINGS");
                 break;
             
             case 3:
@@ -812,6 +807,8 @@ $(() => {
                 waveCountdown = 25 * 1000;
                 $(".selectionLabel").css("color", "white");
                 $("#endlessTint").hide();
+                $(".levelEnemies").text("COMMON, FAST, RANGED, DEF, FLYING");
+                $(".levelBoss").text("SCRIBBLES");
                 break;
             case 4:
                 layer1Anim.push(new Effect({
@@ -860,7 +857,9 @@ $(() => {
                 hearts = 20;
                 waveCountdown = 25 * 1000;
                 $(".selectionLabel").css("color", "white");
-                $("#endlessTint").show();
+                $("#endlessTint").hide();
+                $(".levelEnemies").text("COMMON, FAST, RANGED, DEF, FLYING");
+                $(".levelBoss").text("STAR, CROSS LIGHTNINGS, SCRIBBLES");
                 break;
         }
     });
@@ -880,6 +879,9 @@ $(() => {
         let total = Object.keys(files.images).length;
         if(loaded >= total) {
             console.log("All assets loaded");
+            $(".loaderContainer").fadeOut(200);
+            pauseGame();
+            showLevelInfo = true;
             clearInterval(loaderId);
             require(() => {
                 return placementTiles.length > 0 ? true : false;
@@ -887,7 +889,7 @@ $(() => {
         } else {
             console.log("Loaded " + loaded + " of " + total + " assets");
         }
-    }, 400);
+    }, 5000);
 
 });
 
@@ -1099,7 +1101,16 @@ function showLevelCompleteMenu(){
     $(".levelCompleteMenu").css("display", "flex");
 }
 
-$(".restartButton, #resumeButton, svg").click(() => {sfx.buttonClick.play()});
+$(".startButton").click(() => {
+    $(".levelInfo").fadeOut(200); 
+    pauseGame();
+    currentBGM.play();
+    $("#musicPause").toggle();
+    $("#musicButton").toggle();
+    showLevelInfo = false;
+})
+
+$(".restartButton, #resumeButton, svg, .startButton").click(() => {sfx.buttonClick.play()});
 
 $("#shopButton").click(() => {
     qUpgradeMenu.fadeOut(150);
@@ -1306,7 +1317,10 @@ $(window).on('keypress', (e) => {
         })
     }
     if(e.key === 'h'){
-        hearts -= 1;
+        hearts -= 5;
+    }
+    if(e.key === '='){
+        score += 10;
     }
     if(e.key === 'c'){
         showLevelCompleteMenu();

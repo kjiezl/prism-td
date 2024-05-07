@@ -403,7 +403,9 @@ class Enemy extends Sprite{
                     $(".specialClass").css({ filter: "invert(0)"});
                     this.inverted = false;
                     towers.forEach(tower => {
-                        tower.enableTower();
+                        if(tower.isDisabled){
+                            tower.enableTower();
+                        }
                     })
                 }
                 enemies.splice(index, 1);
@@ -455,6 +457,14 @@ class Enemy extends Sprite{
     }
 
     starBoss() {
+        const validTowers = towers.filter((tower) => {
+            return !tower.isGonnaBeDead;
+        })
+        const random = validTowers.sort(() => Math.random() - 0.5);
+
+        // const numTargets = Math.ceil(validTowers.length / 2);
+        let numTargets = levelParam === 1 ? 1 : 3;
+
         let currentTime = window.performance.now();
         let deltaTime = currentTime - this.lastTime;
     
@@ -462,6 +472,12 @@ class Enemy extends Sprite{
             if (deltaTime >= 3000) {
                 this.initialDelayElapsed = true;
                 this.lastTime = currentTime;
+                sfx.towerDisable.play();
+                for (let i = 0; i < numTargets; i++) {
+                    if (random[i]) {
+                        random[i].disableTower();
+                    }
+                }
             }
         } else if (deltaTime >= 1000) {
             this.lastTime = currentTime;
@@ -481,9 +497,28 @@ class Enemy extends Sprite{
     }
 
     lightningBoss(){
+        const validTowers = towers.filter((tower) => {
+            return !tower.isGonnaBeDead;
+        })
+        const random = validTowers.sort(() => Math.random() - 0.5);
+
+        const numTargets = Math.ceil(validTowers.length / 2);
+
         let currentTime = window.performance.now();
         let deltaTime1 = currentTime - this.lastTime1;
         let deltaTime = currentTime - this.lastTime;
+
+        if(!this.disableTowerLightning){
+            if(deltaTime >= 200){
+                sfx.towerDisable.play();
+                for (let i = 0; i < numTargets; i++) {
+                    if (random[i]) {
+                        random[i].disableTower();
+                    }
+                }
+                this.disableTowerLightning = true;
+            }
+        }
         
         if (deltaTime1 >= 8 * 1000) {
             this.lastTime1 = currentTime;

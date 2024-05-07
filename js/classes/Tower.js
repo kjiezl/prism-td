@@ -129,11 +129,6 @@ class Tower extends Sprite {
                 break;
         }
     }
-
-    changeState(state, expiry) {
-        this.state = state;
-        this.stateExpiry = window.performance.now() + expiry;
-    }
     
     explode() {
         if(this.hasExploded == true) return;
@@ -216,6 +211,15 @@ class Tower extends Sprite {
                 ctx.fill();
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.stroke();
+                break;
+            case 4:
+                ctx.beginPath();
+                ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
                 ctx.stroke();
                 break;
         }

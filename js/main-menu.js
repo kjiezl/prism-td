@@ -16,6 +16,10 @@ $(function() {
             alert("Please rotate to landscape mode");
         }
     }, 100, window);
+
+    setTimeout(() => {
+        $(".loaderContainer").fadeOut(500);
+    }, 2000)
     
     $('.menu-toggle-btn').click(function () {
       $('.menu-toggle-btn').toggleClass("effect");
