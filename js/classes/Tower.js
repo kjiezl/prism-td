@@ -35,10 +35,14 @@ class Tower extends Sprite {
 
         this.levelSprites = [
             imageSrc,
-            "sprites/towers/" + towerClass + "-tower-2.png",
-            "sprites/towers/" + towerClass + "-tower-3.png",
-            "sprites/towers/" + towerClass + "-tower-4.png",
-            "sprites/towers/" + towerClass + "-tower-5.png"
+            // "sprites/towers/" + towerClass + "-tower-2.png",
+            // "sprites/towers/" + towerClass + "-tower-3.png",
+            // "sprites/towers/" + towerClass + "-tower-4.png",
+            // "sprites/towers/" + towerClass + "-tower-5.png"
+            `sprites/towers/${towerClass}-tower-2.png`,
+            `sprites/towers/${towerClass}-tower-3.png`,
+            `sprites/towers/${towerClass}-tower-4.png`,
+            `sprites/towers/${towerClass}-tower-5.png`
         ];
 
         this.state = "normal";
