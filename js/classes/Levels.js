@@ -13,54 +13,55 @@ levels = [
                 fast: 4,
                 range: 3
             },
-            { // 21
+            { // 18
                 common: 10,
                 fast: 6,
-                range: 5
+                range: 3
             },
             { // 20
                 fast: 20
             },
-            { // 16
-                fast: 8,
+            { // 18
+                fast: 10,
                 range: 8
             },
-            { // 26
-                common: 12,
-                fast: 8,
-                range: 6
-            },
-            { // 27
+            { // 22
                 common: 10,
-                fast: 12,
+                fast: 8,
+                range: 4
+            },
+            { // 20
+                common: 10,
+                fast: 7,
+                range: 3
+            },
+            { // 20
+                common: 10,
+                fast: 5,
                 range: 5
             },
-            { // 27
-                common: 10,
+            { // 17
                 fast: 10,
                 range: 7
             },
-            { // 15
-                range: 15
+            { // 20
+                common: 10,
+                fast: 5,
+                range: 5
             },
-            { // 38
-                common: 15,
-                fast: 13,
-                range: 10
-            },
-            { // 35
-                fast: 20,
-                range: 15
-            },
-            { // 52
-                common: 25,
+            { // 20
                 fast: 15,
-                range: 12
+                range: 5
             },
-            { // 55
-                common: 20,
-                fast: 20,
-                range: 15
+            { // 25
+                common: 10,
+                fast: 10,
+                range: 5
+            },
+            { // 30
+                common: 12,
+                fast: 12,
+                range: 6
             },
             { //boss battle
                 star: 1

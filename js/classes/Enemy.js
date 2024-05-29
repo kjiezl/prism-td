@@ -105,7 +105,7 @@ class Enemy extends Sprite{
                 break;
             case "scribbles":
                 this.coinDrop = 100;
-                this.health = 7000;
+                this.health = 6300;
                 this.points = 300;
                 this.attackSpeed = 100;
                 break;
@@ -395,6 +395,8 @@ class Enemy extends Sprite{
                     levelComplete = true;
                     sfx.levelCompleteSound.play();
                     gamePaused = true;
+                    updateScore(levelParam, score);
+                    updateProgress(levelParam);
                     showLevelCompleteMenu();
                 }
                 if((this.type === "star" || this.type === "lightning" || this.type === "scribbles")
@@ -498,11 +500,11 @@ class Enemy extends Sprite{
 
     lightningBoss(){
         const validTowers = towers.filter((tower) => {
-            return !tower.isGonnaBeDead;
+            return !tower.isGonnaBeDead && !tower.isDisabled;
         })
         const random = validTowers.sort(() => Math.random() - 0.5);
 
-        const numTargets = Math.ceil(validTowers.length / 2);
+        const numTargets = Math.ceil(validTowers.length / 3);
 
         let currentTime = window.performance.now();
         let deltaTime1 = currentTime - this.lastTime1;
@@ -510,6 +512,7 @@ class Enemy extends Sprite{
 
         if(!this.disableTowerLightning){
             if(deltaTime >= 200){
+                this.lastTime = currentTime;
                 sfx.towerDisable.play();
                 for (let i = 0; i < numTargets; i++) {
                     if (random[i]) {
@@ -520,12 +523,12 @@ class Enemy extends Sprite{
             }
         }
         
-        if (deltaTime1 >= 8 * 1000) {
+        if (deltaTime1 >= 6 * 1000) {
             this.lastTime1 = currentTime;
     
             towers.forEach(tower => {
                 if(!tower.isDisabled){
-                    tower.health -= 5;
+                    tower.health -= 10;
                     tower.strikedEffect();
                 }
             })

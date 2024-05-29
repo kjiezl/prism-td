@@ -1,5 +1,28 @@
 "use strict";
 
+const socket = io("ws://localhost:3001");
+
+let username = "player";
+
+// function getUsername(){
+//     // console.log(`Using socketId: ${socketId}`);
+//     socket.emit("get-username", socketId);
+//     // console.log(`emitted socketid: ${socketId}`)
+
+//     socket.on("send-username", name => {
+//         username = name;
+//         console.log(`on server: ${name}, on client: ${username}`);
+//     })
+// }
+
+function updateScore(level, score) {
+    socket.emit("update-score", { username, level, score });
+}
+
+function updateProgress(level) {
+    socket.emit("update-progress", { username, level });
+}
+
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 
@@ -177,6 +200,8 @@ function getParam(param){
 }
 
 var levelParam = getParam("level");
+var socketId = getParam("user");
+
 // console.log("level: " + parseInt(levelParam));
 
 levelParam = levelParam == null ? 1 : parseInt(levelParam);
@@ -200,6 +225,7 @@ var waypoints1 = [];
 var waypoints2 = [];
 
 var showLevelInfo = false;
+var enableScrolling = false;
 
 require("levelLoaded", () => {
     canvas.width = levels[currentLevel].mapSize[0];
@@ -635,6 +661,8 @@ function animate(){
         $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
         $("#gameOver").fadeIn(150).css("display", "flex");  
         isGameOver = true;
+        updateScore(levelParam, score);
+        updateProgress(levelParam);
     }
     
     for(let i = 0; i < layer3Anim.length; i++) {
@@ -821,12 +849,12 @@ $(() => {
                 }, 0, 0, img.base, 192, 192, 192, 192, 1, 0, 1));
                 layer1Anim.push(new Effect({
                     x: 192 * 8 + 20,
-                    y: 192 * 2
-                }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                    y: 192 * 2 + 180
+                }, 0, 0, img.portal1, 192, 192, 500, 100, 6, 0, 12));
                 layer1Anim.push(new Effect({
                     x: 192 * 2 + 20,
-                    y: 192 * 7 + 40
-                }, 0, 0, img.portal1, 192, 192, 500, 270, 6, 0, 12));
+                    y: 192 * 7 + 100
+                }, 0, 0, img.portal1, 192, 192, 500, 100, 6, 0, 12));
                 layer1Anim.push(new Effect({
                     x: 192 * 6 + 20,
                     y: 192 * 5 + 20
@@ -879,7 +907,7 @@ $(() => {
         let total = Object.keys(files.images).length;
         if(loaded >= total) {
             console.log("All assets loaded");
-            $(".loaderContainer").fadeOut(200);
+            $(".loaderContainer").fadeOut(500);
             pauseGame();
             showLevelInfo = true;
             clearInterval(loaderId);
@@ -1034,13 +1062,13 @@ function showTowerMenu(){
 }
 
 $("#commonTowerButton").click(() => placeTower("Common"));
-$("#commonTowerButton").hover(() => previewStats("COMMON TOWER"), () =>{$(".previewMenu").fadeOut(10)});
+$("#commonTowerButton").hover(() => previewStats("[ 5 ] COMMON TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#iceTowerButton").click(() => placeTower("Ice"));
-$("#iceTowerButton").hover(() => previewStats("ICE TOWER"), () =>{$(".previewMenu").fadeOut(10)});
+$("#iceTowerButton").hover(() => previewStats("[ 5 ] ICE TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#lightningTowerButton").click(() => placeTower("Lightning"));
-$("#lightningTowerButton").hover(() => previewStats("LIGHTNING TOWER"), () =>{$(".previewMenu").fadeOut(10)});
+$("#lightningTowerButton").hover(() => previewStats("[ 5 ] LIGHTNING TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 $("#sniperTowerButton").click(() => placeTower("Sniper"));
-$("#sniperTowerButton").hover(() => previewStats("SNIPER TOWER"), () =>{$(".previewMenu").fadeOut(10)});
+$("#sniperTowerButton").hover(() => previewStats("[ 5 ] SNIPER TOWER"), () =>{$(".previewMenu").fadeOut(10)});
 
 function placeTower(towerClass){
     towers.forEach(tower => {tower.showTowerRange = false});
@@ -1060,23 +1088,23 @@ function previewStats(towerClass){
     let description = $("#previewDescription");
     $("#previewTower").text(towerClass);
     switch(towerClass){
-        case "COMMON TOWER":
+        case "[ 5 ] COMMON TOWER":
             description.text(
                 "Common towers at level 1 can be upgraded into special towers. " +
                 "Special attack increases fire rate for a certain time.")
             break;
-        case "ICE TOWER":
+        case "[ 5 ] ICE TOWER":
             description.text(
                 "Ice towers slow down enemies once hit. " + 
                 "Special attack freezes all enemies in the area for a certain time.")
             break;
-        case "LIGHTNING TOWER":
+        case "[ 5 ] LIGHTNING TOWER":
             description.text(
                 "Lightning towers can strike multiple enemies at once with a smaller range. " + 
                 "Special attack strikes all enemies in the area. " + 
                 "Lightning will undo ice tower attacks.")
             break;
-        case "SNIPER TOWER":
+        case "[ 5 ] SNIPER TOWER":
             description.text(
                 "Sniper towers have longer range and damage but less fire rate. " +
                 "Special attack deals great damage to 20% of the enemies in the area. " +
@@ -1108,6 +1136,7 @@ $(".startButton").click(() => {
     $("#musicPause").toggle();
     $("#musicButton").toggle();
     showLevelInfo = false;
+    enableScrolling = true;
 })
 
 $(".restartButton, #resumeButton, svg, .startButton").click(() => {sfx.buttonClick.play()});
@@ -1214,7 +1243,7 @@ var autoScroll = {
 };
 
 setInterval(() => {
-    if(gamePaused) {
+    if(gamePaused || !enableScrolling) {
         autoScroll.up = autoScroll.down = autoScroll.left = autoScroll.right = false;
         return;
     }
@@ -1326,6 +1355,8 @@ $(window).on('keypress', (e) => {
         showLevelCompleteMenu();
         // sfx.levelCompleteSound.play();
         levelComplete = true;
+        updateScore(levelParam, score);
+        updateProgress(levelParam);
         pauseGame();
     }
     if(e.key === '-'){
@@ -1364,3 +1395,11 @@ function shakeCanvas(){
 
     shake();
 }
+
+// function updateScore(username, level, score) {
+//     socket.emit("update-score", { username, level, score });
+// }
+
+// function updateProgress(username, level) {
+//     socket.emit("update-progress", { username, level });
+// }

@@ -415,7 +415,7 @@ class Tower extends Sprite {
             })
         }
 
-        if(this.timer < msNow && this.counting && this.towerClass === "AttackBoost"){
+        if(!this.isDisabled && this.timer < msNow && this.counting && this.towerClass === "AttackBoost"){
             this.boostAttack();
             this.timer = this.specialTimer;
             this.startCountdown(this.timer);
@@ -428,7 +428,7 @@ class Tower extends Sprite {
             this.commonActive = false;
         }
 
-        if(this.counting && this.towerClass !== "SpeedProjectile"){
+        if(!this.isDisabled && this.counting && this.towerClass !== "SpeedProjectile"){
             this.specialButton.html(Math.ceil((this.timer - msNow) / 1000));
         }
 
@@ -478,6 +478,7 @@ class Tower extends Sprite {
         }, 0, 0, img.towerDisabled, 192, 192, 192, 192, 1, 0, 1));
         this.specialButton.hide();
         this.isDisabled = true;
+        this.counting = false;
     }
 
     enableTower(){

@@ -1,0 +1,10 @@
+{
+  "name": "prism-td",
+  "version": "0.0.1",
+  "description": "tower defense web game",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.3.4",
+    "socket.io": "^4.7.5"
+  }
+}

@@ -7,8 +7,8 @@
     <link rel="icon" type="image/x-icon" href="sprites/gameobj/base.png">
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="main-menu.css">
+    <script src="http://localhost:3001/socket.io/socket.io.js"></script>
 </head>
-
 
 <body>
     <div id="bg"></div>
@@ -18,6 +18,7 @@
             <div class="content">
                 <h3>LEVEL 1</h3>
                 <a href="index.html?level=1"><button>PLAY</button></a>
+                <div class="scores" id="score1">SCORE: <span id="level1Score">0</span></div>
             </div>
         </div>
         <div class="feature">
@@ -25,6 +26,7 @@
             <div class="content">
                 <h3>LEVEL 2</h3>
                 <a href="index.html?level=2"><button>PLAY</button></a>
+                <div class="scores" id="score2">SCORE: <span id="level2Score">0</span></div>
             </div>
         </div>
         <div class="feature">
@@ -32,6 +34,7 @@
             <div class="content">
                 <h3>LEVEL 3</h3>
                 <a href="index.html?level=3"><button>PLAY</button></a>
+                <div class="scores" id="score3">SCORE: <span id="level3Score">0</span></div>
             </div>
         </div>
         <div class="feature">
@@ -39,6 +42,7 @@
             <div class="content">
                 <h3>ENDLESS MODE</h3>
                 <a href="index.html?level=4"><button>PLAY</button></a>
+                <div class="scores" id="score4">SCORE: <span id="level4Score">0</span></div>
             </div>
         </div>
     </div>
@@ -74,8 +78,18 @@
                 .1-.7 .1c-5.1 .5-10.2 .8-15.3 .8c-6.5 0-12.3-3.9-14.8-9.9c-2.5-6-1.1-12.8 3.4-17.4c4.1-4.2 7.8-8.7 11.3-13.5c1.7-2.3 3.3-4.6 4.8-6.9c.1-.2 .2-.3 .3-.5z"/>
             </svg></i></a>
           </li>
-          <li class="menu-item" id="settings-button">
-            <a href="#"><i><svg 
+          <li class="menu-item" id="reset-button">
+            <a href="#"><i>
+                <svg 
+                    style="width: 25px; color:black"
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor" 
+                    class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7
+                     7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
+                </svg>                  
+                <!-- <svg 
                 style="width: 20px; color:black" 
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 512 512">
@@ -84,7 +98,8 @@
                  425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 
                  22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 
                  22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/>
-            </svg></i></a>
+                </svg> -->
+            </i></a>
           </li>
           <li class="menu-item" id="info-button">
             <a href="#"><i><svg 
@@ -124,9 +139,57 @@
             <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
             </svg>
             <div class="info-content">
-                <p>pending</p>
-                <p>unsay ibutang diri</p>
-                <br><p style="text-align: center;">yah</p>
+                <p style="text-align: center;">*** DEV NOTES ***</p><br>
+                <p>This is a tower defense game made for a midterms project. 
+                    I spent around a month overall developing this game. 
+                    <br><br>       
+
+                    <p>I will upload this on my <a href="https://github.com/kjiezl" target="_blank">github</a> soon, so feel free to play :></p>
+
+                    <br><br>    
+                    Graphics are created and modified by me. 
+                    Music credit goes to the rightful owners.</p>
+                <br><p style="text-align: center;">@kwehh</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-popup" role="alert">
+        <div class="reset-container">
+            <p>Are you sure you want to reset your progress?</p>
+            <ul class="reset-buttons">
+                <li><a class="reset">RESET</a></li>
+                <li><a class="reset-cancel">CANCEL</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="feedback-bg">
+        <div class="feedback-container">
+            <svg 
+            class="feedback-close"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 384 512">
+            <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+            </svg>
+            <div class="feedback-content">
+                <br><p style="text-align: center;">Submit any feedbacks or bug reports here!</p><br><br>
+                <p style="display: flex; align-items: center;"><textarea name="feedback" class="feedback-input" placeholder="Type here..." rows="7" cols="70"></textarea></p>
+                <div class="feedback-wrapper">
+                    <button class="feedback-submit">
+                    <span>Submit</span>
+                        <div class="feedback-success">
+                            <svg xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                version="1.1"  
+                                viewBox="0 0 29.756 29.756" 
+                                style="enable-background:new 0 0 29.756 29.756;" 
+                                xml:space="preserve">
+                            <path d="M29.049,5.009L28.19,4.151c-0.943-0.945-2.488-0.945-3.434,0L10.172,18.737l-5.175-5.173   c-0.943-0.944-2.489-0.944-3.432,0.001l-0.858,0.857c-0.943,0.944-0.943,2.489,0,3.433l7.744,7.752   c0.944,0.943,2.489,0.943,3.433,0L29.049,8.442C29.991,7.498,29.991,5.953,29.049,5.009z"/>
+                            </svg>
+                        </div>
+                    </button>
+                  </div>
             </div>
         </div>
     </div>
