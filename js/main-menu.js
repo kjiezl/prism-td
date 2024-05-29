@@ -1,6 +1,6 @@
 "use strict";
 
-const socket = io("ws://localhost:3001");
+// const socket = io("ws://localhost:3001");
 
 let mainMusic = new Audio('bgm/main-menu.mp3');
 mainMusic.loop = true;
@@ -8,6 +8,7 @@ let buttonSound = new Audio('sfx/button-click.mp3');
 
 let username = "player";
 
+/*
 socket.emit("get-scores", username);
 socket.on("send-scores", scores => {
     if (scores && scores.hasOwnProperty("1")) {
@@ -35,17 +36,7 @@ socket.on("send-scores", scores => {
         $("#level4Score").text("0");
     }
 });
-
-// let username = "Kwehh"
-// let socketId = "";
-// socket.on("socket-id", (id) => {
-//     socketId = id;
-// });
-
-// function sendUsername(){
-//     socket.emit("update-username", { username, socketId });
-//     console.log(`emitted username: ${username}, socketid: ${socketId}`)
-// }
+*/
 
 $(function() {
     setInterval((window) => {
@@ -134,9 +125,3 @@ $(function() {
         $("#musicButton").toggle();
     });
 });
-
-// $(window).on("keypress", (e) => {
-//     if(e.key === 'c'){
-//         sendUsername();
-//     }
-// })

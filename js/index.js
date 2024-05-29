@@ -1,27 +1,16 @@
 "use strict";
 
-const socket = io("ws://localhost:3001");
+// const socket = io("ws://localhost:3001");
 
 let username = "player";
 
-// function getUsername(){
-//     // console.log(`Using socketId: ${socketId}`);
-//     socket.emit("get-username", socketId);
-//     // console.log(`emitted socketid: ${socketId}`)
-
-//     socket.on("send-username", name => {
-//         username = name;
-//         console.log(`on server: ${name}, on client: ${username}`);
-//     })
-// }
-
-function updateScore(level, score) {
+/*function updateScore(level, score) {
     socket.emit("update-score", { username, level, score });
 }
 
 function updateProgress(level) {
     socket.emit("update-progress", { username, level });
-}
+}*/
 
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
@@ -661,8 +650,8 @@ function animate(){
         $("#towerSelectionMenu, .upgradeItem, .specialClass").css("display", "none");
         $("#gameOver").fadeIn(150).css("display", "flex");  
         isGameOver = true;
-        updateScore(levelParam, score);
-        updateProgress(levelParam);
+        // updateScore(levelParam, score);
+        // updateProgress(levelParam);
     }
     
     for(let i = 0; i < layer3Anim.length; i++) {
@@ -1355,8 +1344,8 @@ $(window).on('keypress', (e) => {
         showLevelCompleteMenu();
         // sfx.levelCompleteSound.play();
         levelComplete = true;
-        updateScore(levelParam, score);
-        updateProgress(levelParam);
+        // updateScore(levelParam, score);
+        // updateProgress(levelParam);
         pauseGame();
     }
     if(e.key === '-'){
@@ -1395,11 +1384,3 @@ function shakeCanvas(){
 
     shake();
 }
-
-// function updateScore(username, level, score) {
-//     socket.emit("update-score", { username, level, score });
-// }
-
-// function updateProgress(username, level) {
-//     socket.emit("update-progress", { username, level });
-// }

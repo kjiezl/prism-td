@@ -1,4 +1,4 @@
-const express = require("express");
+/*const express = require("express");
 const mongoose = require("mongoose");
 const io = require("socket.io")(3001, {
     cors: {origin: "*"}
@@ -33,38 +33,6 @@ const Feedback = mongoose.model("Feedback", feedbackSchema);
 
 io.on("connection", (socket) => {
     console.log("New player connected");
-
-    // socket.emit("socket-id", socket.id);
-
-    // socket.on("update-username", async ({ username, socketId }) => {
-    //     console.log(`Updating username: ${username}, socketID: ${socketId}`);
-    //     try {
-    //         let player = await Player.findOne({ username: username });
-    
-    //         if (!player) {
-    //             player = new Player({
-    //                 username: username,
-    //                 socketId: socketId,
-    //                 scores: new Map(),
-    //                 levelsCompleted: []
-    //             });
-    //         } else {
-    //             player.username = username;
-    //             player.socketId = socketId;
-    //         }
-    
-    //         await player.save();
-
-    //     } catch(err) {
-    //         console.log("Error updating username", err);
-    //     }
-    // });
-
-    // socket.on("get-username", async (socketId) => {
-    //     await Player.findOne({ socketId: socketId }).then(player => {
-    //         socket.emit("send-username", player.username);
-    //     })
-    // })
 
     socket.on("get-scores", async (username) => {
         try {
@@ -159,4 +127,4 @@ io.on("connection", (socket) => {
 
 app.listen(3000, () => {
     console.log("Server is running");
-});
+});*/
