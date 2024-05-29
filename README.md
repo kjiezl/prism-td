@@ -1,5 +1,7 @@
 **PRiSM TD** is a web-based tower defense game. It contains 3 levels and an endless mode.
 
+[PLAY GAME](https://kjiezl.github.io/prism-td/main-menu.html)
+
 ### TOWERS
 - COMMON - Special attack increases fire rate for a short duration. Level 1 common towers can be upgraded into special towers.
 - ICE - Special attack freezes all enemies in the area for a short duration. Basic attack temporarily slows down the target enemy.
