@@ -395,8 +395,8 @@ class Enemy extends Sprite{
                     levelComplete = true;
                     sfx.levelCompleteSound.play();
                     gamePaused = true;
-                    updateScore(levelParam, score);
-                    updateProgress(levelParam);
+                    // updateScore(levelParam, score);
+                    // updateProgress(levelParam);
                     showLevelCompleteMenu();
                 }
                 if((this.type === "star" || this.type === "lightning" || this.type === "scribbles")

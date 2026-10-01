@@ -4,13 +4,17 @@
 
 let username = "player";
 
-/*function updateScore(level, score) {
-    socket.emit("update-score", { username, level, score });
+function updateScore(level, score) {
+    if (typeof socket !== "undefined") {
+        socket.emit("update-score", { username, level, score });
+    }
 }
 
 function updateProgress(level) {
-    socket.emit("update-progress", { username, level });
-}*/
+    if (typeof socket !== "undefined") {
+        socket.emit("update-progress", { username, level });
+    }
+}
 
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
