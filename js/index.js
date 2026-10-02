@@ -195,9 +195,11 @@ function getParam(param){
 var levelParam = getParam("level");
 var socketId = getParam("user");
 
-// console.log("level: " + parseInt(levelParam));
-
-levelParam = levelParam == null ? 1 : parseInt(levelParam);
+if (levelParam == null || isNaN(parseInt(levelParam, 10))) {
+    window.location.replace("main-menu.html");
+} else {
+    levelParam = parseInt(levelParam, 10);
+}
 
 var enemies = [];
 var layer1Anim = [];

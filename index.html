@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en-us">
 <head>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const level = parseInt(urlParams.get("level"), 10);
+        if (!urlParams.has("level") || isNaN(level) || level < 1 || level > 4) {
+            window.location.replace("main-menu.html");
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="js/lib/require.js"></script>
     <script src="js/lib/jquery.min.js"></script>
